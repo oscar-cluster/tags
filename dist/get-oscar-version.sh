@@ -1,8 +1,9 @@
 #!/bin/sh
 #
-# $COPYRIGHT$
 #
-# $Id: get-oscar-version.sh,v 1.1 2001/08/20 23:08:07 jsquyres Exp $
+# $COPYRIGHT$
+# 
+# $Id: get-oscar-version.sh,v 1.1.2.2 2002/03/07 16:20:13 naughtont Exp $
 #
 # Since we do this in multiple places, it's worth putting in a
 # separate shell script.  Very primitive script to get the version

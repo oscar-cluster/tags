@@ -1,11 +1,9 @@
 # -*- makefile -*-
 #
-# $Id: Makefile.am,v 1.2 2001/12/22 01:08:37 jsquyres Exp $
+# $Id: Makefile.am,v 1.1.2.1 2002/02/28 05:54:36 jsquyres Exp $
 #
 # This file is part of the OSCAR distribution.
 # See the copyright and license notices in the top-level directory.
 #
 
-noinst_SCRIPTS		= post_buildimage
-
-EXTRA_DIST		= $(noinst_SCRIPTS)
+EXTRA_DIST		= lam-6.5.6-usysv.1oscar.src.rpm

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: make-dist.sh,v 1.6 2002/01/22 16:09:45 bwbarrett Exp $
+# $Id: make-dist.sh,v 1.6.2.3 2002/03/07 15:54:38 naughtont Exp $
 #
 # For copyright information, please see the COPYING file in the
 # top-level directory
@@ -113,7 +113,7 @@ find testing -type f -print >> $filelist
 # If this is a beta, prepend the beta notice to the license.  
 #
 
-if test "$OSCAR_BETA_VERSION" != "" -o "$OSCAR_ALPHA_VERSION" != ""; then
+if test "$OSCAR_BETA_VERSION" != "0" -o "$OSCAR_ALPHA_VERSION" != "0"; then
     echo " - This is a BETA version"
     file=/tmp/oscar-license.$$
     rm -f $file
@@ -138,6 +138,9 @@ rm -f aclocal.m4
 rm -f configure configure.in
 rm -rf dist
 find . -name Makefile\* -exec rm -f {} \; -print
+
+# TJN uncomment once I have chance to test.
+#(cd oscarsamples; ln -s sample.rpmlist.RH72  sample.rpmlist)
 
 #
 # All done

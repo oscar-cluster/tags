@@ -74,10 +74,11 @@ sub link_kernel_files {
 
 sub sync_user_files {
     my ($imagedir) = @_;
-    copy("/etc/resolv.conf","$imagedir/etc/resolv.conf") or (carp "Couldn't populate /etc/resolv.conf to $imagedir",
+
+	if(-e "/etc/shadow") {
+    	copy("/etc/shadow","$imagedir/etc/shadow") or (carp "Couldn't populate /etc/shadow to $imagedir",
                                                    return undef);
-    copy("/etc/shadow","$imagedir/etc/shadow") or (carp "Couldn't populate /etc/shadow to $imagedir",
-                                                   return undef);
+	}
     copy("/etc/passwd","$imagedir/etc/passwd") or (carp "Couldn't populate /etc/passwd to $imagedir",
                                                    return undef);
     copy("/etc/group","$imagedir/etc/group") or (carp "Couldn't populate /etc/group to $imagedir",

@@ -1,7 +1,7 @@
 /*
  * $COPYRIGHT$
  *
- * $Id: cpi.c,v 1.1 2001/12/11 18:06:24 mchasal Exp $
+ * $Id: cpi.c,v 1.1.2.2 2002/03/07 16:20:13 naughtont Exp $
  *
  * Portions taken from the MPICH distribution example cpi.c.
  *

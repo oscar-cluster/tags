@@ -1,0 +1,3 @@
+/dev/sda1 	24            ext3		/boot rw
+/dev/sda5	128          swap
+/dev/sda6	1000        ext3		/        rw

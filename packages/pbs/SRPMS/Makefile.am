@@ -1,11 +1,11 @@
 # -*- makefile -*-
 #
-# $Id: Makefile.am,v 1.2.2.1 2002/02/28 05:56:05 jsquyres Exp $
+# $Id: Makefile.am,v 1.1.2.2 2002/04/10 21:27:54 naughtont Exp $
 #
 # This file is part of the OSCAR distribution.
 # See the copyright and license notices in the top-level directory.
 #
 
 EXTRA_DIST		= \
-			lam-6.5.6-usysv.1oscar.i586.rpm \
-			lam-profile-d-6.5.6-usysv.1oscar.i586.rpm
+			maui-oscar-3.0.6p9-2.src.rpm \
+			openpbs-oscar-2.2p11-4.src.rpm
