@@ -38,6 +38,7 @@ Author: Jeremy Enos jenos@ncsa.uiuc.edu
       <filter group="oscar_server"/>
       <rpm>torque-server</rpm>
       <rpm>torque-gui</rpm>
+      <rpm>tk</rpm>
   </rpmlist>
 <conflicts>
   <name>pbs</name>

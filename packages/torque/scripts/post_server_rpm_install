@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Copyright (c) 2004, The Board of Trustees of the University of Illinois.
 #                     All rights reserved.
 
@@ -23,16 +23,12 @@ use Carp;
 use lib '/usr/lib/systeminstaller';
 use SystemInstaller::Machine;
 
-#########################################################################
-#  Check to see if 'Torque Server' is running.  If not, then start it.  #
-#########################################################################
+#######################################################
+#  Start up 'Torque Server' by restarting the daemon  #
+#######################################################
 sub startPBSserver
 {
-#  open(CMD,"/etc/init.d/pbs_server status |");
-#  my $result = <CMD>;
-#  close(CMD);
-  system('/etc/init.d/pbs_server start');
-#    unless ($result =~ /is running/);
+  system('/etc/init.d/pbs_server restart');
 }
 
 
@@ -58,3 +54,22 @@ open (RCFILE, ">$xpbsmonrc")
 print RCFILE @lines; 
 close (RCFILE);
 
+# Hack to get around xpbs/xpbsmon bug (1170118)
+
+my $libtk = `rpm -ql tk | grep /usr/lib/libtk`;
+chomp($libtk);
+
+my $libtcl = `rpm -ql tcl | grep /usr/lib/libtcl`;
+chomp($libtcl);
+
+if ( !(-e '/usr/lib/libtk8.3.so') ) {
+  system("ln -s $libtk /usr/lib/libtk8.3.so");
+}
+
+if ( !(-e '/usr/lib/libtcl8.3.so') ) {
+  system("ln -s $libtcl /usr/lib/libtcl8.3.so");
+}
+
+if ( !(-e '/usr/bin/wish8.3') ) {
+  system("ln -s /usr/bin/wish /usr/bin/wish8.3");
+}
