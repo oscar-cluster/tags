@@ -18,10 +18,12 @@ You will need to obtain a mysql-server rpm and put it into /tftpboot/rpm before 
     rpmbuild --rebuild mysql-3.23.58-1.src.rpm
     cp /usr/src/redhat/RPMS/ia64/mysql-server-3.23.58-1.ia64.rpm /tftpboot/rpm
 
-If you can't get that SRPM, make sure you also save the other RPMS, e.g.,
+If you can't get the SRPM of the same version number of your others mysql packages, make sure you also save the other RPMS, e.g.,
 
     rpmbuild --rebuild mysql-3.23.58-2.3.src.rpm
     cp /usr/src/redhat/RPMS/ia64/mysql*-3.23.58-1.ia64.rpm /tftpboot/rpm
+
+Another way is just download the respective mysql-server rpm from a repository and save it in /tftpboot/rpm; take care to copy the appropriate one, comparing its version number with those from the others mysql packages in /tftpboot/rpm. 
 
 
 2) Red Hat Enterprise Linux 3 (Gold or U2) rpmlist
@@ -91,13 +93,7 @@ In some systems using cd-rom and scsi disks, you may have to modify the diskorde
               to:  echo DISKORDER=${DISKORDER=sd,hd,cciss,ida,rd}
 
 
-9) eth0 / eth1
-   -----------
-
-The system assumes that all clients uses eth0 as the default ethernet device. If they use eth1 instead of eth0 you have to modify oscarimage.master accordingly after Step 4 of the Wizard.
-
-
-10) elilo
-    -----
+9) elilo
+   -----
 
 If Linux doesn't properly boot after the installation of the image, you may have to manually boot it from the correct path. Chose the "EFI Shell" boot option (SR870BH2), then access the correct device (in our case fs0), copy elilo.efi and elilo.conf to the root ("cp \EFI\redhat\elilo.efi \","cp \EFI\redhat\elilo.conf \") and boot from there ("elilo.efi 2.4.21-15.EL").
