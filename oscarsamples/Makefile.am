@@ -21,6 +21,8 @@ oscar_DATA		= \
 			mandrake-9.1-nox-i386.rpmlist \
 			redhat-3as-i386.rpmlist \
 			redhat-3as-ia64.rpmlist \
+			redhat-3asU2-i386.rpmlist \
+			redhat-3asU2-ia64.rpmlist \
 			redhat-7.1-i386.rpmlist \
 			redhat-7.2-i386.rpmlist \
 			redhat-7.3-i386.rpmlist \
