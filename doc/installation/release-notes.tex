@@ -39,36 +39,36 @@ The following release notes apply to OSCAR version \oscarversion.
 \begin{itemize}
 
 \item There is currently a known issue with the Delete Nodes functionality.
-You may notice error messages like the following when you delete the
-last node of a cluster:
+  You may notice error messages like the following when you delete the
+  last node of a cluster:
 
-/opt/oscar/packages/sis/scripts/post\_clients: illegal or
-non-understood where string <nics.driver\_module = >
-/opt/oscar/packages/sis/scripts/post\_clients: INTERNAL
-ODA ERROR - failing to convert where expression
-<nics.driver\_module = > in oda::delete\_records - at lea
-st one record not deleted in table <nics> in database
-<oscar>
-/opt/oscar/packages/sis/scripts/post\_clients: illegal or
-non-understood where string <nics.gateway = >
-/opt/oscar/packages/sis/scripts/post\_clients: INTERNAL
-ODA ERROR - failing to convert where expression
-<nics.gateway = > in oda::delete\_records - at least one
-record not deleted in table <nics> in database <oscar>
-/opt/oscar/packages/sis/scripts/post\_clients: illegal or
-non-understood where string <nics.assignment\_method
-= >
+  \begin{verbatim}
+    /opt/oscar/packages/sis/scripts/post_clients: illegal or
+    non-understood where string <nics.driver_module = >
+    /opt/oscar/packages/sis/scripts/post_clients: INTERNAL
+    ODA ERROR - failing to convert where expression
+    <nics.driver_module = > in oda::delete_records - at 
+    least one record not deleted in table <nics> in database <oscar>
+    /opt/oscar/packages/sis/scripts/post_clients: illegal or
+    non-understood where string <nics.gateway = >
+    /opt/oscar/packages/sis/scripts/post_clients: INTERNAL
+    ODA ERROR - failing to convert where expression
+    <nics.gateway = > in oda::delete_records - at least one
+    record not deleted in table <nics> in database <oscar>
+    /opt/oscar/packages/sis/scripts/post_clients: illegal or
+    non-understood where string <nics.assignment_method = >
+  \end{verbatim}
 
-This is not 'harmful' but will leave the ODA database inconsistent
-with the SIS database.  The information on network interfaces is
-currently not used therefore it is not really damaging to your
-installation.  This will be fixed in the next release.
+  This is not 'harmful' but will leave the ODA database inconsistent
+  with the SIS database.  The information on network interfaces is
+  currently not used therefore it is not really damaging to your
+  installation.  This will be fixed in the next release.
 
 
 \item Each package in OSCAR has its own installation and release
   notes.  \detailed{See Section~\ref{sec:pkg-specific-notes} for
-    additional release notes.} \quick{See the full Installation Guide
-    for these notes.}
+  additional release notes.} \quick{See the full Installation Guide
+  for these notes.}
 
 \item All nodes must have a hostname other than ``{\tt localhost}''
   that does not contain any underscores (``{\tt \_}'').
@@ -78,7 +78,7 @@ installation.  This will be fixed in the next release.
 
 %TJN: KEEP THIS (if we keep the python2-compat rpms under c3?)
 \item Due to some distribution portability issues, OSCAR currently installs
-  a ``compatibility'' (\file{python2-compat-1.0-1}) RPM to resolve the
+  a ``compatibility''  (\file{python2\--compat\--1.0-1}) RPM to resolve the
   Python2 prerequisite that is slightly different across different Linux
   distributions.  Also see the file \file{packages/c3/RPMS/NOTE.python2}.
 
@@ -274,15 +274,15 @@ issues.
 \begin{itemize}
 
 \item SIS currently does not fully support 2.6 kernel, the way we make it
-work right now is to run a script which generate /etc/modprobe.conf from
-/etc/modules.conf - this does not work 100\% of the time.  If you can
-deploy an image to your slave nodes but are having problems booting,
-chances are this is the issue.  To get around this problem, copy a
-working modprobe.conf for your slave node to the image directory
-/var/lib/systemimager/images/oscarimage/etc/, then you also need to move
-the script
-/var/lib/systemimager/scripts/post-install/22all.generate\_modprobe\_script
-out of the directory.  Re-image the node and it should work.
+  work right now is to run a script which generate \file{/etc/modprobe.conf} 
+  from \file{/etc/modules.conf} - this does not work 100\% of the time.  If 
+  you can deploy an image to your client nodes but are having problems 
+  booting, chances are this is the issue.  To get around this problem, copy a
+  working \file{modprobe.conf} for your client node to the image directory 
+  \file{/var\-/lib\-/systemimager\-/imagesoscarimage\-/etc/},
+  then you also need to move the script 
+  \file{/var\-/lib\-/systemimager\-/scripts\-/post-install\-/22all.\-generate\-\_modprobe\_script} 
+  out of the directory.  Re-image the node and it should work.
 
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -352,45 +352,50 @@ out of the directory.  Re-image the node and it should work.
 \begin{itemize}
 
 \item In order to use some i386 binaries like tftp-hpa with the emulator, 
-we must modify the /usr/lib/rpm/rpmrc file. Change the entry:
-
-arch\_compat: ia64: noarch
-
-to:
-
-arch\_compat: ia64: i386 noarch
+  we must modify the \file{/usr\-/lib\-/rpm\-/rpmrc} file. 
+  Change the entry: \ \\
+    \file{arch\_compat: ia64: noarch} \ \\ 
+  to: \ \\
+    \file{arch\_compat: ia64: i386 noarch}
 
 \item There is a problem generating a valid initrd files on the nodes, so we 
-must provides one in the image.  After the client image is generated by the 
-oscar wizard (step 4), simply copy a valid initrd in the /boot/efi/efi/redhat:
+  must provides one in the image.  After the client image is generated by the 
+  oscar wizard (step 4), simply copy a valid initrd in the 
+  \file{/boot/efi/efi/redhat}:
 
-cp /boot/efi/efi/redhat/initrd-2.4.21-15.EL.img \
-   /var/lib/systemimager/images/oscarimage/boot/efi/EFI/redhat/
+  \begin{verbatim}
+     cp /boot/efi/efi/redhat/initrd-2.4.21-15.EL.img \
+      /var/lib/systemimager/images/oscarimage/boot/efi/EFI/redhat/
+  \end{verbatim}
 
-You will also need to add an INITRD entry to the image
-/etc/systemconfig/systemconfig.conf file. After the modification, the kernel
-section should look like this:
+  You will also need to add an INITRD entry to the image
+  \file{/etc/systemconfig/systemconfig.conf} file. After the modification, the 
+  kernel section should look like this:
 
-\[KERNEL0\]
+  \begin{verbatim}
+    [KERNEL0]
         PATH = /boot/efi/EFI/redhat/vmlinuz-2.4.21-15.EL
         INITRD = /boot/efi/EFI/redhat/initrd-2.4.21-15.EL.img
         LABEL = 2.4.21-15.EL
+  \end{verbatim}
 
-\item Edit the file
-/var/lib/systemimager/images/oscarimage2/etc/systemconfig/systemconfig.conf
-and add an Hardware section with scsi and network drivers. For the SR870BH2,
-the hardware section of this file will look like this:
+\item Edit the file \file{/var\-/lib\-/systemimager\-/images\-/oscarimage2\-/etc\-/systemconfig\-/system\-config.conf}
+  and add an Hardware section with scsi and network drivers. For the SR870BH2,
+  the hardware section of this file will look like this:
 
-\[HARDWARE\]
-        ORDER = e1000 e1000 mptscsih mptbase scsi\_mod
+  \begin{verbatim}
+     [HARDWARE]
+        ORDER = e1000 e1000 mptscsih mptbase scsi_mod
+  \end{verbatim}
 
 \item If you need to use the keyboard on a usb only system like the Intel 
-SR870BH2, you need to add the usb controller to /etc/modules.conf of the oscar 
-image. In our image, /etc/modules.conf cat like this:
+  SR870BH2, you need to add the usb controller to \file{/etc/modules.conf} 
+  of the oscar image. In our image, \file{/etc/modules.conf} cat like this:
 
-\[root@rh3as2 etc\]# cat modules.conf
-alias usb-controller usb-uhci
-
+  \begin{verbatim}
+     [root@rh3as2 etc]# cat modules.conf
+     alias usb-controller usb-uhci
+  \end{verbatim}
 
 \end{itemize}
 
