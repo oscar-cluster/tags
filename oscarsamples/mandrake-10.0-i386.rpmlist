@@ -198,3 +198,15 @@ glibc-devel
 libstdc++5-devel
 gcc-g77
 libf2c0
+menu
+mdk-menu-messages
+libgimpprint1
+XFree86-compat-libs
+libnetpbm9
+xmms-mesa
+libqt3
+cups-common
+giftrans
+latex2html
+automake1.7
+autoconf2.5
