@@ -56,10 +56,10 @@ close (RCFILE);
 
 # Hack to get around xpbs/xpbsmon bug (1170118)
 
-my $libtk = `rpm -ql tk | grep /usr/lib/libtk`;
+my $libtk = `rpm -ql tk | grep /usr/lib/libtk8 | head -n 1`;
 chomp($libtk);
 
-my $libtcl = `rpm -ql tcl | grep /usr/lib/libtcl`;
+my $libtcl = `rpm -ql tcl | grep /usr/lib/libtcl8 | head -n 1`;
 chomp($libtcl);
 
 if ( !(-e '/usr/lib/libtk8.3.so') ) {
