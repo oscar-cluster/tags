@@ -294,8 +294,9 @@ sub run_server_install {
     };
     run_command($window, $step_number, $cmd_vars);
 
-    oscar_log_subsection('Update Wizard Env (as needed)');
-    @mod_env = WizardEnv::update_env();
+    # TJN: (4/5/05) Comment out for now on branch-4-1 to release v4.1
+    #oscar_log_subsection('Update Wizard Env (as needed)');
+    #@mod_env = WizardEnv::update_env();
 }
 
 ###########################################################################
@@ -513,8 +514,9 @@ sub run_post_install {
 
     oscar_log_section("Running step $step_number of the OSCAR wizard: Complete cluster setup");
 
-    oscar_log_subsection('Update Wizard Env (as needed)');
-    @mod_env = WizardEnv::update_env();
+    # TJN: (4/5/05) Comment out for now on branch-4-1 to release v4.1
+    #oscar_log_subsection('Update Wizard Env (as needed)');
+    #@mod_env = WizardEnv::update_env();
 
     my $cmd_vars = { 
 	cmd => "./post_install",
@@ -531,8 +533,9 @@ sub run_post_install {
     };
     run_command($window, $step_number, $cmd_vars);
 
-    oscar_log_subsection('Update Wizard Env (as needed)');
-    @mod_env = WizardEnv::update_env();
+    # TJN: (4/5/05) Comment out for now on branch-4-1 to release v4.1
+    #oscar_log_subsection('Update Wizard Env (as needed)');
+    #@mod_env = WizardEnv::update_env();
 }
 
 ###########################################################################
