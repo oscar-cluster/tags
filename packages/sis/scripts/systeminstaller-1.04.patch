@@ -36,3 +36,16 @@
                  my $name=$mach->name;
                  if ($ADAPTERS{$name}) {
  	                printf TMP "%-20.20s %s\t%s\n", $ADAPTERS{$name},$mach->hostname,$name;
+--- /usr/lib/systeminstaller/SystemInstaller/Image.pm.orig	2004-12-08 10:48:28.000000000 +0100
++++ /usr/lib/systeminstaller/SystemInstaller/Image.pm	2004-12-08 10:50:23.000000000 +0100
+@@ -153,6 +153,10 @@
+                 # Now find the version
+                 $relfiles[0]=~s/.*\///;
+                 my ($j1,$j2,$version,$j3)=split(/-/,$relfiles[0]);
++		#EF# treat 3WS, 3ES like 3AS
++		if ($version =~ m/3(WS|ES)/) {
++			$version = "3AS";
++		}
+                 return($distro,$version);
+         }
+         undef @relfiles;

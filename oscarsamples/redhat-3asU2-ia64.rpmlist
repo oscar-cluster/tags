@@ -6,7 +6,6 @@ basesystem
 bash
 bc
 beecrypt
-bind-libs
 bind-utils
 binutils
 bzip2
@@ -70,7 +69,6 @@ redhat-config-keyboard
 kernel
 kudzu
 krb5-libs
-laus-libs
 laus
 less
 libaio
@@ -132,7 +130,6 @@ readline
 redhat-logos
 redhat-release
 rootfiles
-rpm-libs
 rpm
 rsh
 rsh-server
