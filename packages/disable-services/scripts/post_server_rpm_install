@@ -61,13 +61,53 @@ for service in $services; do
     fi
 done
 
+dir="$OSCAR_PACKAGE_HOME/scripts"
+
+# Temporary solution to fix the problem that the postfix user does not exist
+# on the client nodes when the server node does not have the postfix installed.
+# The absent postfix user of the client nodes makes the postfix unable to run.
+# The temporary solution is to add postfix user and group according to its distro.
+# This makes the client node have postfix user and the postfix of the nodes can 
+# run.
+if [ $service_name != "postfix" ]; then
+    
+    distro=`$dir/distro_control`
+    case "$distro" in
+        redhat:9)
+            /usr/sbin/groupadd -g 90 -r postdrop 2>/dev/null
+            /usr/sbin/groupadd -g 89 -r postfix 2>/dev/null
+            /usr/sbin/groupadd -g 12 -r mail 2>/dev/null
+            /usr/sbin/useradd -d /var/spool/postfix -s /sbin/nologin -g postfix -G mail -M -r -u 89 postfix 2>/dev/null
+            ;;
+        fedora:2)
+            /usr/sbin/groupadd -g 90 -r postdrop 2>/dev/null
+            /usr/sbin/groupadd -g 89 -r postfix 2>/dev/null
+            /usr/sbin/groupadd -g 12 -r mail 2>/dev/null
+            /usr/sbin/useradd -d /var/spool/postfix -s /sbin/nologin -g postfix -G mail -M -r -u 89 postfix 2>/dev/null
+            ;;
+        redhat:3as)
+            /usr/sbin/groupadd -g 90 -r postdrop 2>/dev/null
+            /usr/sbin/groupadd -g 89 -r postfix 2>/dev/null
+            /usr/sbin/groupadd -g 12 -r mail 2>/dev/null
+            /usr/sbin/useradd -d /var/spool/postfix -s /sbin/nologin -g postfix -G mail -M -r -u 89 postfix 2>/dev/null
+            ;;
+        mandrake:10)
+            /usr/share/rpm-helper/add-user postfix $1 postfix /var/spool/postfix /bin/false
+            /usr/share/rpm-helper/add-group postfix $1 postdrop postfix
+            ;;
+        *)
+            echo "Error : OSCAR 4.0 supports RedHat 9, Fedora Core 2, RHEL AS 3"
+            echo "and Mandrake 10. disable-services can configure mailing services"
+            echo "for only the above distros"
+            ;;
+    esac
+fi
 #
 # The only postfix is supported for the oscar-3.0.1b1.
 # If there is no MTA in the head node, install_postfix (perl script)
 # is called to install postfix rpm.
 #
 if [ -z "$service_name" ]; then
-    dir="$OSCAR_PACKAGE_HOME/scripts"
     $dir/install_postfix
     service_name="postfix"
 fi

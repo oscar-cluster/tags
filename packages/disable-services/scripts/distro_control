@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+#
+# Copyright (c) 2004 The Trustees of Indiana University.  
+#                    All rights reserved.
+# 
+# This file is part of the OSCAR software package.  For license
+# information, see the COPYING file in the top level directory of the
+# OSCAR source distribution.
+
+#
+# $Id: distro_control,v 1.0 2004/12/01 donginn Exp $
+#
+
+# This program is made to solve the problem that the postfix user does not exist
+# on the client nodes when the server node does not have the postfix installed.
+# The post_server_rpm_install calls this program to get the distro information
+# since it addes the postfix user and group with the preinstall scripts of
+# postfix rpm corresponding to its distro.
+# This program prints one string of "distro_name:distro_ver".
+use strict;
+use lib "$ENV{OSCAR_HOME}/lib";
+use OSCAR::Distro;
+
+
+my ($distro_name, $distro_ver) = OSCAR::Distro::which_distro_server();
+print "$distro_name:$distro_ver\n";
+
