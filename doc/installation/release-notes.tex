@@ -182,19 +182,18 @@ The following release notes apply to OSCAR version \oscarversion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Red Hat 8/9.0 Notes}
+\subsection{Red Hat 9 Notes}
 \label{subsec:rh90notes}
 
-There are a few issues that may crop up when using OSCAR on Red Hat 9.0
-and/or Red Hat 8.0 clusters.  The following items highlight these
-issues.  
+There are a few issues that may crop up when using OSCAR on Red Hat 9.
+The following items highlight these issues.
 
 \begin{itemize}
 
 \item Deselecting Pfilter causes the image creation to fail.  This is
   due to a dependency with IPtables and when Pfilter is not selected
   the IPtables RPM is not listed in the node (image) rpmlist.   The simple
-  fix is to add ``iptables'' to the Red Hat 9.0 rpmlist if you are not
+  fix is to add ``iptables'' to the Red Hat 9 rpmlist if you are not
   installing Pfilter on the compute nodes.
 
 \item The RPM system has been updated with this Red Hat release.  The
@@ -206,7 +205,7 @@ issues.
 \item In some OSCAR pre-release testing, RPM would hang during the
   building of a client image (Section~\ref{det:build-client-image}).
   This is a documented bug in the version of RPM that ships with
-  Redhat 8 and 9.0; it is not a problem with OSCAR.  The procedure
+  Redhat 9; it is not a problem with OSCAR.  The procedure
   that was used to remedy this situation is outlined below (excerpts
   taken from \url{http://www.rpm.org/hintskinks/repairdb-2003-06/}):
         \begin{itemize}
@@ -268,7 +267,7 @@ issues.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Fedora Core 2 notes.}
+\subsection{Fedora Core 2 Notes}
 \label{subsec:fc2notes}
 
 \begin{itemize}
@@ -278,11 +277,12 @@ issues.
   from \file{/etc/modules.conf} - this does not work 100\% of the time.  If 
   you can deploy an image to your client nodes but are having problems 
   booting, chances are this is the issue.  To get around this problem, copy a
-  working \file{modprobe.conf} for your client node to the image directory 
-  \file{/var\-/lib\-/systemimager\-/imagesoscarimage\-/etc/},
-  then you also need to move the script 
-  \file{/var\-/lib\-/systemimager\-/scripts\-/post-install\-/22all.\-generate\-\_modprobe\_script} 
-  out of the directory.  Re-image the node and it should work.
+  working \file{modprobe.conf} for your client nodes to the image directory 
+  \file{/var\-/lib\-/systemimager\-/images\-/oscarimage\-/etc/}.  Re-image the
+  nodes and it should work.  One quick way of getting the correct
+  \file{modprobe.conf} is to boot a node with the Fedora Core 2 CD 1 
+  and run the Rescue mode.  You will then be able to find
+  \file{modprobe.conf} in \-/tmp.
 
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -346,7 +346,7 @@ issues.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{IA64 on RHEL 3.0 systems}
+\subsection{IA64 on RHEL 3.0 Notes}
 \label{subsec:ia64notes}
 
 \begin{itemize}
