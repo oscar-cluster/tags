@@ -13,6 +13,7 @@ my @rpms = qw(pvm
 		);
 #remove_rpms(@rpms);
 
+exit 0;
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

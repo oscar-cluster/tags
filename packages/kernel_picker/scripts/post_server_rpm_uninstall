@@ -9,9 +9,10 @@
 # Must exit with 0 on success or non-zero for any failures.
 
 
-my @rpms = qw(kernel_picker);
-remove_rpms(@rpms);
+#my @rpms = qw(kernel_picker);
+#remove_rpms(@rpms);
 
+exit 0;
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

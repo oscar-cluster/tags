@@ -8,9 +8,10 @@
 # server uninstall script
 # Must exit with 0 on success or non-zero for any failures.
 
-my @rpms = qw(loghost);
-remove_rpms(@rpms);
+#my @rpms = qw(loghost);
+#remove_rpms(@rpms);
 
+exit 0;
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

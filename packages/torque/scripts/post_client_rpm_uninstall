@@ -12,12 +12,11 @@
 
 system('/etc/init.d/pbs_mom stop');
 
-my @rpms = qw(torque
-		torque-mom
-		torque-client
-		);
-remove_rpms(@rpms);
-
+#my @rpms = qw(torque
+#		torque-mom
+#		torque-client
+#		);
+#remove_rpms(@rpms);
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

@@ -9,13 +9,15 @@
 # Must exit with 0 on success or non-zero for any failures.
 
 
-my @rpms = qw(openpbs-oscar
-		openpbs-oscar-mom
-		openpbs-oscar-client
-		openpbs-oscar-server
-		openpbs-oscar-gui
-		);
-remove_files(@rpms);
+#my @rpms = qw(openpbs-oscar
+#		openpbs-oscar-mom
+#		openpbs-oscar-client
+#		openpbs-oscar-server
+#		openpbs-oscar-gui
+#		);
+#remove_files(@rpms);
+
+exit 0;
 
 
 #-------------------------------------------------------------

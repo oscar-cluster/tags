@@ -11,17 +11,19 @@
 # There's a bunch of names that LAM (and its supporting RPMs) could be
 # installed under.  :-\
 
-my @rpms = qw(lam-gm-oscar
-	      lam-gm-oscar-modulefile
-	      lam-oscar
-	      lam-oscar-module
-	      lam-oscar-modulefile
-	      lam-switcher-modulefile
-	      lam-with-gm-oscar
-	      lam-with-gm-oscar-module
-	      libaio-oscar
-	      libaio-oscar-devel);
-remove_rpms(@rpms);
+#my @rpms = qw(lam-gm-oscar
+#	      lam-gm-oscar-modulefile
+#	      lam-oscar
+#	      lam-oscar-module
+#	      lam-oscar-modulefile
+#	      lam-switcher-modulefile
+#	      lam-with-gm-oscar
+#	      lam-with-gm-oscar-module
+#	      libaio-oscar
+#	      libaio-oscar-devel);
+#remove_rpms(@rpms);
+
+exit 0;
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

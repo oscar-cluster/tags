@@ -9,9 +9,10 @@
 # Must exit with 0 on success or non-zero for any failures.
 
 
-my @rpms = qw(hdf5-oscar hdf5-oscar-module);
-remove_rpms(@rpms);
+#my @rpms = qw(hdf5-oscar hdf5-oscar-module);
+#remove_rpms(@rpms);
 
+exit 0;
 
 
 #-------------------------------------------------------------

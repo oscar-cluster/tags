@@ -8,30 +8,29 @@
 # server uninstall script
 # Must exit with 0 on success or non-zero for any failures.
 
-my @rpms = qw(systemconfigurator
-		systemimager-common
-		perl-AppConfig
-		systemimager-client
-		systeminstaller
-		systeminstaller-x11
-		perl-MLDBM
-		syslinux
-		systemimager-server
-		systemimager-i386boot-standard
-		systemimager-flamethrower
-		flamethrower
-		udpcast
-		tftp-hpa
-		perl-XML-Simple
-		perl-XML-Parser
-		);  #skipping rsync
-
+#my @rpms = qw(systemconfigurator
+#		systemimager-common
+#		perl-AppConfig
+#		systemimager-client
+#		systeminstaller
+#		systeminstaller-x11
+#		perl-MLDBM
+#		syslinux
+#		systemimager-server
+#		systemimager-i386boot-standard
+#		systemimager-flamethrower
+#		flamethrower
+#		udpcast
+#		tftp-hpa
+#		perl-XML-Simple
+#		perl-XML-Parser
+#		);  #skipping rsync
+#
 @files = qw(/usr/share/systeminstaller/distinfo/Fedora/stages
 	);
 
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 remove_files(@files);
-
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

@@ -14,13 +14,13 @@ system('/etc/init.d/pbs_server stop');
 system('/etc/init.d/pbs_sched stop');
 system('/etc/init.d/pbs_mom stop');
 
-my @rpms = qw(torque
-		torque-mom
-		torque-client
-		torque-server
-		torque-gui
-		);
-remove_rpms(@rpms);
+#my @rpms = qw(torque
+#		torque-mom
+#		torque-client
+#		torque-server
+#		torque-gui
+#		);
+#remove_rpms(@rpms);
 
 
 #-------------------------------------------------------------
