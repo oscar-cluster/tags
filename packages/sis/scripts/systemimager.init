@@ -7,7 +7,7 @@
 #   Hacked for rsync as used by SystemImager
 #       by Brian Finley <bef@bgsw.net>.
 #
-#   $Id: systemimager.init,v 1.1 2003/02/18 19:44:48 brianfinley Exp $
+#   $Id: systemimager.init,v 1.1.6.1 2004/01/28 19:53:34 bligneri Exp $
 #
 #
 # Support for IRIX style chkconfig:
