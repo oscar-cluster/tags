@@ -26,7 +26,7 @@ SUBDIRS			= \
 			testing
 
 oscar_SCRIPTS		= install_cluster
-oscar_DATA		= COPYING README VERSION
+oscar_DATA		= COPYING README VERSION README.RH3AS.IA64.txt
 
 EXTRA_DIST		= $(oscar_SCRIPTS) $(oscar_DATA)
 
