@@ -64,18 +64,19 @@ the image:
 4) systemconfig.conf
    ----------------- 
  
-You will also need to add an INITRD entry to the image
-/etc/systemconfig/systemconfig.conf file.  After the modification, the
-kernel section should look like this:
+You will also need to add an INITRD entry to the image file
+
+ /var/lib/systemimager/images/oscarimage/etc/systemconfig/systemconfig.conf
+
+After the modification, the kernel section should look like this:
 
      [KERNEL0]
         PATH = /boot/efi/EFI/redhat/vmlinuz-2.4.21-20.EL
         INITRD = /boot/efi/EFI/redhat/initrd-2.4.21-20.EL.img
         LABEL = 2.4.21-20.EL
-where
-      2.4.21-20.EL is the kernel for Red Hat Enterprise Linux 3 (U3)
-      You should substitute your kernel version if you're not running
-      U3.
+
+where 2.4.21-20.EL is the kernel for Red Hat Enterprise Linux 3 (U3)
+You should substitute your kernel version if you're not running U3.
 
 
 5) SCSI and network
@@ -112,8 +113,7 @@ directory you must install the package and turn it on:
 
 	rpm -i tftp-server-0.32-4.ia64.rpm  
 
-(it could be "ia64" or "i386", depending of your machine's
-architecture).
+(it could be "ia64" or "i386", depending of your machine's architecture).
 
 	/sbin/chkconfig --level 345 tftp on 
 
