@@ -1,4 +1,4 @@
-$Id: README,v 1.7 2002/01/26 14:32:26 jsquyres Exp $
+$Id: README,v 1.10 2002/02/11 19:30:05 bwbarrett Exp $
 
 $COPYRIGHT$
 
@@ -11,10 +11,10 @@ doc/install.pdf.
 
 
 ***************************************************************
-Notes on the 1.2 beta release
+Notes on the 1.2.1 release
 ***************************************************************
 
-There are some limitations to the 1.2 beta release, they are:
+There are some limitations to the 1.2.1 release, they are:
 
 - You MUST specify a domain name for your clients when defining them.
 
