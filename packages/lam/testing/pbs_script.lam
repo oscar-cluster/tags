@@ -50,7 +50,7 @@ EOF
 
 # Start a LAM universe
 
-lamboot $PBS_NODEFILE
+lamboot
 
 # Compile cpi and try running it
 
