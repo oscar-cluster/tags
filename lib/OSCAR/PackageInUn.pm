@@ -23,7 +23,8 @@ use strict;
 
 use lib "$ENV{OSCAR_HOME}/lib";
 use lib "$ENV{OSCAR_HOME}/lib/Qt";
-use lib "/usr/lib/perl5/site_perl/OSCAR";
+#use lib "/usr/lib/perl5/site_perl/OSCAR";
+use lib "/usr/lib/perl5/site_perl";
 use Carp;
 use Cwd;
 use OSCAR::Package;
@@ -32,7 +33,8 @@ use OSCAR::Logger;
 use OSCAR::Configurator;
 use Tk::Dialog;
 use English;
-use PackMan;
+#use PackMan;
+use OSCAR::PackMan;
 
 #this doesn't seem to effect the namespace of the calling script
 use vars qw(@EXPORT);
