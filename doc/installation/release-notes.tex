@@ -187,9 +187,12 @@ The following release notes apply to OSCAR version \oscarversion.
 
 \item If you downloaded PBS through Step 0 \button{Download Addtional 
   OSCAR Packages}, but did not select it for installation, you will get
-  an error message complaining about conflicts. The way around this is to goto
-  Step 1 \button{Select OSCAR Packages To Install}, select the
-  package, and then unselect it.
+  error messages complaining about conflicts. The way around this is to goto
+  \file{/tftpboot/rpm} and remove all the OpenPBS RPMs. If you want to install
+  PBS instead of Torque, select it in Step 1 \button{Select OSCAR Packages To
+  Install}, then either copy the OpenPBS RPMs back to
+  \file{/tftpboot/rpm} or just re-run the OSCAR wizard and the RPMs will be
+  automatically copied back. 
 
 \endchange
 
