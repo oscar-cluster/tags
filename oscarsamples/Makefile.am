@@ -29,6 +29,7 @@ oscar_DATA		= \
 			redhat-9-i386.rpmlist \
 			suse-8.1-i586.rpmlist \
 			sample.disk.ide \
-			sample.disk.scsi
+			sample.disk.scsi \
+			sample.disk.scsi.ia64
 
 EXTRA_DIST		= $(oscar_DATA)
