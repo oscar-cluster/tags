@@ -432,13 +432,15 @@ After the modification, the kernel section should look like this:
 
 \begin{verbatim}
      [KERNEL0]
-        PATH = /boot/efi/EFI/redhat/vmlinuz-2.4.21-20.EL 
-        INITRD = /boot/efi/EFI/redhat/initrd-2.4.21-20.EL.img 
+        PATH = /boot/efi//EFI/redhat/vmlinuz-2.4.21-20.EL 
+        INITRD = /boot/efi//EFI/redhat/initrd-2.4.21-20.EL.img 
         LABEL = 2.4.21-20.EL
 \end{verbatim}
 
 where 2.4.21-20.EL is the kernel for Red Hat Enterprise Linux 3 (U3)
 You should substitute your kernel version if you're not running U3.
+
+Note: Note carefully the \emph{DOUBLE SLASH} in the PATH and INITRD lines.
 
 
 \item SCSI and network

@@ -71,12 +71,14 @@ You will also need to add an INITRD entry to the image file
 After the modification, the kernel section should look like this:
 
      [KERNEL0]
-        PATH = /boot/efi/EFI/redhat/vmlinuz-2.4.21-20.EL
-        INITRD = /boot/efi/EFI/redhat/initrd-2.4.21-20.EL.img
+        PATH = /boot/efi//EFI/redhat/vmlinuz-2.4.21-20.EL
+        INITRD = /boot/efi//EFI/redhat/initrd-2.4.21-20.EL.img
         LABEL = 2.4.21-20.EL
 
 where 2.4.21-20.EL is the kernel for Red Hat Enterprise Linux 3 (U3)
-You should substitute your kernel version if you're not running U3.
+you should substitute your kernel version if you're not running U3.
+
+NOTE: Note carefully the DOUBLE SLASH in the PATH and INITRD lines!
 
 
 5) SCSI and network
