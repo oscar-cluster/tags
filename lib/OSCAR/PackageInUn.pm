@@ -1402,7 +1402,7 @@ sub uninstall_rpms_patch
 	if ($type =~ "oscar_clients")
 	{
 		#handle clients
-		$cmd_string = "$C3_HOME/cexec rpm -e";
+		$cmd_string = "$C3_HOME/cexec --pipe c3cmd-filter rpm -e";
 
 	} 
 	elsif($type =~ "oscar_server")
@@ -1864,8 +1864,6 @@ sub cexec_open
 	my $cmd  = shift;
 	my $aref = shift;
 	my @rslt;
-
-	print "executing:$cmd\n";
 
 	if( defined( open(CMD, "$cmd 2>&1 |")) ) { # Redirect STDERR to STDOUT
 		@rslt = <CMD>;
