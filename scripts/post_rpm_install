@@ -42,6 +42,19 @@ my $targetdir = $config->default_image_dir . "/$imagename";
 
 if(!-d $targetdir) {croak("The directory $targetdir doesn't exist");}
 
+# Fix for bug 1173822 under Mandrakelinux 10.0
+# - kernel 2.6 RPM installs a 'stub' modprobe.conf, this throws off the
+#   OSCAR 2.6 kernel patch which will automatically generate modprobe.conf
+#   from modules.conf (SIS kernel is still 2.4 kernel based)
+# - user can still include modprobe.conf if the one automatically generated
+#   does not work, this code just removes the stub modprobe.conf right after
+#   a fresh image is built
+# - this will no longer be necessary when we check in systemconfigurator
+#   2.2.2+ into trunk
+if ( (-e "/etc/mandrake-release") && (-e "$targetdir/etc/modprobe.conf") ) {
+    unlink("$targetdir/etc/modprobe.conf");
+}
+
 oscar_log_subsection("post_rpm_install: Making sure /dev/null is r/w for all");
 !system("chmod a+rw $targetdir/dev/null") or croak("Couldn't set $targetdir/dev/null permissions!");
 
