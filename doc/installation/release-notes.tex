@@ -420,7 +420,7 @@ the image:
        /var/lib/systemimager/images/oscarimage/boot/efi/EFI/redhat/
     
     cp /boot/efi/efi/redhat/elilo.conf \
-        /var/lib/systemimager/images/oscarimage/boot/efi/EFI/redhat/
+       /var/lib/systemimager/images/oscarimage/boot/efi/EFI/redhat/
 \end{verbatim}
 
 \item \file{systemconfig.conf}
@@ -461,8 +461,8 @@ SR870BH2, you need to add the USB controller to \file{/etc/modules.conf} of
 the OSCAR image.  For example,
 
 \begin{verbatim}
-echo alias usb-controller usb-uhci >> \
-/var/lib/systemimager/images/oscarimage/etc/modules.conf
+    echo alias usb-controller usb-uhci >> \
+        /var/lib/systemimager/images/oscarimage/etc/modules.conf
 \end{verbatim}
 
 
@@ -474,43 +474,59 @@ package you should download and install the appropriate file from a
 repository.  Once you have downloaded and copied it to a known
 directory you must install the package and turn it on:
 
- \cmd{rpm -i tftp-server-0.32-4.ia64.rpm}
+    \cmd{rpm -i tftp-server-0.32-4.ia64.rpm}
 
 (it could be "ia64" or "i386", depending of your machine's architecture).
 
- \cmd{/sbin/chkconfig --level 345 tftp on}
+    \cmd{/sbin/chkconfig --level 345 tftp on}
 
 
 \item DISKORDER.
 
 In some systems using CD-ROM and SCSI disks, you may have to modify
-the diskorder sequence in the oscarimage.master script
-(\file{/var/lib/systemimager/scripts}) to prevent the system to recognize
-your CD-ROM as the main disk, resulting in a "Kernel panic" during the
-client's installation phase, from:  
+the disk order sequence used by SystemImager to prevent the system from using
+your CD-ROM as a disk, resulting in a "Kernel panic" during the
+client's installation phase.  Add the following to the SystemImager
+kernel command line:
 
-    \cmd{echo DISKORDER=\$\{DISKORDER=hd,sd,cciss,ida,rd\}} 
-    \ \\  % Force newline
-to:  
-    \ \\  % Force newline
-    \cmd{echo DISKORDER=\$\{DISKORDER=sd,hd,cciss,ida,rd\}}
+    \cmd{DISKORDER=hd,sd,cciss,ida,rd} 
 
+For i386 clients, add the value to the ``APPEND'' keyword in
 
-\item elilo.
+    \cmd{/tfpboot/pxelinuf.cfg/default}
 
-If Linux doesn't properly boot after the installation of the image,
-you may have to manually boot it from the correct path.  Chose the
-``EFI Shell'' boot option (SR870BH2), then access the correct device (in
-our case fs0), copy elilo.efi and elilo.conf to the root: 
+For example,
 
 \begin{verbatim}
-   cp  \EFI\redhat\elilo.efi   \
-   cp  \EFI\redhat\elilo.conf  \ 
+    APPEND vga=extended initrd=initrd.img root=/dev/ram \
+        DISKORDER=sd,hd,cciss,ida,rd
 \end{verbatim}
 
-%TJN: Can someone confirm the path is correct and my footnote is accurate.
-and boot from there ("elilo.efi 2.4.21-15.EL")~\footnote{Note the backward
-slashes for the EFI shell.}.
+For ia64 clients, add this value to the ``APPEND'' keyword in
+
+    \cmd{/tfpboot/elilo.conf}
+
+For example,
+
+\begin{verbatim}
+    APPEND="DISKORDER=sd,hd,cciss,ida,rd"
+\end{verbatim}
+
+%dnl\item elilo.
+%dnl
+%dnlIf Linux doesn't properly boot after the installation of the image,
+%dnlyou may have to manually boot it from the correct path.  Choose the
+%dnl``EFI Shell'' boot option (SR870BH2), then access the correct device (in
+%dnlour case fs0), copy elilo.efi and elilo.conf to the root: 
+%dnl
+%dnl\begin{verbatim}
+%dnl   cp  \EFI\redhat\elilo.efi   \
+%dnl   cp  \EFI\redhat\elilo.conf  \ 
+%dnl\end{verbatim}
+%dnl
+%dnl%TJN: Can someone confirm the path is correct and my footnote is accurate.
+%dnland boot from there ("elilo.efi 2.4.21-15.EL")~\footnote{Note the backward
+%dnlslashes for the EFI shell.}.
 
 \end{itemize}
 
