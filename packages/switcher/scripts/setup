@@ -28,21 +28,24 @@ use OSCAR::PackageBest;
 
 my $source_dir= $ENV{OSCAR_PACKAGE_HOME} . "/distro/";
 my $dest_dir = $ENV{OSCAR_PACKAGE_HOME} . "/RPMS";
-
 my ($name, $ver) = OSCAR::Distro::which_distro_server();
+
 if ($name eq "redhat") {
   $source_dir .= "rh";
   if ($ver eq "8.0") {
     $source_dir .= "80";
   } elsif ($ver eq "9") {
     $source_dir .= "90";
-  } else {
+  } elsif ($ver eq "3as") {
+    $source_dir .= "3as";
+  }
+  else {
     $source_dir .= "72";
   }
 } elsif ($name eq "suse") {
   $source_dir .= "suse81";
 } elsif ($name eq "mandrake") {
-  $source_dir .= "mdk90";
+  $source_dir .= "mdk10";
 } elsif ($name eq "fedora") {
   	$source_dir .= $name;
 	$source_dir .= $ver;

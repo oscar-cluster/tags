@@ -66,7 +66,7 @@ my $interface = $ARGV[0];
 if ( !defined($interface) || $interface eq '' ) {
   my @tables = ("oscar");
   my @result = ();
-  single_database_execute("read_records oscar.interface", "READ", \@tables, \@result, undef);
+  single_dec_locked("read_records oscar.interface", "READ", \@tables, \@result, undef);
   $interface = pop @result;
 }
 
@@ -310,6 +310,7 @@ sub build_oscar_image {
 	(($arch eq "i386") ? "" : ".$arch");
 
     my %vars = (
+                title => "Build OSCAR Client Image",
                 imgname => "oscarimage",
                 noshow => {
                            arch => 1,
@@ -320,11 +321,11 @@ sub build_oscar_image {
                 pkgpath => "/tftpboot/rpm",
                 diskfile => "$ENV{OSCAR_HOME}/oscarsamples/$diskfile",
                 ipmeth => "static",
-		mcast  => "off",
+                mcast  => "off",
                 piaction => "beep",
                 extraflags => $extraflags,
                 postinstall => \&postimagebuild,
-		step_number => $step_number,
+                step_number => $step_number,
                );
 
     createimage_window($window, %vars);
@@ -386,6 +387,7 @@ sub build_oscar_clients {
     }
 
     my %vars = (
+                title => "Define OSCAR Clients",
                 imgname => "oscarimage",
                 basename => "oscarnode",
                 domainname => $domainname,
@@ -460,11 +462,12 @@ sub populate_client_config_opkgs{
 			do_it_or_die( "add_node_config_revs $node_id $config_id",
 						   undef,
 						  "can not create node_config_revs record for oscar_server");                                                                                 
+            my $syslog = "OK";
 			foreach my $opkg (@pkgs){
 				my @packages_id = ();
                 dec_already_locked("read_records packages id name=$opkg", \@packages_id);
 				my $package_id = pop @packages_id;
-				do_it_or_die( "add_config_opkgs $config_id $package_id",
+				do_it_or_die( "add_config_opkgs $config_id $package_id $syslog",
 							   undef,
 							  "cannot create config_opkgs record for oscar_server" );
                         }

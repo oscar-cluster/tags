@@ -76,6 +76,7 @@ kernel-smp
 krb5-libs
 less
 libaio
+libaio-devel
 libjpeg
 libpng
 libselinux
@@ -121,6 +122,7 @@ perl
 pidentd
 popt
 portmap
+postfix
 procmail
 procps
 psmisc

@@ -37,11 +37,12 @@ sub delnode_window {
     my ($parent, $vars) = @_;
 
     my $window = $parent->Toplevel;
-    $window->title("Delete Oscar Nodes");
+    $window->withdraw;
+    $window->title("Delete Oscar Clients");
     my $inst=$window->Label (-text=>"In order to delete OSCAR clients 
 from your cluster, select the nodes
-you wish to delete and press the 
-Delete Clients button.",-relief=>"groove");
+you want to delete and press the 
+\"Delete Selected Clients\" button.",-relief=>"groove");
     $inst->grid("-",-sticky=>"nsew");
 
     my $listbox = $window->ScrlListbox(
@@ -54,8 +55,9 @@ Delete Clients button.",-relief=>"groove");
 
     
     my $deletebutton = $window->Button(
-                                      -text => "Delete clients",
+                                      -text => "Delete Selected Clients",
                                       -command => [\&delnodes, $window, $listbox],
+                                      -state => "disabled",
                                      );
     my $exitbutton = $window->Button(
                                      -text => "Close",
@@ -63,12 +65,30 @@ Delete Clients button.",-relief=>"groove");
                                     );
 
     $deletebutton->grid($exitbutton,-sticky => "ew");
+
+    $listbox->bind( "<ButtonRelease>",
+            [ sub { my ($lb,$b) = @_;
+                    $b->configure( -state => ( defined $lb->curselection ) ? "normal" : "disabled" );
+                  }, $deletebutton
+            ]
+        );
+
+    center_window( $window );
+}
+
+# Use Schwartzian transform to sort node names alphabetically and numerically.
+# Names w/o numeric suffix preceed those with numeric suffix.
+sub sortnodes(@) {
+	return map { $_->[0] }
+	       sort { $a->[1] cmp $b->[1] || ($a->[2]||-1) <=> ($b->[2]||-1) }
+	       map { [$_, /^([\D]+)([\d]*)$/] }
+	       @_;
 }
 
 sub fill_listbox {
         my $listbox=shift;
         my @elements;
-        my @clients = list_client();
+        my @clients = sortnodes( list_client() );
         foreach my $client (@clients) {
                 push (@elements,$client->name);
         }
@@ -139,6 +159,21 @@ sub delnodes {
           carp("Failed to delete machines $clientstring");
           $fail++;
 	}
+
+        print ">> Updating C3 configuration file\n";
+        if (system("$ENV{OSCAR_HOME}/packages/c3/scripts/post_clients")) {
+                carp("C3 configuration file update phase failed.");
+                $fail++;
+        }
+                                                                                
+        print ">> Re-starting client services on remaining nodes\n";
+        foreach my $generic_service (@generic_services) {
+                if (system("/opt/c3-4/cexec /etc/init.d/$generic_service restart")) {
+                        carp("client_services restart phase failed.");
+                        $fail++;
+                }
+        }
+
         fill_listbox($listbox);
         if ($fail) {
           error_window($window,"Clients deleted, but reconfiguration failed.");
