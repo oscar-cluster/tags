@@ -32,6 +32,7 @@
 	<rpmlist>
 		<filter group="oscar_server"/>
 		<rpm>apitest</rpm>
+		<rpm>apitest-profiled</rpm>
 		<rpm>Twisted</rpm>
 		<rpm>elementtree</rpm>
 	</rpmlist>
