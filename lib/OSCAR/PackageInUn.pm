@@ -1384,7 +1384,7 @@ sub uninstall_rpms_patch
 #works on the headnode or the compute nodes/image
 #args:
 #$package_name = name of a valid OSCAR package
-#$type is either oscar_server or oscar_client
+#$type is either oscar_server or oscar_clients
 #return:
 #0 on success
 #1 on failure
@@ -1399,16 +1399,14 @@ sub uninstall_rpms_patch
 	
 	@rpm_list = OSCAR::Database::database_rpmlist_for_package_and_group($package_name, $type, 1);
 
-	if ($type =~ "oscar_client")
+	if ($type =~ "oscar_clients")
 	{
 		#handle clients
 		$cmd_string = "$C3_HOME/cexec rpm -e";
-		print "client\n";
 
 	} 
 	elsif($type =~ "oscar_server")
 	{
-		print "server\n";
 		$cmd_string = "";
 	}
 
@@ -1416,12 +1414,10 @@ sub uninstall_rpms_patch
 	{
 		$cmd_string = $cmd_string." ".$rpm;
 	}
-	#print $cmd_string;
-	#exit (0);
 
-	if ($type =~ "oscar_client")
+	if ($type =~ "oscar_clients")
 	{
-		#$retval = cexec_open($cmd_string, \@rslts); 
+		$retval = cexec_open($cmd_string, \@rslts); 
 		if( $retval != 0 )
 		{ 
 			oscar_log_subsection("Error on client rpm un-install for $package_name \n");
@@ -1552,8 +1548,7 @@ sub run_uninstall_client
 
 	oscar_log_subsection("Running client un-install");
 
-
-	if (uninstall_rpms_patch($package_name, "oscar_client") != 0)
+	if (uninstall_rpms_patch($package_name, "oscar_clients") != 0)
 	{
 		my $e_string = "Error on server un-install for $package_name \n";
 		add_error($e_string);
