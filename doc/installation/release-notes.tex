@@ -22,7 +22,7 @@ The following release notes apply to OSCAR version \oscarversion.
 \begin{itemize}
 
 \item Red Hat 9 and Fedora Core 2 support on x86.
-\item New rpm dependency finder helps build the server (DepMan/PackMan).
+\item New RPM dependency finder helps build the server (DepMan/PackMan).
 \item Ganglia now included in the default package set.
 \item Torque now included/OpenPBS is now an optional package.
 \item Multiple bug fixes and Wizard improvements.
@@ -132,9 +132,10 @@ The following release notes apply to OSCAR version \oscarversion.
   node, close the OSCAR installer GUI, launch the OSCAR installer GUI
   again, and then add the node.
 
-\item During the \button{Build OSCAR Client Image} step, the ``Successfully
-  created image'' notice will appear even though the status bar looks
-  incomplete.  This incomplete status bar can be ignored.
+% This bug has been fixed
+%\item During the \button{Build OSCAR Client Image} step, the ``Successfully
+%  created image'' notice will appear even though the status bar looks
+%  incomplete.  This incomplete status bar can be ignored.
 
 \begchange
 \item If \cmd{ssh} produces warnings when logging into the compute
@@ -184,14 +185,11 @@ The following release notes apply to OSCAR version \oscarversion.
   to experiment please check the {\tt oscar-users} and/or 
   {\tt sisuite-users} mailing lists for tips.
 
-\item If you download PBS through the step 0, \button{Download Addtional 
-  OSCAR Packages..}, but don't want to use it, then you should go to the
-  step 1, \button{Select OSCAR Packages To Install...}, check the
-  package, which should be unchecked yet, and then uncheck it.
-  And then you can close ``OSCAR Package Selector'' 
-  by clicking the button \button{Exit}.
-  Of course, if the downloaded package is intended, you may skip
-  this note safely.
+\item If you downloaded PBS through Step 0 \button{Download Addtional 
+  OSCAR Packages}, but did not select it for installation, you will get
+  an error message complaining about conflicts. The way around this is to goto
+  Step 1 \button{Select OSCAR Packages To Install}, select the
+  package, and then unselect it.
 
 \endchange
 
@@ -364,7 +362,7 @@ The following items highlight these issues.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{IA64 on RHEL 3 Notes}
+\subsection{Red Hat Enterprise Linux (AS) 3 Notes}
 \label{subsec:ia64notes}
 
 Note: These instructions are for Red Hat Enterprise Linux 3 (U3); see
