@@ -9,7 +9,7 @@
       information, see the COPYING file in the top level directory of the
       OSCAR source distribution.
      
-      $Id: config.xml,v 1.15 2003/11/13 21:09:33 brechin Exp $
+      $Id: config.xml,v 1.15.2.1 2004/01/29 19:14:58 bligneri Exp $
   -->
   <name>opium</name>
 
@@ -44,6 +44,7 @@ the OSCAR server are checked and synchronized (if necessary) periodically (confi
   <rpmlist>
       <filter group="oscar_server" distribution='redhat' />
       <filter group="oscar_server" distribution='mandrake' />
+      <filter group="oscar_server" distribution='fedora' />
       <rpm>sync_users-oscar</rpm>
       <rpm>crontabs</rpm>
   </rpmlist>

@@ -137,7 +137,7 @@ done
 file=sshd_config
 echo ; echo checking configuration file $file ...
 
-for wantedyes in IgnoreRhosts X11Forwarding RhostsRSAAuthentication RSAAuthentication ; do
+for wantedyes in IgnoreRhosts X11Forwarding RhostsRSAAuthentication RSAAuthentication PermitRootLogin; do
     if [ yes`grep "^[[:space:]]*$wantedyes[[:space:]]" $file | awk '{print $2}' | tr A-Z a-z | tail -1` != "yesyes" ] ; then
 	echo turning on $wantedyes parameter in configuration file $file ...
 	if [ ! -r $file.pre_ssh_install ] ; then

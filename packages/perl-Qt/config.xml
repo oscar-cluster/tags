@@ -9,7 +9,7 @@
       information, see the COPYING file in the top level directory of the
       OSCAR source distribution.
 
-      $Id: config.xml,v 1.13 2003/10/22 16:51:55 giraldeau Exp $
+      $Id: config.xml,v 1.13.2.1 2004/01/29 19:14:59 bligneri Exp $
   -->
   <name>perl-Qt</name>
 
@@ -34,6 +34,13 @@
 
   <rpmlist>
     <filter distribution='redhat' group='oscar_server' />
+    <rpm>qt</rpm>
+    <rpm>qt-devel</rpm>
+    <rpm>cups-libs</rpm>
+  </rpmlist>
+
+  <rpmlist>
+    <filter distribution='fedora' group='1' />
     <rpm>qt</rpm>
     <rpm>qt-devel</rpm>
     <rpm>cups-libs</rpm>
@@ -95,6 +102,7 @@
 <!-- For distros with Perl 5.8 -->
     <filter distribution='redhat'   distribution_version='8.0' group='oscar_server'/>
     <filter distribution='redhat'   distribution_version='9' group='oscar_server'/>
+    <filter distribution='fedora'   distribution_version='1' group='oscar_server'/>
     <filter distribution='suse' group='oscar_server'/>
       <rpm>perl-Qt</rpm>
   </rpmlist>

@@ -9,7 +9,7 @@
       information, see the COPYING file in the top level directory of the
       OSCAR source distribution.
      
-      $Id: config.xml,v 1.17 2003/07/24 21:30:37 brechin Exp $
+      $Id: config.xml,v 1.17.4.1 2004/01/29 19:14:58 bligneri Exp $
   -->
   <name>LAM/MPI</name>
 
@@ -93,6 +93,7 @@ visualized either at runtime or post-mortem.</description>
   <rpmlist>
     <filter distribution="redhat" distribution_version="8.0" />
     <filter distribution="redhat" distribution_version="9"   />
+    <filter distribution="fedora" distribution_version="1"   />
     <rpm>libaio</rpm>
     <rpm>libaio-devel</rpm>
   </rpmlist>

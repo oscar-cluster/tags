@@ -20,6 +20,10 @@
 
 use strict;
 use Carp;
+use lib "$ENV{OSCAR_HOME}/lib";
+use POSIX;
+use Carp;
+use OSCAR::Distro;
 
 # XXX Remove when SystemImager v3.0.1 or greater packages are added.
 my $cmd = "cp -f $ENV{OSCAR_PACKAGE_HOME}/scripts/systemimager.init /etc/init.d/systemimager";
@@ -29,3 +33,20 @@ my $cmd = "chmod 755 /etc/init.d/systemimager";
 
 !system("/etc/init.d/systemimager restart") or croak("Couldn't restart systemimager");
 
+# Quick hack to have Fedora support while this is worked out by the SIS Team
+# Benoit des Ligneris, Las Vegas
+# To be removed as soon as the packages become avalaible !!!!
+my ($name, $ver) = OSCAR::Distro::which_distro_server();
+
+if ($name eq "fedora") {
+ 	print "Welcome $name - $ver\n";
+	print "Patching the systeminstaller so that it support Fedora\n";
+	print "Temporary solution until we have new systeminstaller packages\n";
+	print "Creating distinfo information\n";
+	!system('cp $OSCAR_PACKAGE_HOME/scripts/fedora_patch/Fedora.tgz /usr/share/systeminstaller/distinfo');
+	print "Creating base package list for fedora\n";
+	!system('cd /usr/share/systeminstaller/distinfo && tar xzvf Fedora.tgz 1>/dev/null');
+	!system('cp -f $OSCAR_PACKAGE_HOME/scripts/fedora_patch/Image.pm* /usr/lib/systeminstaller/SystemInstaller');
+	print "SIS patch for Fedora done\n";
+
+}

@@ -9,7 +9,7 @@
       information, see the COPYING file in the top level directory of the
       OSCAR source distribution.
      
-      $Id: config.xml,v 1.62 2003/10/15 15:02:42 giraldeau Exp $
+      $Id: config.xml,v 1.65.2.2 2004/01/29 19:14:58 bligneri Exp $
   -->
   <name>oda</name>
 
@@ -25,13 +25,13 @@
 
   <version>
     <major>1</major>
-    <minor>22</minor>
+    <minor>24</minor>
     <subversion>0</subversion>
     <release>1</release>
     <epoch>1</epoch>
   </version>
 
-  <class>special</class>
+  <class>core</class>
 
   <summary>Oscar DAtabase</summary>
   <license>Freely distributable</license>
@@ -52,6 +52,7 @@
   <rpmlist>
     <filter group="oscar_server" distribution="redhat" distribution_version="7.3" />
     <filter group="oscar_server" distribution="rhas" distribution_version="2.1AS" />
+    <filter group="oscar_server" distribution="fedora" distribution_version="1" />
     <rpm>mysql-server</rpm>
   </rpmlist>
 
@@ -65,6 +66,29 @@
     <rpm>perl-DBD-MySQL</rpm>
     <rpm>perl-DBI</rpm>
   </rpmlist>
+
+  <rpmlist>
+    <filter distribution="fedora" distribution_version="1" />
+    <rpm>mysql</rpm>
+    <rpm>perl-DBD-MySQL</rpm>
+    <rpm>perl-DBI</rpm>
+  </rpmlist>
+
+  <rpmlist>
+   <filter distribution='mandrake' distribution_version='9.2' />
+    <rpm>MySQL</rpm>
+    <rpm>MySQL-client</rpm>
+    <rpm>libmysql12</rpm>
+    <rpm>perl-CGI</rpm>
+    <rpm>perl-DBI</rpm>
+    <rpm>perl-Mysql</rpm>
+    <rpm>perl-Data-ShowTable</rpm>
+    <rpm>perl-ExtUtils-PerlPP</rpm>
+    <rpm>oda</rpm>
+    <rpm>MySQL-common</rpm>
+    <rpm>libmysql12</rpm>
+  </rpmlist>
+  
 
   <rpmlist>
     <filter distribution="mandrake" distribution_version="9.0" />
@@ -96,7 +120,7 @@
    <filter distribution='mandrake' distribution_version='9.2' />
     <rpm>MySQL</rpm>
     <rpm>MySQL-client</rpm>
-    <rpm>libmysql10</rpm>
+    <rpm>libmysql12</rpm>
     <rpm>perl-CGI</rpm>
     <rpm>perl-DBI</rpm>
     <rpm>perl-Mysql</rpm>
@@ -555,6 +579,34 @@
         </shortcut>
         <!--
 
+	delete_package deletes a single package record,
+	required parameters are:
+
+	name          name of the package(s)
+
+	The portions of this multiple commands shortcut do:
+	Remove the package from being included in any package sets,
+	Remove the package from being included in any package filters,
+	Remove all rpmlist records for the package,
+	Remove the packages table record for the package.
+	 -->
+	<shortcut> delete_package
+                   remove_package_from_all_package_sets
+                   %1
+		   %+
+                   ;
+		   remove_package_from_all_packages_filters
+		   %1
+		   ;
+		   remove_package_from_all_packages_rpmlists
+		   %1
+                   ;
+                   delete_records
+                   packages
+                   name=%1
+        </shortcut>
+        <!--
+
 	delete_package_set deletes a software package set record,
 	required parameters are:
 
@@ -875,6 +927,27 @@
                    oscar.oscar_version!=undef
                    oscar.oscar_version
         </shortcut>
+	<shortcut> package_clear_installed
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.installed~0
+                   %+
+        </shortcut>
+	<shortcut> package_clear_should_be_installed
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.should_be_installed~0
+                   %+
+        </shortcut>
+	<shortcut> package_clear_should_be_uninstalled
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.should_be_uninstalled~0
+                   %+
+        </shortcut>
 	<shortcut> package_id_to_name
                    read_records
                    packages
@@ -913,6 +986,27 @@
                    name=%1
                    id
         </shortcut>
+	<shortcut> package_mark_installed
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.installed~1
+                   %+
+        </shortcut>
+	<shortcut> package_mark_should_be_installed
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.should_be_installed~1
+                   %+
+        </shortcut>
+	<shortcut> package_mark_should_be_uninstalled
+                   modify_records
+                   packages
+                   packages.name=%1
+                   packages.should_be_uninstalled~1
+                   %+
+        </shortcut>
 	<shortcut> package_sets
                    read_records
                    package_sets.name
@@ -922,6 +1016,24 @@
                    read_records
                    packages
                    packages.name
+                   %+
+        </shortcut>
+	<shortcut> packages_clear_all_installed
+                   modify_records
+                   packages
+                   packages.installed~0
+                   %+
+        </shortcut>
+	<shortcut> packages_clear_all_should_be_installed
+                   modify_records
+                   packages
+                   packages.should_be_installed~0
+                   %+
+        </shortcut>
+	<shortcut> packages_clear_all_should_be_uninstalled
+                   modify_records
+                   packages
+                   packages.should_be_uninstalled~0
                    %+
         </shortcut>
 	<shortcut> packages_conflicts_with_package
@@ -953,6 +1065,16 @@
         <shortcut> packages_installable_in_selected_package_set
                    packages_in_selected_package_set
                    packages.installable!=0
+                   %+
+        </shortcut>
+	<shortcut> packages_installed
+                   packages
+                   packages.installed!=0
+                   %+
+        </shortcut>
+	<shortcut> packages_not_installed
+                   packages
+                   packages.installed=0
                    %+
         </shortcut>
 	<shortcut> packages_provided_by_package
@@ -999,6 +1121,16 @@
                    packages_that_require
                    %1
                    packages_requires.type="package"
+        </shortcut>
+	<shortcut> packages_that_should_be_installed
+                   packages
+                   packages.should_be_installed!=0
+                   %+
+        </shortcut>
+	<shortcut> packages_that_should_be_uninstalled
+                   packages
+                   packages.should_be_uninstalled!=0
+                   %+
         </shortcut>
 	<shortcut> packages_uninstallable
                    packages
@@ -1069,6 +1201,18 @@
                    packages.name=%1
                    packages.id=package_sets_included_packages.package_id
         </shortcut>
+	<shortcut> remove_package_from_all_packages_filters
+                   delete_records
+                   packages_filters
+                   packages.name=%1
+                   packages.id=packages_filters.package_id
+        </shortcut>
+	<shortcut> remove_package_from_all_packages_rpmlists
+                   delete_records
+                   packages_rpmlists
+                   packages.name=%1
+                   packages.id=packages_rpmlists.package_id
+        </shortcut>
 	<shortcut> remove_package_from_package_set
                    delete_records
                    package_sets_included_packages
@@ -1076,6 +1220,7 @@
                    package_sets.name=%2
                    package_sets.id=package_sets_included_packages.package_set_id
                    package_sets_included_packages.package_id=packages.id
+		   %+
         </shortcut>
         <shortcut> remove_package_set_from_all_nodes
                    delete_records
@@ -1522,6 +1667,10 @@
 	  <type> integer </type>
 	  <parameters> auto_increment not null unique primary key </parameters>
 	</id>
+        <installed> 
+	  <type> integer </type>
+	  <default> 0 </default>
+	</installed>
 	<installable/>
 	<license/>
 	<maintainer_email/>
@@ -1533,6 +1682,14 @@
 	<package/>
 	<packager_email/>
 	<packager_name/>
+        <should_be_installed> 
+	  <type> integer </type>
+	  <default> 0 </default>
+	</should_be_installed>
+        <should_be_uninstalled> 
+	  <type> integer </type>
+	  <default> 0 </default>
+	</should_be_uninstalled>
 	<summary/>
 	<url/>
 	<vendor/>
@@ -1568,7 +1725,6 @@
         <package_id>
 	  <type> integer </type>
 	</package_id>
-        <package_version/>
       </fields>
     </packages_filters>
 
@@ -1597,7 +1753,6 @@
         <package_id>
 	  <type> integer </type>
 	</package_id>
-        <package_version/>
         <rpm/>        
       </fields>
     </packages_rpmlists>
