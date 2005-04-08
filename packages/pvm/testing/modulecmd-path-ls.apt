@@ -12,6 +12,7 @@
 <testDef>
 
   <info>
+   Check for the 'modulecmd' in explicit (hardcoded) path using 'ls'.
   </info>
 
   <test type="cmd">
