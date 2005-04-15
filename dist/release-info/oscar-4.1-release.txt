@@ -19,32 +19,32 @@ toolkit, OSCAR 4.1.
 OSCAR is a software package that supports the use of high-performance
 computing by reducing the work of cluster  configuration, installation,
 operation, and management. Enhancements to previous versions of OSCAR in 
-OSCAR 4.1 include full support for Mandrake 10.0 running on IA32 processors.
+OSCAR 4.1 include full support for Mandrakelinux 10.0 running on IA32 processors.
 Enhanced support for Red Hat Enterprise Linux as many bug fixes and 
 additions were made to make installation on this platform much better, both
 on IA32 and IA64 architectures. APITest has been added to the OSCAR testing
 framework and it is envisioned that all installation tests will be performed
 by this package in upcoming releases. DepMan and PackMan are now fully 
 integrated into the OSCAR installation mechanism. These tools provide RPM 
-dependency resolution and the amount of manual work to resolve dependencies
-manually has been greatly reduced, both during the server installation and 
+dependencies resolution and greatly reduces the amount of manual work to resolve dependencies
+, both during the server installation and 
 the build client image stage.
 
 OSCAR 4.1 has been fully tested for use with IA32 processors under Red
-Hat 9.0, Fedora Core 2, Red Hat Enterprise Linux 3.0, and Mandrake 10.0.
+Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux 10.0.
 Additionally, IA64 support is also available under Red Hat Enterprise
 Linux 3.0.
 
 OSCAR 4.1, previous OSCAR versions, and additional information about the OSCAR
-project are available from the OSCAR project page:
+project are available from the OSCAR website:
 
-     http://sourceforge.net/projects/oscar/
+     http://oscar.openclustergroup.org
 
 The OSCAR working group is a consortium of industry, academic and
 research participants. Primary contributors include Bald Guy Software,
-Michael Smith Genome Sciences Centre, Dell, IBM, Intel,
-Indiana  University, Intel, Louisiana Tech University, 
-Oak Ridge National Laboratory(ORNL), and Sherbrooke University. OSCAR  
+Canada's Michael Smith Genome Sciences Centre, Dell, IBM, 
+Indiana University, Intel, Louisiana Tech University, 
+Oak Ridge National Laboratory (ORNL), and Revolution Linux. OSCAR  
 is the product of the OSCAR working group of the Open Cluster Group (OCG). 
 OCG is dedicated to making cluster computing practical. The OCG and its 
 subgroups are open to all.
@@ -52,7 +52,7 @@ subgroups are open to all.
 
 Related resources:
    + OSCAR Working Group Homepage
-     http://www.OpenClusterGroup.org/OSCAR
+     http://oscar.OpenClusterGroup.org
 
    + OSCAR Project Homepage
      http://sourceforge.net/projects/oscar
@@ -64,13 +64,8 @@ Related resources:
    + Open Cluster Group Homepage
      http://www.OpenClusterGroup.org
 
-   + Thin-OSCAR (diskless) Working Group Homepage
-     http://www.OpenClusterGroup.org/Thin-OSCAR
-
    + HA-OSCAR (high-availability) Working Group Homepage
      http://www.OpenClusterGroup.org/HA-OSCAR
 
 ORNL is a Department of Energy multi-program research facility managed	by
 UT-Battelle.
-
-
