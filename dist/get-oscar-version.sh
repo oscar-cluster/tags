@@ -13,6 +13,8 @@
 srcdir="$1"
 option="$2"
 
+today=`date  +%Y%m%d`
+
 if test "$srcdir" = ""; then
     option="--help"
 else
@@ -28,11 +30,11 @@ else
 	OSCAR_VERSION="$OSCAR_MAJOR_VERSION.$OSCAR_MINOR_VERSION"
     fi
 
-    if test "`expr $OSCAR_ALPHA_VERSION \> 0`" = "1"; then
-	OSCAR_VERSION="${OSCAR_VERSION}a$OSCAR_ALPHA_VERSION"
-    elif test "`expr $OSCAR_BETA_VERSION \> 0`" = "1"; then
-	OSCAR_VERSION="${OSCAR_VERSION}b$OSCAR_BETA_VERSION"
-    fi
+    #if test "`expr $OSCAR_ALPHA_VERSION \> 0`" = "1"; then
+	#OSCAR_VERSION="${OSCAR_VERSION}a$OSCAR_ALPHA_VERSION"
+    #elif test "`expr $OSCAR_BETA_VERSION \> 0`" = "1"; then
+	#OSCAR_VERSION="${OSCAR_VERSION}b$OSCAR_BETA_VERSION"
+    #fi
 
     if test "$OSCAR_SVN_VERSION" = "1"; then
         if test -d .svn; then
@@ -43,7 +45,7 @@ else
             ver="svn`date '+%m%d%Y'`"
         fi
         OSCAR_SVN_VERSION="$ver"
-	OSCAR_VERSION="${OSCAR_VERSION}$ver"
+	OSCAR_VERSION="${OSCAR_VERSION}$ver-$today"
     else
         OSCAR_SVN_VERSION=
     fi
