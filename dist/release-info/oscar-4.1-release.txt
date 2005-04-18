@@ -10,23 +10,21 @@ Communications & Community Outreach
 ======================
 
 
-OAK RIDGE, Tenn., April 18, 2005 -- The OSCAR working group has released
-a new version of the Open Source Cluster Application Resources (OSCAR)
-toolkit, OSCAR 4.1.
+OAK RIDGE, Tenn., April 18, 2005 -- The OSCAR working group has released 
+a new version of the Open Source Cluster Application Resources (OSCAR) 
+toolkit, OSCAR 4.1. 
 
 OSCAR is a software package that supports the use of high-performance 
 computing by reducing the work of cluster configuration, installation, 
 operation, and management. Enhancements to previous versions of OSCAR in 
 OSCAR 4.1 include full support for Mandrakelinux 10.0 running on IA32 
-processors. Enhanced support for Red Hat Enterprise Linux as many bug 
-fixes and additions were made to make installation on this platform much 
-better, both on IA32 and IA64 architectures. APITest has been added to 
-the OSCAR testing framework and it is envisioned that all installation 
-tests will be performed by this package in upcoming releases. DepMan and 
-PackMan are now fully integrated into the OSCAR installation mechanism. 
-These tools provide RPM dependency resolution and greatly reduce the 
-amount of work developers do to install software, both during the server 
-installation and the build client image stage.
+processors. OSCAR installation on Red Hat Enterprise Linux has been 
+streamlined to smooth the installation. The OSCAR testing framework has 
+been extended to make use of the APITest tool which makes the post 
+installation testing cohesive and thorough. RPMS dependency resolution 
+and installation are now handled for both the server and the client image 
+by DepMan and PackMan. These tools greatly reduce the effort OSCAR 
+package authors must do to install software on an OSCAR built system. 
 
 OSCAR 4.1 has been fully tested for use with IA32 processors under Red
 Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux 
@@ -34,11 +32,18 @@ Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux
 Enterprise Linux 3.0.
 
 The OSCAR project would also like to announce a new website for 
-registering clusters installed with OSCAR. The URL for this site is 
-http://oscar.OpenClusterGroup.org/cluster-register.
+registering clusters installed with OSCAR. The URL for this site is:
 
-OSCAR 4.1, previous OSCAR versions, and additional information about the 
-OSCAR project are available from the OSCAR website:
+     http://oscar.openclustergroup.org/register
+
+Additionally, the 3rd Annual OSCAR Symposium will take place on May 
+15-18, 2005 at the University of Guelph, Ontario, Canada. More 
+information can be located here:
+
+     http://www.csm.ornl.gov/oscar05
+
+OSCAR 4.1 and additional information about the OSCAR project 
+are available from the OSCAR website:
 
      http://oscar.openclustergroup.org
 
@@ -46,14 +51,14 @@ The OSCAR working group is a consortium of industry, academic and
 research participants. Primary contributors include Bald Guy Software, 
 Canada's Michael Smith Genome Sciences Centre, Dell, IBM, Indiana 
 University, Intel, Louisiana Tech University, Oak Ridge National 
-Laboratory (ORNL), and Revolution Linux. OSCAR is the product of the 
-OSCAR working group of the Open Cluster Group (OCG). OCG is dedicated to 
-making cluster computing practical. The OCG and its subgroups are open to 
-all.
+Laboratory (ORNL), and Revolution Linux. The Open Cluster Group (OCG) is 
+an umbrella organization which sponsors OSCAR and other working groups
+related to clustering. OCG is dedicated to making cluster computing 
+practical. The OCG and its subgroups are open to all.
 
 Related resources:
    + OSCAR Working Group Homepage
-     http://oscar.OpenClusterGroup.org
+     http://oscar.openclustergroup.org
 
    + OSCAR Project Homepage
      http://sourceforge.net/projects/oscar
@@ -63,12 +68,12 @@ Related resources:
          Development: <oscar-devel@lists.sourcefore.net>
 
    + Open Cluster Group Homepage
-     http://www.OpenClusterGroup.org
+     http://www.openclustergroup.org
 
    + HA-OSCAR (high-availability) Working Group Homepage
-     http://www.OpenClusterGroup.org/HA-OSCAR
+     http://www.openclustergroup.org/HA-OSCAR
 
-   + SSS-OSCAR (scaleable systems)
+   + SSS-OSCAR (scalable systems)
      http://sourceforge.net/projects/sss-oscar/
      http://www.scidac.org/ScalableSystems/
 
