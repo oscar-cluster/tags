@@ -66,9 +66,12 @@ The following release notes apply to OSCAR version \oscarversion.
 
 \item In Step 8 \button{Test Cluster Setup}, some tests may fail for the first
   time but subsequent re-runs of this step will indicate that all the
-  tests succeeded.  This is a known issue and will be fixed for the next
-  release.
-
+  tests succeeded.  If APItests are failing, it may be because the OSCAR
+  Wizard did not have the correct environment variables set.  The way around
+  this problem is to quit the Wizard, open another terminal, bring up the
+  Wizard and re-run the tests.  All tests (including APItests) should pass
+  if the cluster is configured correctly.
+ 
 \item Each package in OSCAR has its own installation and release
   notes.  \detailed{See Section~\ref{sec:pkg-specific-notes} for
   additional release notes.} \quick{See the full Installation Guide
@@ -468,11 +471,5 @@ As a result, this kernel will be used upon subsequent reboot.
 pxelinux boot files to reside in \file{/var/lib/tftpboot} but OSCAR puts
 them in \file{/tftpboot}.  To get around this issue a symbolic link is
 created from \file{/var/lib/tftpboot} to \file{/tftpboot}.
-
-\item During Step 8, \button{Test Cluster Setup}, some APItests may fail due to
-the OSCAR Wizard not having the correct environment variables set.  If you
-encounter this problem, simply quit the Wizard, open another terminal,
-bring up the Wizard and then re-run the tests.  All tests should pass if
-the cluster has been configured correctly.
 
 \end{itemize}
