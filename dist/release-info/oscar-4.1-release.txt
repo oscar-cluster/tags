@@ -1,6 +1,4 @@
 ======================
-# File formatted w/ tabstop=4, textwidth=74, & $VIMRUNTIME/macros/justify.vim
-# using 'expand -4 FILE > NEW_FILE' may be helpful
 
 FOR IMMEDIATE RELEASE
 
@@ -17,7 +15,7 @@ a new version of the Open Source Cluster Application Resources (OSCAR)
 toolkit, OSCAR 4.1.
 
 OSCAR is a software package that supports the use of high-performance 
-computing by reducing the work of cluster  configuration, installation, 
+computing by reducing the work of cluster configuration, installation, 
 operation, and management. Enhancements to previous versions of OSCAR in 
 OSCAR 4.1 include full support for Mandrakelinux 10.0 running on IA32 
 processors. Enhanced support for Red Hat Enterprise Linux as many bug 
@@ -26,14 +24,18 @@ better, both on IA32 and IA64 architectures. APITest has been added to
 the OSCAR testing framework and it is envisioned that all installation 
 tests will be performed by this package in upcoming releases. DepMan and 
 PackMan are now fully integrated into the OSCAR installation mechanism. 
-These tools provide RPM dependencies resolution and greatly reduces the 
-amount of manual work to resolve dependencies, both during the server 
+These tools provide RPM dependency resolution and greatly reduce the 
+amount of work developers do to install software, both during the server 
 installation and the build client image stage.
 
 OSCAR 4.1 has been fully tested for use with IA32 processors under Red
 Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux 
 10.0. Additionally, IA64 support is also available under Red Hat 
 Enterprise Linux 3.0.
+
+The OSCAR project would also like to announce a new website for 
+registering clusters installed with OSCAR. The URL for this site is 
+http://oscar.OpenClusterGroup.org/cluster-register.
 
 OSCAR 4.1, previous OSCAR versions, and additional information about the 
 OSCAR project are available from the OSCAR website:
