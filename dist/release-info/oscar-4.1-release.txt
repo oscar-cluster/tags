@@ -24,15 +24,21 @@ been extended to make use of the APITest tool which makes the post
 installation testing cohesive and thorough. RPMS dependency resolution 
 and installation are now handled for both the server and the client image 
 by DepMan and PackMan. These tools greatly reduce the effort OSCAR 
-package authors must do to install software on an OSCAR built system. 
+package authors put forth to install software on an OSCAR built system. 
 
 OSCAR 4.1 has been fully tested for use with IA32 processors under Red
 Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux 
 10.0. Additionally, IA64 support is also available under Red Hat 
 Enterprise Linux 3.0.
 
-The OSCAR project would also like to announce a new website for 
-registering clusters installed with OSCAR. The URL for this site is:
+The OSCAR project would also like to announce a new website for OSCAR 
+which will be on-line at the time of release: 
+
+     http://oscar.openclustergroup.org 
+
+One new feature of the website is a web page for registering clusters 
+installed with OSCAR. Please register your cluster if you used OSCAR to
+install it:
 
      http://oscar.openclustergroup.org/register
 
@@ -41,11 +47,6 @@ Additionally, the 3rd Annual OSCAR Symposium will take place on May
 information can be located here:
 
      http://www.csm.ornl.gov/oscar05
-
-OSCAR 4.1 and additional information about the OSCAR project 
-are available from the OSCAR website:
-
-     http://oscar.openclustergroup.org
 
 The OSCAR working group is a consortium of industry, academic and 
 research participants. Primary contributors include Bald Guy Software, 
