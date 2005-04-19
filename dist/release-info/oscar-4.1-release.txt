@@ -10,7 +10,7 @@ Communications & Community Outreach
 ======================
 
 
-OAK RIDGE, Tenn., April 18, 2005 -- The OSCAR working group has released 
+OAK RIDGE, Tenn., April 26, 2005 -- The OSCAR working group has released 
 a new version of the Open Source Cluster Application Resources (OSCAR) 
 toolkit, OSCAR 4.1. 
 
@@ -19,17 +19,17 @@ computing by reducing the work of cluster configuration, installation,
 operation, and management. Enhancements to previous versions of OSCAR in 
 OSCAR 4.1 include full support for Mandrakelinux 10.0 running on IA32 
 processors. OSCAR installation on Red Hat Enterprise Linux has been 
-streamlined to smooth the installation. The OSCAR testing framework has 
+streamlined to make the process easier. The OSCAR testing framework has 
 been extended to make use of the APITest tool which makes the post 
-installation testing cohesive and thorough. RPMS dependency resolution 
+installation testing cohesive and thorough. RPM dependency resolution 
 and installation are now handled for both the server and the client image 
-by DepMan and PackMan. These tools greatly reduce the effort OSCAR 
-package authors put forth to install software on an OSCAR built system. 
+by DepMan and PackMan. These tools greatly reduce the effort needed by
+OSCAR package authors to install software on an OSCAR built system. 
 
 OSCAR 4.1 has been fully tested for use with IA32 processors under Red
 Hat Linux 9, Fedora Core 2, Red Hat Enterprise Linux 3, and Mandrakelinux 
 10.0. Additionally, IA64 support is also available under Red Hat 
-Enterprise Linux 3.0.
+Enterprise Linux 3.
 
 The OSCAR project would also like to announce a new website for OSCAR 
 which will be on-line at the time of release: 
@@ -38,13 +38,13 @@ which will be on-line at the time of release:
 
 One new feature of the website is a web page for registering clusters 
 installed with OSCAR. Please register your cluster if you used OSCAR to
-install it:
+install it at:
 
      http://oscar.openclustergroup.org/register
 
 Additionally, the 3rd Annual OSCAR Symposium will take place on May 
 15-18, 2005 at the University of Guelph, Ontario, Canada. More 
-information can be located here:
+information is available at:
 
      http://www.csm.ornl.gov/oscar05
 
@@ -52,7 +52,7 @@ The OSCAR working group is a consortium of industry, academic and
 research participants. Primary contributors include Bald Guy Software, 
 Canada's Michael Smith Genome Sciences Centre, Dell, IBM, Indiana 
 University, Intel, Louisiana Tech University, Oak Ridge National 
-Laboratory (ORNL), and Revolution Linux. The Open Cluster Group (OCG) is 
+Laboratory, and Revolution Linux. The Open Cluster Group (OCG) is 
 an umbrella organization which sponsors OSCAR and other working groups
 related to clustering. OCG is dedicated to making cluster computing 
 practical. The OCG and its subgroups are open to all.
@@ -61,7 +61,7 @@ Related resources:
    + OSCAR Working Group Homepage
      http://oscar.openclustergroup.org
 
-   + OSCAR Project Homepage
+   + OSCAR SourceForge Project Homepage
      http://sourceforge.net/projects/oscar
 
    + OSCAR Mailing Lists
@@ -84,5 +84,5 @@ Related resources:
    + OSCAR on Debian
      http://ssi-oscar.irisa.fr/oscarondebian/
 
-ORNL is a Department of Energy multi-program research facility managed	by
+ORNL is a Department of Energy multi-program research facility managed by
 UT-Battelle.
