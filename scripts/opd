@@ -9,7 +9,7 @@
 # information, see the COPYING file in the top level directory of the
 # OSCAR source distribution.
 #
-# $Id: opd,v 1.25 2003/07/17 21:00:52 tfleury Exp $
+# $Id$
 #
 
 use strict;
@@ -48,7 +48,7 @@ if (($ENV{LC_ALL} && $ENV{LC_ALL} ne "C") ||
 
 my $default_master_location = "SourceForge, USA";
 my $default_master_uri = 
-    "http://oscar.sourceforge.net/repository/";
+    "http://oscar.sourceforge.net/repository/4.2/";
 my $default_master_name = "Main OSCAR package repository";
 
 my $none_attribute = "<none>";
