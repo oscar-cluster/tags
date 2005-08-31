@@ -47,18 +47,23 @@ if ( system("rpm -q perl-Tk >/dev/null") != 0  ) {
     my @rpms = grep { /.rpm/ } readdir(DIR);
     closedir DIR;
     foreach $file (@rpms) {
-      if (! -e "/tftpboot/rpm/$file" ) {
-        oscar_log_subsection("Copying $rpmdir/$file to /tftpboot/rpm/$file\n");
-        copy("$rpmdir/$file", "/tftpboot/rpm/$file") || croak("Unable to copy $rpmdir/$file to /tftpboot/rpm/$file");
+      # Mandrake system takes mandrake specific rpms (mdk) WHILE other systems doesn't take mdk rpms, but all the others
+      if ( (( $distn eq 'mandrake' ) and ( grep { /mdk./ } $file )) or (( $distn ne 'mandrake' ) and ( ! ( grep { /mdk./ } $file ))) ) {      
+        #if the file is not already at /tftpboot/rpm...      
+        if (! -e "/tftpboot/rpm/$file" ) {
+          oscar_log_subsection("Copying $rpmdir/$file to /tftpboot/rpm/$file\n");
+	  #... copy it to there ..................... or 'croak' if this can't be done!
+          copy("$rpmdir/$file", "/tftpboot/rpm/$file") || croak("Unable to copy $rpmdir/$file to /tftpboot/rpm/$file");
+        }
       }
     }
     if ( $distn eq 'mandrake' ) {
       if ( $distv eq '10.1' ) {
 	      #MDK10.1
-	@ptkrpms = qw( perl-Tk perl-PerlIO-gzip perl-Tie-Watch);
+	@ptkrpms = qw( perl-Tk perl-Tie-Watch);
       }elsif ( $distv eq '10.0' ) {
 	      #MDK10.0
-	@ptkrpms = qw( perl-Tk perl-PerlIO-gzip perl-Tie-Watch);
+	@ptkrpms = qw( perl-Tk perl-Tie-Watch);
       }elsif ( $distv eq '9.2' ) {
 	      #MDK9.2
 	@ptkrpms = qw( perl-Tk perl-PerlIO-gzip );
