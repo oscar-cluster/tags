@@ -1,6 +1,6 @@
 package OSCAR::PackageInUn;
 # 
-#  $Id: PackageInUn.pm 1.20 2003/11/25 23:36:39 muglerj Exp $
+#  $Id$
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -1396,6 +1396,9 @@ sub uninstall_rpms_patch
 	my $pm;
 	my $retval = 0;
 	my @rslts;
+	my $imagenumber; # number of images on the system
+	my %imagehash; #hash of imagename node range pairs
+	my @imagename; #a list of all the images, but we fail unless we have only one
 	
 	@rpm_list = OSCAR::Database::database_rpmlist_for_package_and_group($package_name, $type, 1);
 
@@ -1422,7 +1425,7 @@ sub uninstall_rpms_patch
 	if ($type =~ "oscar_client")
 	{
 		#$retval = cexec_open($cmd_string, \@rslts); 
-		if( $retval != 0 )
+	 $retval != 0 )
 		{ 
 			oscar_log_subsection("Error on client rpm un-install for $package_name \n");
 			my $e_string = "Error on client rpm un-install for $package_name \n";
@@ -1430,9 +1433,21 @@ sub uninstall_rpms_patch
 			return(1);
 		}
 
-		#handle image
+		#determine image
+		$imagenumber = get_image_info(\%imagehash);
+
+		#we only support one image in this version
+		if ($imagenumber != 1)
+		{
+			print "Warning: This program only supports one image.\n";
+			return (0);
+		}
+		@imagename = keys(%imagehash);
+		croak "Error: no imagename\n" if( !defined($imagename[0]) );
+		croak "Error: image directory does not exhist\n" if ( !(-d $imgdir) );
+
 		$pm = PackMan::RPM->new;
-		$pm->chroot("/var/lib/systemimager/images/oscarimage");
+		$pm->chroot("/var/lib/systemimager/images/$imagename[0]");
 		if($pm->remove( @rpm_list ))
 		{
 			return 0;
