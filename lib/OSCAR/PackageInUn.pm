@@ -1425,7 +1425,7 @@ sub uninstall_rpms_patch
 	if ($type =~ "oscar_client")
 	{
 		#$retval = cexec_open($cmd_string, \@rslts); 
-	 $retval != 0 )
+	 	if ($retval != 0 )
 		{ 
 			oscar_log_subsection("Error on client rpm un-install for $package_name \n");
 			my $e_string = "Error on client rpm un-install for $package_name \n";
@@ -1439,15 +1439,19 @@ sub uninstall_rpms_patch
 		#we only support one image in this version
 		if ($imagenumber != 1)
 		{
-			print "Warning: This program only supports one image.\n";
-			return (0);
+			my $e_string = "Error: This program only supports one image. $package_name \n";
+			oscar_log_subsection("Error: This program only supports one image. $package_name \n");
+			add_error($e_string);
+			return (1);
 		}
 		@imagename = keys(%imagehash);
 		croak "Error: no imagename\n" if( !defined($imagename[0]) );
+
+		my $imgdir = "/var/lib/systemimager/images/$imagename[0]";
 		croak "Error: image directory does not exhist\n" if ( !(-d $imgdir) );
 
 		$pm = PackMan::RPM->new;
-		$pm->chroot("/var/lib/systemimager/images/$imagename[0]");
+		$pm->chroot($imgdir);
 		if($pm->remove( @rpm_list ))
 		{
 			return 0;
