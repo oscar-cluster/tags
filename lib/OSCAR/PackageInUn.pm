@@ -23,7 +23,6 @@ use strict;
 
 use lib "$ENV{OSCAR_HOME}/lib";
 use lib "$ENV{OSCAR_HOME}/lib/Qt";
-use lib "/usr/lib/perl5/site_perl/OSCAR";
 use Carp;
 use Cwd;
 use OSCAR::Package;
@@ -32,7 +31,8 @@ use OSCAR::Logger;
 use OSCAR::Configurator;
 use Tk::Dialog;
 use English;
-use PackMan;
+use OSCAR::PackMan;
+use OSCAR::WizardEnv;
 
 #this doesn't seem to effect the namespace of the calling script
 use vars qw(@EXPORT);
@@ -253,8 +253,12 @@ sub install_uninstall_packages
 	#OSCAR::Database::database_execute_command(
 	#"packages_clear_all_should_be_uninstalled");
 
-	oscar_log_section("Finished running Install/Uninstall OSCAR Packages");
+
+	oscar_log_subsection('Update Wizard Env (as needed)');
+	my @mod_env = WizardEnv::update_env();
 	
+	oscar_log_section("Finished running Install/Uninstall OSCAR Packages");
+
 	return 0;
 }
 
