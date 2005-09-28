@@ -19,6 +19,6 @@
 
 
 # Call the update Maui config script
-print `../packages/pbs/scripts/update_maui_config`;
+#print `../packages/pbs/scripts/update_maui_config`;
 
 print `/etc/init.d/maui restart`;
