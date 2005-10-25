@@ -21,7 +21,7 @@ The following release notes apply to OSCAR version \oscarversion.
 
 \begin{itemize}
 
-\item x86\_64 support for Fedora Core 3 and Red Hat Enterprise Linux 3 \& 4,
+\item x86\_64 support for Red Hat Enterprise Linux 3 \& 4,
 \item Fedora Core 3, Red Hat Enterprise Linux 4 and 
       Mandriva Linux 10.0 \& 10.1 support
 \item New feature! ``Monitor Cluster Deployment''
@@ -184,6 +184,12 @@ all distributions and are required for installation.
   deactivated on the same screen as the firewall.  If it is currently
   active it can be turned off in /etc/selinux/config by setting SELINUX 
   to ``disabled'' and rebooting.
+
+\item On x86 systems using Red Hat Enterprise Linux 4, the pfilter package 
+  causes image deployment to freeze midway through, so it is necessary to
+  uncheck the pfilter package during Step 1 \button{Select OSCAR Packages 
+  To Install} or turn it off prior to network booting the nodes defined 
+  in Step 5 \button{Define OSCAR Clients}.
 
 
 \end{itemize}
