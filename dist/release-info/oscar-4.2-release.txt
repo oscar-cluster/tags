@@ -63,7 +63,7 @@ subgroups are open to all.
 
 Related resources:
    + OSCAR Working Group Homepage
-     http://www.OpenClusterGroup.org/OSCAR
+     http://oscar.openclustergroup.org/
 
    + OSCAR Project Homepage
      http://sourceforge.net/projects/oscar
@@ -75,13 +75,10 @@ Related resources:
    + Open Cluster Group Homepage
      http://www.OpenClusterGroup.org
 
-   + Thin-OSCAR (diskless) Working Group Homepage
-     http://www.OpenClusterGroup.org/Thin-OSCAR
-
    + HA-OSCAR (high-availability) Working Group Homepage
      http://www.OpenClusterGroup.org/HA-OSCAR
 
-ORNL is a Department of Energy multi-program research facility managed	by
+ORNL is a Department of Energy multi-program research facility managed by
 UT-Battelle.
 
 
