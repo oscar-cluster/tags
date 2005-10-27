@@ -205,6 +205,29 @@ all distributions and are required for installation.
   To Install} or turn it off prior to network booting the nodes defined 
   in Step 5 \button{Define OSCAR Clients}.
 
+\item On RHEL4 ia64 systems, it may be possible that proc remains mounted
+  on the image after it has been built; this causes subsequent compute node
+  installations (rsync) to fail.  To get around this problem, you need to
+  umount the directory manually after image has been created and before
+  installing the compute nodes.
+ 
+  First, find out what is mounted by looking in {\tt /proc/mounts} with
+  \begin{verbatim}
+# cat /proc/mounts
+  \end{verbatim}
+  It should list something like the following:
+  \begin{verbatim}
+proc /var/lib/systemimager/images/oscarimage/proc proc rw,nodiratime 0 0
+none /var/lib/systemimager/images/oscarimage/proc/sys/fs/binfmt_misc
+binfmt_misc rw 0 0
+  \end{verbatim}
+  Then umount the two directories that are mounted, e.g.,
+  \begin{verbatim}
+# umount -f /var/lib/systemimager/images/oscarimage/proc/sys/fs/binfmt_misc
+# umount -f /var/lib/systemimager/images/oscarimage/proc"
+  \end{verbatim}
+  Note the ordering of the umount commands is important.
+
 \item On ia64 systems using Red Hat Enterprise Linux 4, the ia32el.rpm is
   needed.  This rpm is located on the extra CDs.  Make sure you include
   the rpms from these disks when you copy the rpms into /tftpboot/rpm.
