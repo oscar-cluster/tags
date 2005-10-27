@@ -1,0 +1,87 @@
+======================
+# File formatted w/ tabstop=4, textwidth=74, & $VIMRUNTIME/macros/justify.vim
+# using 'expand -4 FILE > NEW_FILE' may be helpful
+
+FOR IMMEDIATE RELEASE
+
+++++
+MEDIA CONTACT: Ron Walli
+Communications & Community Outreach
+Oak Ridge National Lab
+(865) 576-0226
+
+======================
+
+
+OAK RIDGE, Tenn., October 31, 2005 -- The OSCAR working group has released
+a new version of the Open Source Cluster Application Resources (OSCAR)
+toolkit, OSCAR 4.2.
+
+OSCAR is a software package that supports the use of high-performance
+computing by reducing the work of cluster x configuration, installation,
+operation, and management. Enhancements to previous versions of OSCAR include
+a new Wizard feature to dynamically monitor the installation of compute nodes.
+Several OSCAR packages have been updated, and the new versions of the software
+are:
+
+    1. Ganglia 3.0.1
+    2. TORQUE 1.2.0p5
+    3. SystemImager 3.5.3
+    4. MPICH 1.2.7
+
+Due to boot image size getting larger and the fact that many computers are no 
+longer deployed with floppy drives, the 'Build AutoInstallFloppy' button has 
+been changed to a 'Build AutoInstallCD' cd button. To improve image deployment 
+times and increase support for larger clusters, the 'tftp-server' package has 
+been replaced with 'atftp-server'. Software raid disk configurations are now
+supported on the compute nodes. Many bugfixes have been made to muliticast 
+support for installing the clients, and the experimental flag has been removed
+from this feature.  
+
+OSCAR 4.2 has been fully tested for use with IA32 processors under Fedora Core
+2, Fedora Core 3, Mandriva Linux 10.0, Mandriva Linux 10.1, and Red Hat 
+Enterprise Linux 3.0 and 4.0. 
+
+Support for IA64 and x86-64 is available from both Red Hat Enterprise Linux
+(RHEL) 3.0 and 4.0. Distributions based on RHEL, such as CentOS, have been
+found to work quite nicely with OSCAR but are not officially tested by the 
+OSCAR developers. 
+
+OSCAR 4.2, previous OSCAR versions, and additional information about the OSCAR
+project are available from the OSCAR project page:
+
+     http://sourceforge.net/projects/oscar/
+
+The OSCAR working group is a consortium of industry, academic and
+research participants. Primary contributors include Bald Guy Software,
+Michael Smith Genome Sciences Centre, Dell, IBM, Intel,
+Indiana  University, Intel, Louisiana Tech University, 
+Oak Ridge National Laboratory(ORNL), and Sherbrooke University. OSCAR  
+is the product of the OSCAR working group of the Open Cluster Group (OCG). 
+OCG is dedicated to making cluster computing practical. The OCG and its 
+subgroups are open to all.
+
+Related resources:
+   + OSCAR Working Group Homepage
+     http://www.OpenClusterGroup.org/OSCAR
+
+   + OSCAR Project Homepage
+     http://sourceforge.net/projects/oscar
+
+   + OSCAR Mailing Lists
+      User Questions: <oscar-users@lists.sourceforge.net>
+         Development: <oscar-devel@lists.sourcefore.net>
+
+   + Open Cluster Group Homepage
+     http://www.OpenClusterGroup.org
+
+   + Thin-OSCAR (diskless) Working Group Homepage
+     http://www.OpenClusterGroup.org/Thin-OSCAR
+
+   + HA-OSCAR (high-availability) Working Group Homepage
+     http://www.OpenClusterGroup.org/HA-OSCAR
+
+ORNL is a Department of Energy multi-program research facility managed	by
+UT-Battelle.
+
+
