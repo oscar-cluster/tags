@@ -205,7 +205,8 @@ all distributions and are required for installation.
   To Install} or turn it off prior to network booting the nodes defined 
   in Step 5 \button{Define OSCAR Clients}.
 
-\item On RHEL4 ia64 systems, it may be possible that proc remains mounted
+\item On ia64 systems using Red Hat Enterprise Linux 4, it may be possible
+  that proc remains mounted
   on the image after it has been built; this causes subsequent compute node
   installations (rsync) to fail.  To get around this problem, you need to
   umount the directory manually after image has been created and before
