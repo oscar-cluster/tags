@@ -28,6 +28,7 @@ are:
     2. TORQUE 1.2.0p5
     3. SystemImager 3.5.3
     4. MPICH 1.2.7
+    5. PVM 3.4.5p4-2                           
 
 Due to boot image size getting larger and the fact that many computers are no 
 longer deployed with floppy drives, the 'Build AutoInstallFloppy' button has 
@@ -43,9 +44,9 @@ OSCAR 4.2 has been fully tested for use with IA32 processors under Fedora Core
 Enterprise Linux 3.0 and 4.0. 
 
 Support for IA64 and x86-64 is available from both Red Hat Enterprise Linux
-(RHEL) 3.0 and 4.0. Distributions based on RHEL, such as CentOS, have been
-found to work quite nicely with OSCAR but are not officially tested by the 
-OSCAR developers. 
+(RHEL) 3.0 and 4.0. Distributions based on RHEL, such as CentOS and 
+ScientificLinux, have been found to work quite nicely with OSCAR but are not 
+officially tested by the OSCAR developers. 
 
 OSCAR 4.2, previous OSCAR versions, and additional information about the OSCAR
 project are available from the OSCAR project page:
@@ -54,12 +55,11 @@ project are available from the OSCAR project page:
 
 The OSCAR working group is a consortium of industry, academic and
 research participants. Primary contributors include Bald Guy Software,
-Michael Smith Genome Sciences Centre, Dell, IBM, Intel,
-Indiana  University, Intel, Louisiana Tech University, 
-Oak Ridge National Laboratory(ORNL), and Sherbrooke University. OSCAR  
-is the product of the OSCAR working group of the Open Cluster Group (OCG). 
-OCG is dedicated to making cluster computing practical. The OCG and its 
-subgroups are open to all.
+Canada's Michael Smith Genome Sciences Centre, Indiana  University, 
+Intel, Louisiana Tech University, Oak Ridge National Laboratory(ORNL),
+NEC HPC Europe, and RevolutionLinux. OSCAR is the product of the OSCAR working 
+group of the Open Cluster Group (OCG). OCG is dedicated to making cluster 
+computing practical. The OCG and its subgroups are open to all.
 
 Related resources:
    + OSCAR Working Group Homepage
