@@ -15,7 +15,8 @@ Oak Ridge National Lab
 
 OAK RIDGE, Tenn., October 31, 2005 -- The OSCAR working group has released
 a new version of the Open Source Cluster Application Resources (OSCAR)
-toolkit, OSCAR 4.2.
+toolkit, OSCAR 4.2, the OSCAR version with more supported architectures and
+Linux distributions than ever before. 
 
 OSCAR is a software package that supports the use of high-performance
 computing by reducing the work of cluster x configuration, installation,
@@ -35,7 +36,7 @@ longer deployed with floppy drives, the 'Build AutoInstallFloppy' button has
 been changed to a 'Build AutoInstallCD' cd button. To improve image deployment 
 times and increase support for larger clusters, the 'tftp-server' package has 
 been replaced with 'atftp-server'. Software raid disk configurations are now
-supported on the compute nodes. Many bugfixes have been made to muliticast 
+supported on the compute nodes. Many bug fixes have been made to muliticast 
 support for installing the clients, and the experimental flag has been removed
 from this feature.  
 
