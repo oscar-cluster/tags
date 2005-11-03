@@ -1,0 +1,227 @@
+# Sat Oct 08 2005  19:37:59PM    Thomas Naughton  <naughtont@ornl.gov>
+# Notes on oscar-4.2b4 integration on FC4
+#
+# This should be removed before/if merging with the rest of oscar
+# it is only really for my sanity that I'm keeping it in SVN. ;)
+# 
+
+[apitest]
+ - FC4 provides python-twisted (v1.3.0-4) & python-elementtree (v1.2.6-4)
+ - Rebuilt apitest to fix Copyright legacy error & adjust Requres
+ - Adjust config.xml to specify appropriate deps for twisted & elementtree 
+ -  root# diff config.xml.OLD config.xml
+    35a36,42
+    >       </rpmlist>
+    > 
+    >       <rpmlist>
+    >               <filter group="oscar_server" distribution="fedora" distribution_version="2"/>
+    >               <filter group="oscar_server" distribution="fedora" distribution_version="3"/>
+    >               <filter group="oscar_server" distribution="mandrake"/>
+    >               <filter group="oscar_server" distribution="redhat"/>
+    39a47,53
+    >       <!-- FC4 provides twisted and elementtree, but with diff name -->
+    >       <rpmlist>
+    >               <filter group="oscar_server" distribution="fedora" distribution_version="4"/>
+    >               <rpm>python-twisted</rpm>
+    >               <rpm>python-elementtree</rpm>
+    >       </rpmlist>
+    > 
+ - NOTE: need to confirm these alt RPMS work ok with APItest get errors
+    when running the apitest/samples/ tests...but some are just hardcodes
+    so other may be as well?
+ - Adjust the setup script to include the FC4 distro dir,
+    root# diff setup.OLD setup
+    46a47,48
+    >       } elsif ($ver eq "4") {
+    >                 $source_dir .= "4";
+
+
+[base]
+ - update config.xml to have <filter> for fc4 with other fedoras
+
+[perl-Tk (prereq)]
+ - FC4 has perl-5.8.6 but it isn't picking up the vendor_perl/5.8.0 path
+   and our perl-Tk/setup script breaks if you add a 5.8.6/ dir to the 
+   media/RPMS/ area since there is already a 5.8/ dir. :(
+ - FIXME: For now just manually installing perl-Tk built on FC4
+
+[perl @INC path]
+ - Lots of stuff is installing into,
+      /usr/lib/perl5/vendor_perl/5.8.0
+   and this is not in the default @INC search path for the 5.8.6 perl w/ FC4
+   It appears a quick work around is to add the following EnvVar before
+   running install_cluster,
+
+    root# export PERL5LIB=/usr/lib/perl5/vendor_perl/5.8.0
+    root# ./install_cluster eth1 
+
+[ganglia]
+ - update config.xml 
+ - add two filter lines for FC4
+    root# diff config.xml.OLD config.xml
+    39a40
+    >       <filter group="oscar_server" distribution="fedora" distribution_version="4" />
+    49a51
+    >       <filter group="oscar_server" distribution="fedora" distribution_version="4" />
+    
+
+
+[sis]
+ - update distro/ to have fc4-i386 (uses generic-setup)
+ - TJN: I'm just trying to use the fc3 udpcast & atftp-server RPMS
+    for now b/c I'm lazy.
+
+
+[perl-Qt]
+ - update distro/ to have fc4 (uses generic-setup)   
+ - TJN: I'm just trying to use the fc3 perl-Qt for now b/c there were
+    build errors under FC4
+       
+        configure: error:
+       
+       This particular compiler version is blacklisted because it
+       is known to miscompile KDE. Please use a newer version, or
+       if that is not yet available, choose an older version.
+       
+       Please do not report a bug or bother us reporting this
+       configure error. We know about it, and we introduced
+       it by intention to avoid untraceable bugs or crashes in KDE.
+       
+       
+       error: Bad exit status from /var/tmp/rpm-tmp.2121 (%build)
+       
+       
+       RPM build errors:
+           Bad exit status from /var/tmp/rpm-tmp.2121 (%build)
+
+       
+[torque]
+ - during Step3 Server install 
+   NOTE: i'm pretty sure part of these msgs are from 
+         other post_server_install scripts...I think 
+         this may be a hostname issue since i was playing with that
+         during the install (to build RPMS).
+
+
+       <<...cut here...>>
+
+   Shutting down TORQUE Server:                               [FAILED]
+   Starting TORQUE Server:                                    [FAILED]
+   ...updating xpbsmonrc file
+   WARNING: OSCAR does not know how to configure sendmail yet.
+   WARNING: Please bug the OSCAR developers to finish the disable-servics package!
+   WARNING: There will be no mail service running on the client nodes!
+   --> Successfully ran server non-core package post_server_install scripts
+ - Having to rebuild torque rpms b/c of readline.so.4/5 incompatibility across
+   FC releases (FC4 has libreadline.so.5)
+ - Bump RPM rel=3 b/c had to replace Copyright tag w/ License tag for 
+   rpm 4.4 legacy syntax error
+ - CORRECTION/FOLLOW-UP w.r.t. RPM versioning (see also SRPMS/README.*.txt)
+
+    I have added this SRPM for completeness since I had to make a minor
+    modification to the spec file in order to build on FC4/x86.  
+    
+    Note, I manually renamed the file to have the 'tjn-fc4' string so
+    it would not conflict with the other SRPM for torque.  The only 
+    difference is the torque spec file (see below).
+    
+    I really should have bumped the RPM release number to 3 but b/c
+    of dependencies for the torque-modulefile and interdependencies among
+    the torque RPMS themselves I couldn't even bump the Epoch number. :(
+    
+    This new file corresponds to the RPMS that were built for Fedor Core 4,
+    i.e., distro/fc4/ .
+    
+    The changes made to the torque spec file:
+     + Replace Copyright: with License:
+     + Add a Changelog notice,
+
+   * Sat Oct 08 2005  13:59:51PM    Thomas Naughton  <naughtont@ornl.gov>
+   - (fc4) Replace tag Copyright w/ License for rpm 4.4 legacy syntax error
+     not bumping rpm rel or epoch b/c of rigid deps across rpms and modulefile
+    
+
+
+[build image]
+ - i just copied the oscarsamples/fedora-3-i386.rpmlist => fedora-4-i386.rpmlist
+   and made changes to accomodate the new gcc-4 & compat-gcc compilers and a few
+   other items that either were in FC3 but not FC4 or were renamed
+
+[misc warnings]
+ - [Step 4]
+  * Built image from rpms
+    Added Disk Table for oscarimage based on /opt/oscar/oscarsamples/scsi.disk
+    Use of uninitialized value in concatenation (.) or string at /usr/lib/systemimager/perl/SystemImager/Server.pm line 1246.
+    Ran mkautoinstallscript
+
+   * --> Step 4: Completed successfully
+    Use of uninitialized value in hash element at /usr/lib/perl5/vendor_perl/5.8.6/i386-linux-thread-multi/Tk/Trace.pm line 181.
+
+ - [Step 5]
+   * =============================================================================
+     == Running step 5 of the OSCAR wizard: Define OSCAR clients
+     =============================================================================
+
+     Argument "2.121_02" isn't numeric in subroutine entry at /usr/lib/perl5/site_perl/MLDBM/Serializer/Data/Dumper.pm line 5
+     --> Step 5: Running: ./post_clients
+  
+ - No msg displayed but the restart of maui (via post_clients) hung for a while,
+   could be related to my toying with hostname values.  ;)
+   (Ultimately the post_clients script all completed successfully)
+
+
+[step7 post_install]
+ - Looks like FC4 has libreadline.so.5 and the torque RPMS were built
+   on systems that had libreadline.so.4.
+   (See additions to [torque] section above)
+
+   Shutting down TORQUE Server:                               [FAILED]
+   Starting TORQUE Server:                                    [  OK  ]
+   Updating pbs_server nodes
+   /opt/pbs/bin/pbsnodes: error while loading shared libraries: libreadline.so.4: cannot open shared object file: No such file or directory
+   /opt/pbs/bin/qmgr: error while loading shared libraries: libreadline.so.4: cannot open shared object file: No such file or directory
+   Shutting down TORQUE Server:                               [  OK  ]
+   Starting TORQUE Server:                                    [  OK  ]
+   Creating torque workq queue...
+   /opt/pbs/bin/qmgr: error while loading shared libraries: libreadline.so.4: cannot open shared object file: No such file or directory
+   /opt/pbs/bin/qmgr: error while loading shared libraries: libreadline.so.4: cannot open shared object file: No such file or directory
+   Configuration of Torque queues failed at /opt/oscar/packages/torque/scripts/post_install line 315
+   Script /opt/oscar/packages/torque/scripts/post_install exitted badly with exit code '127' at ./post_install line 44
+   Couldn't run 'post_install' script for torque at ./post_install line 45
+
+[SUMMARY]
+ - Must use this EnvVar to pickup the perl-5.8.0 based libs in @INC
+      PERL5LIB=/usr/lib/perl5/vendor_perl/5.8.0
+   e.g.,  
+      root# PERL5LIB=/usr/lib/perl5/vendor_perl/5.8.0 ./install_cluster eth1
+
+ - SVN Modifications
+    A      oscarsamples/fedora-4-i386.rpmlist
+    ?      dist/oscar-release.spec
+    M      dist/VERSION
+    A      packages/torque/SRPMS/README-1.2.0p5-2tjn-fc4.txt
+    A      packages/torque/SRPMS/torque-1.2.0p5-2tjn-fc4.src.rpm
+    A      packages/torque/distro/fc4
+    A      packages/torque/distro/fc4/torque-client-1.2.0p5-2.i686.rpm
+    A      packages/torque/distro/fc4/torque-1.2.0p5-2.i686.rpm
+    A      packages/torque/distro/fc4/torque-gui-1.2.0p5-2.i686.rpm
+    A      packages/torque/distro/fc4/torque-server-1.2.0p5-2.i686.rpm
+    A      packages/torque/distro/fc4/torque-mom-1.2.0p5-2.i686.rpm
+    A      packages/perl-Qt/distro/fc4
+    A      packages/perl-Qt/distro/fc4/perl-Qt-3.009b2-2.i686.rpm
+    A      packages/sis/distro/fc4-i386
+    A      packages/sis/distro/fc4-i386/atftp-server-0.7-4oscar.i686.rpm
+    A      packages/sis/distro/fc4-i386/udpcast-20050226-1.i686.rpm
+    M      packages/ganglia/config.xml
+    A      packages/apitest/distro/fc4
+    A      packages/apitest/distro/fc4/apitest-0.2.5+1-5oscar.i386.rpm
+    A      packages/apitest/distro/fc4/apitest-profiled-0.2.5+1-5oscar.i386.rpm
+    A      packages/apitest/SRPMS/apitest-0.2.5+1-5oscar.src.rpm
+    M      packages/apitest/config.xml
+    M      packages/apitest/scripts/setup
+    M      packages/base/config.xml
+
+ - TJN: Misc unused/TODO items look at,
+     test2.csm.ornl.gov:/tmp/TJN_oscar-4.2.1_fc4-TODO/
+
+

@@ -208,6 +208,10 @@ AC_CONFIG_FILES([
     share/prereqs/perl-XML-Simple/scripts/Makefile
     share/prereqs/perl-XML-Simple/RPMS/Makefile
     share/prereqs/perl-XML-Simple/SRPMS/Makefile
+    share/prereqs/perl5lib-profile-oscar/Makefile
+    share/prereqs/perl5lib-profile-oscar/scripts/Makefile
+    share/prereqs/perl5lib-profile-oscar/RPMS/Makefile
+    share/prereqs/perl5lib-profile-oscar/SRPMS/Makefile
 
     src/Makefile
     src/Installer/Makefile

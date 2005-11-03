@@ -5,4 +5,5 @@ packman
 update-rpms
 perl-XML-Parser
 perl-XML-Simple
+perl5lib-profile-oscar
 oda

@@ -6,3 +6,26 @@ SRPM generates all of the OSCAR-ized LAM RPM's.  Specifically, if you
 need to --rebuild the SRPM, all the necessary RPM's will be created.
 
 --The LAM Team
+
+
+  **NOTICE**
+
+    Summary: To rebuild on Fedora Core 4 (FC4) use the file,
+      "lam-oscar-7.0.6-4.fc4.src.rpm".  This only applies to
+      Fedora Core 4 based systems.
+   
+    Details: In order to minimize changes for the oscar-4.2.x 
+      release(s) the LAM SRPM's were modified for Fedora Core 4 (FC4).  
+      This included a change to the configure arguments to specify
+      the newer gcc-gfortran (--with-fc=/usr/bin/gfortran) and
+      changes to the RPM 'Requires:' tag to match this newer 
+      gcc-gfortran.  
+
+      To indicate these changes were specific to Fedora Core 4,
+      the RPM release number was increased by one and a suffix
+      was added (.fc4) so the resulting RPM's and SRPM reflect
+      this change in the filename(s).  
+
+  **********
+
+

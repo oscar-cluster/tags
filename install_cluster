@@ -212,6 +212,27 @@ oscar_log_subsection("Running: \"$cmd\"");
 !system($cmd)
     or die("Oscar Wizard preparation script failed to complete");
 oscar_log_subsection("Successfully ran wizard_prep");
+
+
+#---------------------------------------------------------
+#
+#   HORRIBLE HACK ALERT  -- FC4/perl-5.8.0 WORKAROUND
+#
+# TJN: (11/2/05)
+#   We need to update the ENV in case any of these prereqs
+#   installed things that would effect the perl paths, etc.
+#   Mainly this is for the perl5lib-profile-oscar file that is
+#   used on FC4 to extend PERL5LIB for 5.8.0 perl libs, to
+#   avoid recompilation and further testing on the 4.2.x
+#   series...  :-|
+#   see also: share/prereq/perl5lib-profile-oscar
+
+use OSCAR::WizardEnv;
+$ENV{QUIET_OSCAR_WIZARD} = 1;
+my @mod_env = WizardEnv::update_env();
+delete $ENV{QUIET_OSCAR_WIZARD};
+#---------------------------------------------------------
+
 #
 # HORRIBLE HACK ALERT -- FIXING MANDRAKE SNAFU
 #

@@ -1,0 +1,80 @@
+#!/usr/bin/env perl
+#
+# This script was adapted from the prereqs/perl-XML-Simple setup script.
+#
+# Copyright (c) 2005 Oak Ridge National Laboratory.
+#                    All rights reserved.
+#
+# Copyright (c) 2002 The Trustees of Indiana University.  
+#                    All rights reserved.
+# 
+# This file is part of the OSCAR software package.  For license
+# information, see the COPYING file in the top level directory of the
+# OSCAR source distribution.
+#
+#
+
+use strict;
+use lib "$ENV{OSCAR_HOME}/lib";
+use OSCAR::Logger;
+use Carp;
+use OSCAR::Distro;
+
+# Version included in media directory
+
+my $ver = "1.0-1"; 
+my $real_name = "perl5lib-profile-oscar";
+
+
+# See if we need to install the profile.d/ file
+# We only need this RPM if we're on FC4,
+# perl 5.8.0 libs not in default @INC path 
+
+oscar_log_subsection("Checking to see if we need to install $real_name");
+
+
+my ($distro, $distro_ver) = OSCAR::Distro::which_distro_server();
+
+if( $distro eq "fedora"  &&  $distro_ver eq "4" ) {
+	oscar_log_subsection("We are on FC4 so install PERL5LIB profile.d/ file");
+
+	my $topdir = "$ENV{OSCAR_HOME}/share/prereqs/$real_name";
+	my $tempdir = "/tmp/oscar-install-$real_name.$$";
+
+	mkdir($tempdir) or carp("Can't create temp dir: $tempdir");
+	chomp(my $pwd = `pwd`);
+	chdir($tempdir);
+
+	my $rpmsdir = "$ENV{OSCAR_HOME}/share/prereqs/$real_name/RPMS";
+ 
+	opendir(RPMS, "/tftpboot/rpm");
+	my @rpmsindir = readdir(RPMS);
+	closedir(RPMS);
+	# check if the rpm is in /tftpboot/rpm
+	if ( !(grep( /^$real_name/, @rpmsindir ) ) ) {
+		system ("cp $rpmsdir/$real_name-$ver.noarch.rpm /tftpboot/rpm"); 
+    }
+	#check if the package is already installed and if it's not...
+	if ( `rpm -qa | grep -c $real_name` == 0 ) {
+		system("rpm -Uvh /tftpboot/rpm/$real_name-$ver.noarch.rpm");
+	} else {
+		print "The package $real_name is already installed";
+	}
+    
+	oscar_log_subsection("$real_name installed successfully");
+
+	chdir($pwd);
+	system("rm -rf $tempdir");
+} 
+
+# It's not FC4 (perl ver ok) -- nothing to do
+
+else {
+	oscar_log_subsection("$real_name is not needed on this system.");
+}
+
+# All done
+
+0;
+
+# vim: ts=4

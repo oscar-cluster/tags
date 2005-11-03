@@ -87,6 +87,7 @@
   <rpmlist>
     <filter distribution='fedora' distribution_version='2' group='oscar_server' />
     <filter distribution='fedora' distribution_version='3' group='oscar_server' />
+    <filter distribution='fedora' distribution_version='4' group='oscar_server' />
         <rpm>apr</rpm>
         <rpm>apr-util</rpm>
 	<rpm>dhcp</rpm>

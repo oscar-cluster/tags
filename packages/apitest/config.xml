@@ -33,8 +33,22 @@
 		<filter group="oscar_server"/>
 		<rpm>apitest</rpm>
 		<rpm>apitest-profiled</rpm>
+	</rpmlist>
+
+	<rpmlist>
+		<filter group="oscar_server" distribution="fedora" distribution_version="2"/>
+		<filter group="oscar_server" distribution="fedora" distribution_version="3"/>
+		<filter group="oscar_server" distribution="mandrake"/>
+		<filter group="oscar_server" distribution="redhat"/>
 		<rpm>Twisted</rpm>
 		<rpm>elementtree</rpm>
+	</rpmlist>
+
+	<!-- FC4 provides twisted and elementtree, but with diff name -->
+	<rpmlist>
+		<filter group="oscar_server" distribution="fedora" distribution_version="4"/>
+		<rpm>python-twisted</rpm>
+		<rpm>python-elementtree</rpm>
 	</rpmlist>
 
 </oscar>

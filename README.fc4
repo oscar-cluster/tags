@@ -1,0 +1,28 @@
+# Mon Oct 31 2005  13:35:29PM    Thomas Naughton  <naughtont@ornl.gov>
+
+
+
+ ********
+  NOTICE
+ ********
+  This is an unoffical release initially based on oscar-4.2.1b1 with additions
+  to work on Fedora Core 4 (FC4).  Ultimately this may become 4.2.1, but
+  for now we're just mangling the version to keep it distinct/unique from
+  the main branch.  :)
+     Example: 4.2.1b1+FC4r3816
+
+
+
+Steps that must be done manually on FC4 (current testing version)
+
+ 1) export PERL5LIB=/usr/lib/perl5/vendor_perl/5.8.0
+ 2) extract tarball and run standard oscar install
+ 
+ NOTES:
+   N1) During "Step 5" maui's "post_clients" script hangs sometimes,
+       but if you run it manually (while Wizard is frozen/hung) it will
+       continue with success (but the manual invocation of the script hangs)???
+
+       This appears to be related to the init script?  'maui restart'
+
+
