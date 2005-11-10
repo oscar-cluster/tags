@@ -1,0 +1,18 @@
+We would like to thank the following individuals who are not part of the
+team <http://oscar.openclustergroup.org/team> (yet) but have contributed
+to this release:
+
+Bruce Becker (DAPNIA/SPhN/CEA)
+- Fedora Core 3 x86_64 testing
+
+Carlos Vasco (Industria de Turbopropulsores)
+- Building of Fedora Core 3 x86_64 RPMs and testing
+
+Gareth Devaus (UCT-CERN Research Centre)
+- Fedora Core 3 x86_64 testing
+
+Paul Greidanus (University of Alberta)
+- Providing x86_64 server for building x86_64 RPMs for Fedora Core 3
+
+Sean Dague (IBM)
+- Insights into SystemConfigurator
