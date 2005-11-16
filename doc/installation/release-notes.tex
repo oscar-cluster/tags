@@ -177,14 +177,14 @@ all distributions and are required for installation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Red Hat Enterprise Linux 4 \& Fedora Core 3 SELinux Conflict }
+\subsection{Red Hat Enterprise Linux 4 \& Fedora Core 3 \& 4: SELinux Conflict }
 \label{subsec:SELinuxnotes}
 
 \begin{itemize}
 
 \item Due to issues with displaying graphs under Ganglia, and installing
-  RPMs in a chroot environment (needed to build OSCAR images), SELinux should
-  be disabled before installing OSCAR.  During installation, it can be
+  RPMs in a SIS chroot environment (needed to build OSCAR images), SELinux 
+  should be disabled before installing OSCAR.  During installation, it can be
   deactivated on the same screen as the firewall.  If it is currently
   active it can be turned off in /etc/selinux/config by setting SELINUX 
   to ``disabled'' and rebooting.
