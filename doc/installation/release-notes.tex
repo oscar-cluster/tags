@@ -172,6 +172,12 @@ all distributions and are required for installation.
   this happens, run the test script, \file{testing/test\_cluster},
   manually in a shell window to diagnose the problem.
 
+\item Oscar uses the atftp-server package instead of the tftp-server
+  package which ships with many distributions.  The tftp-server rpm
+  should be uninstalled, along with any packages which depend on it
+  before the Oscar wizard is started.  Using the standard or
+  ``workstation'' installation should avoid this issue.
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
