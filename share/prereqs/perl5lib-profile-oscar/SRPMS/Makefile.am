@@ -11,6 +11,6 @@
 
 include $(top_srcdir)/dist/Makefile.options
 
-oscar_DATA		= perl5lib-profile-oscar-1.0-1.src.rpm
+oscar_DATA		= perl5lib-profile-oscar-1.0-2.src.rpm
 
 EXTRA_DIST		= $(oscar_DATA)
