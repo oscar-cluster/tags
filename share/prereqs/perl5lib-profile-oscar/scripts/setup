@@ -22,7 +22,7 @@ use OSCAR::Distro;
 
 # Version included in media directory
 
-my $ver = "1.0-1"; 
+my $ver = "1.0-2"; 
 my $real_name = "perl5lib-profile-oscar";
 
 
