@@ -205,6 +205,19 @@ all distributions and are required for installation.
 
 \begin{itemize}
 
+% TJN: Adding in respose to Bug#1271143
+\item On Red Hat Enterprise Linux 4.2 (RHEL4) and CentOS 4.2 systems you 
+      must remove the `tog-pegasus' RPM from the server, if installed, to 
+      avoid file ownership conflicts with `pvm' on the compute nodes and SIS 
+      image.  This is due to an ordering issue with the RPM installs which 
+      both create system-level users which get out of ordering during OSCAR's 
+      image build process.  See also:
+      \begin{itemize}
+		\item OSCAR Bug\#1368604 ``/opt/pvm3 directory ownership on image''
+		\item OSCAR Bug\#1371143 ``docfix: tog-pegasus / pvm permission issues''
+      \end{itemize}
+
+
 \item On x86 systems using Red Hat Enterprise Linux 4, the pfilter package 
   causes image deployment to freeze midway through, so it is necessary to
   uncheck the pfilter package during Step 1 \button{Select OSCAR Packages 
