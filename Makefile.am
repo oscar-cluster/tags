@@ -26,7 +26,7 @@ SUBDIRS			= \
 			testing
 
 oscar_SCRIPTS		= install_cluster
-oscar_DATA		= COPYING README VERSION README.fc4 CREDITS
+oscar_DATA		= COPYING README VERSION CREDITS
 
 EXTRA_DIST		= $(oscar_SCRIPTS) $(oscar_DATA)
 
