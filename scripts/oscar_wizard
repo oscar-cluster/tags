@@ -619,6 +619,10 @@ sub monitor_deployment {
     my $cmd = "/usr/sbin/si_monitortk";
     $monitor_button->configure(-state => 'disabled');
 
+    my $monitord = "/etc/init.d/systemimager-server-monitord";
+
+    # Make sure that systemimager-server-monitord is running before we start si_monitotk
+    system("$monitord restart") == 0 or croak("Failed to restart $monitord"); 
     my $pipe = new FileHandle;
     $pipe->open("$cmd |") or die "Cannot fork: $!";
     $window->fileevent($pipe, 'readable', [\&stop_monitor_deployment, $window, $pipe]);
