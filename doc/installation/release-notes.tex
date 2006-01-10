@@ -211,6 +211,13 @@ all distributions and are required for installation.
   active it can be turned off in /etc/selinux/config by setting SELINUX 
   to ``disabled'' and rebooting.
 
+  When installation fails due to SELinux, it displays this message:
+  \begin{verbatim}
+  error: %pre(coreutils-5.2.1-31.1.x86_64) scriptlet failed, 
+    exit status 255
+  error: install: %pre scriptlet failed (2), skipping 
+    coreutils-5.2.1-31.1
+  \end{verbatim}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,7 +269,22 @@ binfmt_misc rw 0 0
   the rpms from these disks when you copy the rpms into /tftpboot/rpm.
 
 \end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{CentOS 4.2 and Scientific Linux 4.2 Notes}
+\label{subsec:centos42sci42notes}
+
+\begin{itemize}
+
+\item Installation fails on CentOS 4.2 and Scientific Linux 4.2 due to
+a conflict between the python-elementtree rpm which is required by the
+yum package installed by default with these systems and the elementtree rpm
+provided by OSCAR's apitest package.  Therefore OSCAR does not support
+these versions of CentOS and Scientific Linux, as yum is an important
+feature of these operating systems and we can't really recommend removing it.
+
+\end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -281,6 +303,7 @@ downloading the RPM from this site \url{ftp://ftp.scientificlinux.org/linux/scie
 and placing it in the /tftpboot/rpm directory.  This package contains the
 ia32 execution layer needed for running ia32 applications and is included
 in most other Red Hat based distributions by default.
+
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
