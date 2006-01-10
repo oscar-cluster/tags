@@ -21,18 +21,8 @@ The following release notes apply to OSCAR version \oscarversion.
 
 \begin{itemize}
 
-\item x86\_64 support for Red Hat Enterprise Linux 3 \& 4,
-\item Fedora Core 3, Red Hat Enterprise Linux 4 and 
-      Mandriva Linux 10.1 support
-\item New feature! ``Monitor Cluster Deployment'' in Wizard
-\item Ganglia updated to v3.0.1
-\item PVM updated to v3.4.5+4
-\item Torque updated to v1.2.0p5
-\item SystemImager updated to v3.5.3
-\item MPICH updated to v1.2.7
-\item AutoInstallFloppy changed to AutoInstallCD due to large kernel images.
-\item Replaced tftp-server with atftp-server for better scalability
-\item Software RAIDs on cluster nodes are now supported
+\item x86\_64 support for Fedora Core 3
+\item x86 support for Fedora Core 4
 
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,7 +201,7 @@ all distributions and are required for installation.
   active it can be turned off in /etc/selinux/config by setting SELINUX 
   to ``disabled'' and rebooting.
 
-  When installation fails due to SELinux, it displays this message:
+  When installation fails due to SELinux, it displays a few messages like the following:
   \begin{verbatim}
   error: %pre(coreutils-5.2.1-31.1.x86_64) scriptlet failed, 
     exit status 255
