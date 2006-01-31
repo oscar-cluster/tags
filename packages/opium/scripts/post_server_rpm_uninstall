@@ -8,7 +8,7 @@
 # server uninstall script
 # Must exit with 0 on success or non-zero for any failures.
 
-remove_rpms( "ssh-oscar" );
+#remove_rpms( "ssh-oscar" );
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

@@ -18,14 +18,14 @@ if( ($distro eq "fedora") || ($distro eq "redhat") ) {
 	my @rpms = qw(env-switcher
 			modules-oscar
 			); #skipping ed
-	remove_rpms(@rpms);
+	#remove_rpms(@rpms);
 
 }
 elsif( ($distro eq "mandrake") && ($ver eq "9.2") ) {
 	my @rpms = qw(env-switcher
 			modules-oscar-mdk92
 			);  #skipping ed
-	remove_rpms(@rpms);
+	#remove_rpms(@rpms);
 }	
 
 #-------------------------------------------------------------

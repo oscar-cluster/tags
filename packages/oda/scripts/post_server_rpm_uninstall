@@ -21,7 +21,7 @@ if( ($distro eq "fedora") ||
 			perl-DBD-MySQL
 			perl-DBI
 			);
-	remove_rpms(@rpms);
+	#remove_rpms(@rpms);
 
 }
 elsif( ($distro eq "mandrake") && ($ver eq "9.0") ) {
@@ -34,7 +34,7 @@ elsif( ($distro eq "mandrake") && ($ver eq "9.0") ) {
 			oda
 			MySQL
 			);
-	remove_rpms(@rpms);
+	#remove_rpms(@rpms);
 
 }	
 elsif( ($distro eq "mandrake") && ($ver eq "9.1") ) {
@@ -49,7 +49,7 @@ elsif( ($distro eq "mandrake") && ($ver eq "9.1") ) {
 			MySQL-common
 			libmysql12
 			);
-	remove_rpms(@rpms);
+	#remove_rpms(@rpms);
 
 }
 elsif( ($distro eq "mandrake") && ($ver eq "9.2") ) {

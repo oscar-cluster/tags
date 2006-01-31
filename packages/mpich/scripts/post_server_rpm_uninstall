@@ -11,7 +11,7 @@
 my @rpms = qw(mpich-ch_p4-gcc-oscar
 	mpich-ch_p4-gcc-oscar-module
 	);
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)

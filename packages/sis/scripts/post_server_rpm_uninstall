@@ -29,7 +29,7 @@ my @rpms = qw(systemconfigurator
 @files = qw(/usr/share/systeminstaller/distinfo/Fedora/stages
 	);
 
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 remove_files(@files);
 
 

@@ -10,7 +10,7 @@
 
 
 my @rpms = qw(kernel_picker);
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 
 #-------------------------------------------------------------

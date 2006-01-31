@@ -11,7 +11,7 @@
 my @rpms = qw(pvm
                 pvm-modules-oscar
                 );
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 
 

@@ -20,7 +20,7 @@ my @rpms = qw(torque
 		torque-server
 		torque-gui
 		);
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 
 #-------------------------------------------------------------

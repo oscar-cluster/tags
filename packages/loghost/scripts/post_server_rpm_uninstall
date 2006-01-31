@@ -9,7 +9,7 @@
 # Must exit with 0 on success or non-zero for any failures.
 
 my @rpms = qw(loghost);
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 
 #-------------------------------------------------------------

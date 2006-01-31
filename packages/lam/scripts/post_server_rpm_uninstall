@@ -21,7 +21,7 @@ my @rpms = qw(lam-gm-oscar
 	      lam-with-gm-oscar-module
 	      libaio-oscar
 	      libaio-oscar-devel);
-remove_rpms(@rpms);
+#remove_rpms(@rpms);
 
 #-------------------------------------------------------------
 #  Input: Array of rpms to remove (short name no version)
