@@ -264,22 +264,6 @@ binfmt_misc rw 0 0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{CentOS 4.2 and Scientific Linux 4.2 Notes}
-\label{subsec:centos42sci42notes}
-
-\begin{itemize}
-
-\item Installation fails on CentOS 4.2 and Scientific Linux 4.2 due to
-a conflict between the python-elementtree rpm which is required by the
-yum package installed by default with these systems and the elementtree rpm
-provided by OSCAR's apitest package.  Therefore OSCAR does not support
-these versions of CentOS and Scientific Linux, as yum is an important
-feature of these operating systems and we can't really recommend removing it.
-
-\end{itemize}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{CentOS 4 ia64 Notes}
 \label{subsec:centos4notes}
 
@@ -419,19 +403,6 @@ Step 5, \button{Define OSCAR Clients}:
 Argument "2.121_02" isn't numeric in subroutine entry at 
 /usr/lib/perl5/site_perl/MLDBM/Serializer/Data/Dumper.pm line 5
 \end{verbatim}
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Fedora Core 2}
-\label{subsec:fc2notes}
-
-\begin{itemize}
-\item On Fedora Core 2, the following output may be ignored during Step 8,
-  \button{Test Cluster Setup}:
-  \begin{verbatim}
-    Can't find string terminator '"' anywhere before EOF at -e line 1
-  \end{verbatim}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
