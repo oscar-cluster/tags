@@ -164,10 +164,10 @@ all distributions and are required for installation.
   this happens, run the test script, \file{testing/test\_cluster},
   manually in a shell window to diagnose the problem.
 
-\item Oscar uses the atftp-server package instead of the tftp-server
-  package which ships with many distributions.  The tftp-server rpm
+\item OSCAR uses the atftp-server package instead of the tftp-server
+  package which ships with many distributions.  The tftp-server RPM 
   should be uninstalled, along with any packages which depend on it
-  before the Oscar wizard is started.  Using the standard or
+  before the OSCAR wizard is started.  Using the standard or
   ``workstation'' installation should avoid this issue.
 
 \item On x86 systems using Red Hat Enterprise Linux 4 or Fedora Core 4,
@@ -175,9 +175,10 @@ all distributions and are required for installation.
   so it is necessary to uncheck the pfilter package during Step 1 
   \button{Select OSCAR Packages To Install} or turn it off prior to 
   network booting the nodes defined in Step 5 \button{Define OSCAR Clients}.
-  To turn of pfilter, run the ``Services'' wiget found under the
+  To turn of pfilter, run the ``Services'' widget found under the
   ``System Tools'' menu, select pfilter from the list of services, and
-  click on stop.  Oscar will restart the service during a later step.
+  click on stop.  OSCAR will restart the service during a later step.
+  An alternate solution is to update the kernel on the headnode.
 
 \item In some distributions, when using cshell, the 
   /etc/profile.d/less.csh script expects to find /etc/sysconfig/i18n. If 
