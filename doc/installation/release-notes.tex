@@ -175,10 +175,9 @@ all distributions and are required for installation.
   so it is necessary to uncheck the pfilter package during Step 1 
   \button{Select OSCAR Packages To Install} or turn it off prior to 
   network booting the nodes defined in Step 5 \button{Define OSCAR Clients}.
-  To turn of pfilter, run the ``Services'' widget found under the
-  ``System Tools'' menu, select pfilter from the list of services, and
-  click on stop.  OSCAR will restart the service during a later step.
-  An alternate solution is to update the kernel on the headnode.
+  To turn off pfilter, run the following on the command prompt as root:
+  \cmd{/etc/init.d/pfilter stop}.  OSCAR will restart the service during
+  a later step.  An alternate solution is to update the kernel on the headnode.
 
 \item In some distributions, when using cshell, the 
   /etc/profile.d/less.csh script expects to find /etc/sysconfig/i18n. If 
@@ -259,7 +258,7 @@ binfmt_misc rw 0 0
 
 \item On ia64 systems using Red Hat Enterprise Linux 4, the ia32el.rpm is
   needed.  This rpm is located on the extra CDs.  Make sure you include
-  the rpms from these disks when you copy the rpms into /tftpboot/rpm.
+  the RPMs from these disks when you copy the RPMs into /tftpboot/rpm.
 
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
