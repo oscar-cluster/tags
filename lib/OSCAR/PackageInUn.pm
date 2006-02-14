@@ -23,6 +23,7 @@ use strict;
 
 use lib "$ENV{OSCAR_HOME}/lib";
 use lib "$ENV{OSCAR_HOME}/lib/Qt";
+use lib "/usr/lib/perl5/site_perl/OSCAR";
 use Carp;
 use Cwd;
 use OSCAR::Package;
@@ -1385,10 +1386,12 @@ sub is_installed
 sub uninstall_rpms_patch
 #patch fuction added 2/20/05
 #uninstall's rpms, takes the database at its word
-#works on the headnode or the compute nodes/image
+#works on the headnode or the /image
 #args:
 #$package_name = name of a valid OSCAR package
 #$type is either oscar_server or oscar_client
+#NOTE:DOES nothing on the compute nodes, only on the server and image
+#at present
 #return:
 #0 on success
 #1 on failure
@@ -1670,7 +1673,7 @@ sub run_uninstall_image
 	#get the package dir sanely
 	my $package_dir = OSCAR::Package::getOdaPackageDir($package_name);
 
-	$script_path = "$package_dir/scripts/post_client_rpm_uninstall";
+	$script_path = "$package_dir/scripts/post_image_rpm_uninstall";
 	if (-x $script_path)
 	{
 		@temp_list = split(/\//,$script_path);
