@@ -19,8 +19,8 @@
 
 # (C)opyright Bernard Li <bli@bcgsc.ca>
 
-#my @rpms = qw(ganglia-gmond);
-#remove_rpms(@rpms);
+my @rpms = qw(ganglia-gmond);
+remove_rpms(@rpms);
 
 exit 0;
 
