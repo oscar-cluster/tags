@@ -19,8 +19,8 @@ my @rpms = qw(lam-gm-oscar
 	      lam-switcher-modulefile
 	      lam-with-gm-oscar
 	      lam-with-gm-oscar-module
-	      libaio-oscar
-	      libaio-oscar-devel);
+	      libaio
+	      libaio-devel);
 remove_rpms(@rpms);
 
 #-------------------------------------------------------------
