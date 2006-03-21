@@ -1,0 +1,6 @@
+#!/bin/sh
+
+image=$1
+update-rpms --root=/var/lib/systemimager/images/$image --arch i686 \
+   --arch i386 --cache=u --go compat-gcc compat-gcc-c++ \
+   compat-libstdc++ compat-libstdc++-devel
