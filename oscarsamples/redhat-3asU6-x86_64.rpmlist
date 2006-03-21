@@ -211,7 +211,6 @@ XFree86-libs:i386
 expat:i386
 ncurses:i386
 XFree86-Mesa-libGL:i386
-compat-libstdc++-devel:i386
 zlib:i386
 gpm:i386
 libgcc:i386
