@@ -290,6 +290,21 @@ in most other Red Hat based distributions by default.
 
 \begin{itemize}
 
+\item When creating an OSCAR image on Red Hat Enterprise Linux 3 Update 6
+or 7 on x86\_64 hardware, it is necessary to manually choose the
+\file{redhat-3asU6-x86\_64.rpmlist} otherwise the build process will error
+out.  This is caused by a bug which prevents update-rpms from installing
+the i386 compat RPMs correctly.  Since update-rpms will be deprecated in
+future (5.0) releases, a workaround is discussed here.  The above mentioned
+rpmlist does not contain the i386 compat RPMs but they are installed after
+the image has been created by executing the \file{rhel3u6\_fixup} script
+located in the \file{\$OSCAR\_HOME/scripts} directory.  This will install the
+i386 compat RPMs into the image: 
+
+\begin{verbatim}
+ $OSCAR_HOME/scripts/rhel3u6_fixup <image name>
+\end{verbatim}
+
 \item The efibootmgr (from package elilo) isn't able to deal with the 
 efi variables in /sys (as in the new installation kernel). It expects 
 to find them in /proc. This means that at the end of the installation 
