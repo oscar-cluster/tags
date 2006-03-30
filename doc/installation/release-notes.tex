@@ -174,14 +174,13 @@ all distributions and are required for installation.
   before the OSCAR wizard is started.  Using the standard or
   ``workstation'' installation should avoid this issue.
 
-\item On x86 systems using Red Hat Enterprise Linux 4 or Fedora Core 4,
-  the pfilter package causes image deployment to freeze midway through,
-  so it is necessary to uncheck the pfilter package during Step 1 
-  \button{Select OSCAR Packages To Install} or turn it off prior to 
-  network booting the nodes defined in Step 5 \button{Define OSCAR Clients}.
+\item The pfilter package may cause image deployment to freeze midway through,
+  so if you are encountering this problem and have the package installed, you
+  can turn it off prior to imaging your nodes via PXE-boot and/or BootCD.
   To turn off pfilter, run the following on the command prompt as root:
   \cmd{/etc/init.d/pfilter stop}.  OSCAR will restart the service during
-  a later step.  An alternate solution is to update the kernel on the headnode.
+  a later step.  An alternate solution is to update the kernel on the headnode
+  to the latest version that is available for your installed Linux distribution.
 
 \item In some distributions, when using cshell, the 
   /etc/profile.d/less.csh script expects to find /etc/sysconfig/i18n. If 
@@ -224,9 +223,10 @@ all distributions and are required for installation.
 
 \begin{itemize}
 
-% TJN: Adding in respose to Bug#1271143
+% TJN: Adding in response to Bug#1271143
 \item On Red Hat Enterprise Linux 4 Update 2 and CentOS 4.2 systems you 
-      must remove the `tog-pegasus' RPM from the server, if installed, to 
+      must uninstall the `tog-pegasus' and `tog-pegasus-devel' RPMs from the 
+      server, if installed, to 
       avoid file ownership conflicts with `pvm' on the compute nodes and SIS 
       image.  This is due to an ordering issue with the RPM installs which 
       both create system-level users which get out of ordering during OSCAR's 
