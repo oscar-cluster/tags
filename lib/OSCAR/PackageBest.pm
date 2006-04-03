@@ -437,11 +437,17 @@ sub cache_gen {
                         # If not, add a blank entry
                         $CLINES{$_}="";
                 }
+            # 
+            # HORRIBLE HACK ALERT --  See OSCAR SF.net Bug#1463733
+            # 
+            { # TJN: Hack to eliminate the 'uninitialized var' warnings
+	      no warnings;
                 # Now see if the size is the same
                 if ($FSIZES{$_} != $CSIZES{$_}){
                         # If not, blank the entry.
                         $CLINES{$_}="";
                 }
+            } # TJN: Hack to eliminate the 'uninitialized var' warnings
         }
         foreach (keys(%CSIZES)) {
                 if (! defined $FSIZES{$_}) {
