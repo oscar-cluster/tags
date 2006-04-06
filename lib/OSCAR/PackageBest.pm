@@ -147,6 +147,7 @@ sub gen_compat_list {
         my $rpmrcfile=shift;
         my %RPM_COMPAT;
         my @list=@_;
+	my %rhash;
         my $line;
         local *COMPF;
         
@@ -163,32 +164,44 @@ sub gen_compat_list {
                         if ($tag eq "arch_compat") {
                                 $carchs=~s/^ //;
                                 $arch=~s/^ //;
-                                my ($carch,$junk)=split(/ /,$carchs);      # chuck multiples for now
-                                $RPM_COMPAT{$arch}=$carch; 
+                                #EF# my ($carch,$junk)=split(/ /,$carchs);      # chuck multiples for now
+				my @carchlist = split(/ /,$carchs);
+				foreach (@carchlist) {
+                                	$RPM_COMPAT{$arch}{$_}=1;
+				}
                         }
                 }
                 close(COMPF);
                 $list[0]=$arch; # Prime the list with the requested arch.
+		$rhash{$arch} = 0; # mark it as unresolved
         }
-        return resolve_compat_chain(\%RPM_COMPAT,@list);
+        return resolve_compat_chain(\%RPM_COMPAT,\%rhash,@list);
 }
 
 sub resolve_compat_chain {
         # Recursively generate a list based on the rpm compat data
         # Input: a ref to the rpm compat data
+	#        ref to a hash array for marking resolved and unresolved archs
         #        the compatability list so-far
         # Output: the complete compat list.
         my $RPM_COMPAT=shift;
+	my $rhash=shift;
         my @list=@_;
         # Now do the recursive stuff to build a compat chain.
-        my $last=scalar(@list)-1;
-        if (defined $$RPM_COMPAT{$list[$last]}){
-                push @list,$$RPM_COMPAT{$list[$last]};
-                return resolve_compat_chain($RPM_COMPAT,@list);
-        } else {
-                return @list;
+	for my $arch (@list) {
+		next if $rhash->{$arch}; # resolved arches
+        	if (defined $RPM_COMPAT->{$arch}){
+			for my $carch (keys %{$RPM_COMPAT->{$arch}}) {
+				if (!defined $rhash->{$carch}) {
+                			push @list,$carch;
+					$rhash->{$carch}=0;
+				}
+			}
+		}
+		$rhash->{$arch}=1;
+                return resolve_compat_chain($RPM_COMPAT,$rhash,@list);
         }
-
+        return @list;
 }
 
 sub populate_rpm_table {
@@ -437,17 +450,11 @@ sub cache_gen {
                         # If not, add a blank entry
                         $CLINES{$_}="";
                 }
-            # 
-            # HORRIBLE HACK ALERT --  See OSCAR SF.net Bug#1463733
-            # 
-            { # TJN: Hack to eliminate the 'uninitialized var' warnings
-	      no warnings;
                 # Now see if the size is the same
                 if ($FSIZES{$_} != $CSIZES{$_}){
                         # If not, blank the entry.
                         $CLINES{$_}="";
                 }
-            } # TJN: Hack to eliminate the 'uninitialized var' warnings
         }
         foreach (keys(%CSIZES)) {
                 if (! defined $FSIZES{$_}) {
@@ -480,6 +487,7 @@ sub cache_gen {
                         print CACHE "$CLINES{$_}\n";
                 }
         }
+      &verbose("Wrote new cache file.");
         close(CACHE);
         return 1;
 
