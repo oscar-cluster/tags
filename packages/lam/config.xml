@@ -213,7 +213,7 @@ visualized either at runtime or post-mortem.</description>
         <name>mdv</name>
       </distribution>
     </filter>
-
+    <pkg>gcc-gfortran</pkg>
     <pkg>lam-oscar</pkg>
     <pkg>lam-oscar-modulefile</pkg>
     <pkg>lam-switcher-modulefile</pkg>
