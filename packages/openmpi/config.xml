@@ -73,7 +73,7 @@ the bottom of this config.xml file.
   <package-specific-attributes>
     <switcher>
       <tag>mpi</tag>
-      <name>openmpi-1.1</name>
+      <name>openmpi-1.1.1</name>
     </switcher>
   </package-specific-attributes>
 
