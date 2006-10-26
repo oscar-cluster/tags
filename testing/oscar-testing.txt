@@ -1,0 +1,44 @@
+# $Id$
+# OSCAR Testing Checklist 
+
+
+[REQUIRED]
+ R1. Test system profile  [can be copy-pasted from log/console]
+    (oscar version, distro, distro_ver, arch)
+
+ R2. Test environment/startup [can be copy-pasted from log/console]
+    (command-line invocation, hostname, network interface, $OSCAR_HOME)
+
+ R3. Run Steps 1-3 (select opkgs, configure opkgs, install server opkgs)
+    report any errors/warnings
+
+ R4. Run 'Step4: Build OSCAR Client Image'
+    R4.1) Confirm the Target Distro & Package Repos values are correct
+    R4.2) Create an image using provided defaults 
+
+
+
+[OPTIONAL] 
+ O0. In all GUI panels, check that the 'Help' works during the various steps.
+
+ O1. Run 'Step0: Download OSCAR Package(s)' & install/select in 'Step1'.
+
+ O2. In 'Step1' create & use an alternate "Package Set" via "Manage Sets"
+
+ O3. In 'Step2' make changes to any/all of the opkg configurator panels,
+    e.g., Env-Switcher, Ganglia, NTP Config, SIS, Torque.
+
+ O4. In 'Step4: Build OSCAR Client Image' 
+    O4.1) create image using "Image Name" other than 'oscarimage'
+    O4.2) create image using "Package File" other than the default
+          [note, can modify deafault package files in 'oscarsamples/']
+    O4.3) create image using "Disk Partition File" other than the default
+          [note, can modify deafault partition files in 'oscarsamples/']
+    O4.4) create image using "IP Assign. Method" set to 'static'
+    O4.5) create image using "IP Assign. Method" set to 'replicant'
+    O4.6) create image using "IP Assign. Method" set to 'static'
+    O4.7) create image using "Post Install Action" set to 'reboot'
+    O4.8) create image using "Post Install Action" set to 'beep'
+    O4.9) create image using "Post Install Action" set to 'shutdown'
+
+ O5. 
