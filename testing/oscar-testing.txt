@@ -16,6 +16,42 @@
     R4.1) Confirm the Target Distro & Package Repos values are correct
     R4.2) Create an image using provided defaults 
 
+ R5. Run 'Step5: Define OSCAR Clients'
+    R5.1) Confirm 'Default Gateway' is correct (i.e., IP of headnode)
+    R5.2) Confirm 'Starting IP' is correct (i.e., same IP subnet as headnode)
+	R5.3) Confirm 'Number of Hosts' set to '0' returns an error msg
+    R5.4) Create one or more nodes (using defaults)
+
+ R6. Run 'Step6: Setup Networking'
+    R6.1) Confirm all clients from 'R5' appear in right panel
+    R6.2) Confirm 'Dynamic DHCP update' is selected
+    R6.3) Import or Collect from network MACs
+    R6.4) Run 'Enable Install Mode' using default value (e.g., rsync)
+    R6.5) Run 'Setup Network Boot'
+    R6.6) Associate MACs with each Client
+
+ R7. Build/Install Clients over network
+    R7.1) Record the 'Installation Mode' (e.g., rsync)
+    R7.2) Record the 'Boot Environment' (e.g., PXE)
+    R7.3) Open the 'Monitor Cluster Deployment', confirm operating ok
+    R7.4) Confirm nodes build/reboot properly, report any OSCAR related issues
+
+ R8. Run 'Complete Cluster Setup'
+    R8.1) Confirm all operations execute properly, report any errors/warnings
+
+ R9. Run 'Test Cluster Setup'
+    R9.1) Confirm all tests pass, report any errors/warnings
+
+ R10. Misc. Manual Tests
+    R10.1) Confirm time on cluster in synch, e.g., "date ; cexec -p date"
+
+ R11. Other -- report any errors/warnings/comments experienced during
+      this OSCAR test.  (Possibly to include new items to include in the
+	  REAUIRED or OPTIONAL areas of this file.)
+
+
+
+
 
 
 [OPTIONAL] 
@@ -40,5 +76,29 @@
     O4.7) create image using "Post Install Action" set to 'reboot'
     O4.8) create image using "Post Install Action" set to 'beep'
     O4.9) create image using "Post Install Action" set to 'shutdown'
+    O4.10) create an alternate image for testing node testing, see also: 'O5.1'
+ 
+ O5. In 'Step5: Define OSCAR Clients'
+    O5.1) create new nodes using more than one 'Image Name:', see also: 'O4.10'
+    O5.2) create a node using an alt. 'Domain Name'
+    O5.3) create a node using an alt. 'Base Name'
+    O5.4) create a node using a different range of IP addresses, e.g. 10.0.0.x
 
- O5. 
+ O6. In 'Step6: Setup Networking'
+    O6.1) Import MACs from file w/ and w/o comments in file, confirm import OK
+    O6.2) Import MACs from user input, w/ and w/o errors, confirm import OK
+    O6.3) Set 'Enable Install Mode' to 'systemimager-multicast' (flamethrower)
+	      O6.3.a: Record the type of network used in test (multicast details).
+          O6.3.b: Build a node and confirm installation/reboot.
+    O6.4) Set 'Enable Install Mode' to 'systemimager-bt' (bit torrent)
+          O6.4.a: Build a node and confirm installation/reboot.
+    O6.5) Set 'Enable UYOK' (use your own kernel), and setup boot environment 
+          O6.5.a: Build a node and confirm installation/reboot.
+          O6.5.b: Confirm this UYOK setting works with 'kernel-picker' settings
+    O6.6) Set 'Enable UYOK' (use your own kernel), and setup boot environment 
+          O6.6.a: Build a node and confirm installation/reboot.
+    O6.7) Test boot environment using 'Build AutoInstall CD'
+          O6.7.a: Build a node (from CD) and confirm installation/reboot.
+    O6.8) Test boot environment using 'Setup Network Boot'
+          O6.8.a: Build a node (from PXE) and confirm installation/reboot.
+
