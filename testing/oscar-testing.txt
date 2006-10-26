@@ -45,7 +45,15 @@
  R10. Misc. Manual Tests
     R10.1) Confirm time on cluster in synch, e.g., "date ; cexec -p date"
 
- R11. Other -- report any errors/warnings/comments experienced during
+ R11. Delete OSCAR Clients / confirm tests (R9) work, report errors/warnings
+
+ R12. Add OSCAR Clients / confirm tests (R9) work, report errors/warnings
+
+ R13. PackageInUn testing
+     R13.1) Uninstall OPkgs, confirm tests (R9) work, report errors/warnings
+     R13.2) Install OPkgs, confirm tests (R9) work, report errors/warnings
+
+ R14. Other -- report any errors/warnings/comments experienced during
       this OSCAR test.  (Possibly to include new items to include in the
 	  REAUIRED or OPTIONAL areas of this file.)
 
