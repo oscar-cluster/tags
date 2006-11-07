@@ -37,6 +37,25 @@ if (!$install_mode) {
   set_install_mode($default_install_mode);
 }
 
+#EF# hack for fixing problem of si_monitor with nothreads perl
+#    in Mandriva 2006. Workaround for bug #280
+use Config;
+if ($Config{useithreads} eq "undef") {
+    print "Detected that perl doesn't support threads!!!\n";
+    my $patch = $ENV{OSCAR_PACKAGE_HOME}."/scripts/si_monitor.patch";
+    # was the patch already applied?
+    my $is_patched = system("patch -p0 --dry-run --batch -f -s < $patch 2>/dev/null");
+    if (!$is_patched) {
+	print "Patching systemimager-server-monitord to use perl-forks.\n";
+	print "This version is less scalable than the one supporting threads.\n";
+	!system("patch -p0 -f < $patch")
+	  or croak("Faild to patch systemimager-server-monitord");
+    } else {
+	print "Patch to systemimager-server-monitord was already applied.\n";
+    }
+}
+
+
 my @services = qw(systemimager-server-rsyncd systemimager-server-monitord);
 
 foreach my $service (@services) {
