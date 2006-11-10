@@ -86,29 +86,17 @@ $define = $cwd . "/$define" if ($define !~ /$cwd/ && $define ne '');
 # First of all, enforce that the user running this script is 'root'
 croak "You must be 'root' to run this script.  Aborting" if ($< != 0 || $ENV{'USER'} ne 'root');
 
+my $adapter = shift;
+$ENV{OSCAR_HEAD_INTERNAL_INTERFACE}=$adapter;
+
 # Validate OSCAR_HOME environment variable and write /etc/profile.d files
 &oscar_home_env();
 
-# Validate the interface before we do too much...
-my %nics;
-open IN, "/sbin/ifconfig |" || die "ERROR: Unable to query NICs\n";
-while( <IN> ) {
-	next if /^\s/ || /^lo\W/;
-	chomp;
-	s/\s.*$//;
-	$nics{$_} = 1;
+# First of all, we do some system checking
+if ( system("./scripts/system-sanity") ) {
+        die "ERROR: There are basic system configuration issues (see log).\n";
 }
-close IN;
-
-my $adapter = shift;
-die "
-ERROR: A valid NIC must be specified for the cluster private network.
-
-Valid NICs: ".join( ", ", sort keys %nics )."\n\n"
-	unless $adapter && exists $nics{$adapter};
-
-# Now check to see if there is an $ENV{OSCAR_HOME} directory, and if
-# so, if we're in it.
+print "System checked\n";
 
 if (! -d $ENV{OSCAR_HOME}) {
     die("ERROR: The environment variable \$OSCAR_HOME was set, but the directory 
@@ -236,7 +224,6 @@ system("chmod 755 packages/*/scripts/*");
 
 croak "\nError: \'/tftpboot\' is gone!" if(! -d "/tftpboot" );
 
-$ENV{OSCAR_HEAD_INTERNAL_INTERFACE}=$adapter;
 
 # Run the wizard_prep script
 
