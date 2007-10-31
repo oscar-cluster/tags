@@ -49,12 +49,8 @@ package OSCAR::Database;
 # OscarFileServer
 # Networks
 # Nics
-# Packages_rpmlists
 # Packages_servicelists
 # Packages_switcher
-# Packages_conflicts
-# Packages_requires
-# Packages_provides
 # Packages_config
 # Node_Package_Status
 # Group_Nodes
@@ -125,13 +121,9 @@ $options{debug} = 1
               get_node_package_status_with_group_node
               get_node_package_status_with_node
               get_node_package_status_with_node_package
-              get_package_info_with_name
               get_packages
-              get_packages_related_with_package
-              get_packages_related_with_name
               get_packages_switcher
               get_packages_servicelists
-              get_packages_with_class
               get_pkgconfig_vars
               get_selected_group
               get_selected_group_packages
@@ -340,138 +332,11 @@ sub list_selected_packages # ($type[,$sel_group]) -> @selectedlist
     }
 }
 
-
-
-#
-# Simplify database_rpmlist_for_package_and_group
-# Usage:
-#    pkgs_of_opkg($opkg, $opkg_ver, \@errors, 
-#                 chroot    => $image_path,
-#                 arch      => $architecture,
-#                 distro    => $compat_distro_name,
-#                 distro_ver=> $compat_distrover,
-#                 group     => $host_group,
-#                 os        => $os_detect_object );
-# The selection arguments "group", "chroot" and "os" can be omitted.
-# "os" should be a reference to a hash array returned by OS_Detect.
-# "chroot" is a path which will be OS_Detect-ed,
-# "arch", "distro", "distro_ver" specify the targetted architecture,
-#     distro, etc... For ia32 the "arch" should i386 (uname -i). The
-#     distro name corresponds to the compat_distro names in OS_Detect! So
-#     use rhel, fc, mdk, etc...
-# "group" is a host group name like oscar_server
-#
-
-sub pkgs_of_opkg {
-    
-    my ( $opkg,
-     $opkg_ver,
-     $passed_errors_ref,
-     %sel ) = @_;
-
-    #my ($calling_package, $calling_filename, $line) = caller;
-
-    my ($chroot,$group,$os);
-    my ($architecture, $distribution, $distribution_version);
-    if (exists($sel{"arch"}) && exists($sel{"distro"}) &&
-	     exists($sel{"distro_ver"})) {
-        $architecture = $sel{"arch"};
-        $distribution = $sel{"distro"};
-        $distribution_version = $sel{"distro_ver"};
-
-    } else {
-        if (!exists($sel{"os"})) {
-            if (exists($sel{"chroot"})) {
-                $chroot = $sel{"chroot"};
-            } else {
-                $chroot = "/";
-            }
-	        $os = distro_detect_or_die($chroot);
-        } else {
-            $os = $sel{"os"};
-        }
-        $architecture = $os->{"arch"};
-        $distribution = $os->{"compat_distro"};
-        $distribution_version = $os->{"compat_distrover"};
-    }
-    if (exists($sel{"group"})) {
-    	$group = $sel{"group"};
-    }
-
-
-    ( my $was_connected_flag = $database_connected ) ||
-	OSCAR::Database::database_connect(undef, $passed_errors_ref ) ||
-        return undef;
-
-    # read in all the packages_rpmlists records for this opkg
-    my @packages_rpmlists_records = ();
-    my @error_strings = ();
-    my $error_strings_ref = ( defined $passed_errors_ref && 
-			      ref($passed_errors_ref) eq "ARRAY" ) ?
-			      $passed_errors_ref : \@error_strings;
-    my $number_of_records = 0;
-    # START LOCKING FOR NEST
-    my %options = ();
-    my @tables = ("Packages_rpmlists", "Packages");
-#    locking("read", \%options, \@tables, $error_strings_ref);
-    my $sql = "SELECT Packages_rpmlists.* FROM Packages_rpmlists, Packages " .
-              "WHERE Packages.id=Packages_rpmlists.package_id " .
-              "AND Packages.package='$opkg' " .
-              ($opkg_ver?"AND Packages.version='$opkg_ver'":"");
-    my $success = 
-        oda::do_query( $options_ref,
-                    $sql,
-                    \@packages_rpmlists_records,
-                    \$error_strings_ref);
-    # UNLOCKING FOR NEST
-#    unlock(\%options, $error_strings_ref);
-    if ( ! $success ) {
-	push @$error_strings_ref,
-	"Error reading packages_rpmlists records for opkg $opkg";
-	if ( defined $passed_errors_ref && ! ref($passed_errors_ref) && $passed_errors_ref ) {
-	    warn shift @$error_strings_ref while @$error_strings_ref;
-	}
-	OSCAR::Database::database_disconnect() if ! $was_connected_flag;
-	return undef;
-    }
-
-    # now build the matches list
-    my @pkgs = ();
-    foreach my $record_ref ( @packages_rpmlists_records ) {
-        if (
-            ( ! defined $$record_ref{group_arch} ||
-              $$record_ref{group_arch} eq "all" ||
-              ! defined $architecture ||
-              $$record_ref{group_arch} eq $architecture )
-            &&
-            ( ! defined $$record_ref{distro} ||
-              $$record_ref{distro} eq "all" ||
-              ! defined $distribution ||
-              $$record_ref{distro} eq $distribution )
-            &&
-            ( ! defined $$record_ref{distro_version} ||
-              $$record_ref{distro_version} eq "all" ||
-              ! defined $distribution_version ||
-              $$record_ref{distro_version} eq $distribution_version )
-            &&
-            ( ! defined $$record_ref{group_name} ||
-              $$record_ref{group_name} eq "all" ||
-              ! defined $group ||
-              $$record_ref{group_name} eq $group )
-            ) { push @pkgs, $$record_ref{rpm}; }
-    }
-        
-    OSCAR::Database::database_disconnect() if ! $was_connected_flag;
-
-    return @pkgs;
-}
-
 ######################################################################
 #
 #       Select SQL query: database subroutines
 #
 ######################################################################
-
 
 sub get_node_info_with_name {
     my ($node_name,
@@ -568,82 +433,58 @@ sub get_cluster_info_with_name {
     }
 }
 
-sub get_package_info_with_name {
-    my ($package_name,
-        $options_ref,
-        $error_strings_ref,
-        $version) = @_;
-    print "Getting information about a package...\n";
-    my @results = ();
-    my $sql = "SELECT * FROM Packages WHERE package='$package_name' ";
-    if( $version ){
-        $sql .= "AND version='$version'";
-    }
-    print "DB_DEBUG>$0:\n====> in Database::get_package_info_with_name SQL : $sql\n" if $$options_ref{debug};
-    print "DB_DEBUG>$0:\n====> in Database::get_package_info_with_name SQL : $sql\n";
-    if(do_select($sql,\@results, $options_ref, $error_strings_ref)) {
-        my $package_ref = pop @results;
-        print "Success.\n";
-        return $package_ref;
-    } else {
-        print "ERROR";
-        return undef;
-    }
-}
-
-
+#
+# This is a generalisation of all other get_packages calls. It can
+# replace all of them and make the calls more readable.
+#
+# Usage:
+#   get_packages(\@res,\%opts,$err, class => "core", distro => $distro);
+#   get_packages(\@res,\%opts,$err, version => $ver, distro => $distro);
+#   get_packages(\@res,\%opts,$err, package => $name, version => $ver,
+#                distro => $distro);
+# etc...
+# The selectors all add up and invoked with AND between them.
+#
 sub get_packages {
     my ($results_ref,
         $options_ref,
-        $error_strings_ref) = @_;
-    my $sql = "SELECT * FROM Packages";
+        $error_strings_ref,
+	%sel) = @_;
+
+    croak("ERROR: distro string is empty!") if (!$sel{distro});
+    my $sql = "SELECT * FROM Packages WHERE ";
+    if (defined($sel{class})) {
+	$sel{__class} = $sel{class};
+	delete $sel{class};
+    }
+    if (defined($sel{group})) {
+	$sel{__group} = $sel{group};
+	delete $sel{group};
+    }
+    my @where = map { "$_=\'$sel{$_}\'" } keys(%sel);
+    $sql .= join(" AND ", @where);
     print "DB_DEBUG>$0:\n====> in Database::get_packagess SQL : $sql\n" if $$options_ref{debug};
     return do_select($sql,$results_ref, $options_ref, $error_strings_ref);
 }
 
 
-sub get_packages_with_class {
-    my ($class,
-        $results_ref,
-        $options_ref,
-        $error_strings_ref) = @_;
-    my $sql = "SELECT id, package, version FROM Packages ".
-              "WHERE __class='$class' ";
-    print "DB_DEBUG>$0:\n====> in Database::get_packages_with_class SQL : $sql\n" if $$options_ref{debug};
-    return do_select($sql,$results_ref,$options_ref,$error_strings_ref);
+sub get_package_info_with_name {
+    my ($opkg, $options_ref, $errors_ref, $ver) = @_;
+
+    carp("The call of this function is deprecated! Please work on removing it!\n".
+	 "On multi-distro clusters this returns just ONE package!\n");
+    my @results;
+    my %sel = ( package => $opkg );
+    $sel{version} = $ver if ($ver);
+    &get_packages(\@results, $options_ref, $errors_ref, %sel);
+    my $p_ref;
+    if (@results) {
+	$p_ref = pop(@results);
+    }
+    return $p_ref;
 }
 
-# These two subroutines(get_packages_related_with_package and
-# get_packages_related_with_name) take care of 
-# Packages_conflicts, Packages_provides, and Packages_requires
-# tables.
-sub get_packages_related_with_package {
-    my ($part_name,
-        $package,
-        $results_ref,
-        $options_ref,
-        $error_strings_ref) = @_;
-    my $sql = "SELECT P.package, P.id, S.p2_name, S.type " .
-              "FROM Packages P, Packages_$part_name S " .
-              "WHERE P.id=S.p1_id ".
-              "AND P.package='$package'";  
-    print "DB_DEBUG>$0:\n====> in Database::get_packages_related_with_package SQL : $sql\n" if $$options_ref{debug};
-    return do_select($sql,$results_ref,$options_ref,$error_strings_ref);
-}    
 
-sub get_packages_related_with_name {
-    my ($part_name,
-        $name,
-        $results_ref,
-        $options_ref,
-        $error_strings_ref) = @_;
-    my $sql = "SELECT P.package, P.id, S.p2_name, S.type " .
-              "FROM Packages P, Packages_$part_name S " .
-              "WHERE P.id=S.p1_id ".
-              "AND S.p2_name='$name'";  
-    print "DB_DEBUG>$0:\n====> in Database::get_packages_related_with_name SQL : $sql\n" if $$options_ref{debug};
-    return do_select($sql,$results_ref,$options_ref,$error_strings_ref);
-}    
 
 
 sub get_packages_switcher {
@@ -702,7 +543,7 @@ sub get_selected_group_packages {
         $flag) = @_;
     $group = get_selected_group($options_ref,$error_strings_ref) if(!$group);    
     $flag = 1 if(! $flag);
-    my $sql = "SELECT Packages.id, Packages.package, Packages.name, Packages.version " .
+    my $sql = "SELECT Packages.id, Packages.package, Packages.version " .
               "From Packages, Group_Packages, Groups " .
               "WHERE Packages.id=Group_Packages.package_id ".
               "AND Group_Packages.group_name=Groups.name ".
@@ -1165,14 +1006,21 @@ sub delete_groups {
     }    
     return 1;
 }
+
 sub delete_package {
-    my ($package_name,
-        $options_ref,
+    my ($options_ref,
         $error_strings_ref,
-        $package_version) = @_;
-    my $sql = "DELETE FROM Packages WHERE package='$package_name' ";
-    print "DB_DEBUG>$0:\n====> in Database::delete_package SQL : $sql\n" if $$options_ref{debug};
-    $sql .= ($package_version?"AND version='$package_version'":"");
+	%sel) = @_;
+
+    my $sql = "DELETE FROM Packages WHERE ";
+    my @where = map { "$_=\'$sel{$_}\'" } keys(%sel);
+    if (!scalar(@where)) {
+	carp("WARNING: no selection criteria passed to delete_package");
+	return undef;
+    }
+    $sql .= join(" AND ", @where);
+    print "DB_DEBUG>$0:\n====> in Database::delete_package SQL : $sql\n"
+	if $$options_ref{debug};
     return do_update($sql,"Packages", $options_ref, $error_strings_ref);
 }    
 
@@ -1206,9 +1054,8 @@ sub delete_node_packages {
 # This function includes given OSCAR Packages into the database                #
 ################################################################################
 sub insert_packages {
-    my ($passed_ref, $table,
-        $name,$path,$table_fields_ref,
-        $passed_options_ref,$passed_error_strings_ref) = @_;
+    my ($passed_ref, $table, $table_fields_ref,
+        $passed_options_ref, $passed_error_strings_ref) = @_;
 
     # take care of faking any non-passed input parameters, and
     # set any options to their default values if not already set
@@ -1218,15 +1065,12 @@ sub insert_packages {
     my $sql_values = " VALUES ( ";
     my $flag = 0;
     my $comma = "";
-    $sql .= "path, package, ";
-    $sql_values .= "'$path', '$name', ";
     foreach my $key (keys %$passed_ref){
         # If a field name is "group", "__" should be added
         # in front of $key to avoid the conflict of reserved keys
 
-        $key = ( $key eq "maintainer" || $key eq "packager"?$key . "_name":$key );
-        
-        if( $$table_fields_ref{$table}->{$key} && $key ne "package-specific-attribute"){
+        if ($$table_fields_ref{$table}->{$key}
+	    && $key ne "package-specific-attribute") {
             $key = ( $key eq "group"?"__$key":$key);
             $key = ( $key eq "class"?"__$key":$key);
             $comma = ", " if $flag;
@@ -1235,35 +1079,9 @@ sub insert_packages {
             $key = ( $key eq "__group"?"group":$key);
             $key = ( $key eq "__class"?"class":$key);
             my $value;
-            if( $key eq "version" ){
-                my $ver_ref = $passed_ref->{$key};
-                $value = "$ver_ref->{major}.$ver_ref->{minor}" .
-                    ($ver_ref->{subversion}?".$ver_ref->{subversion}":"") .
-                    "-$ver_ref->{release}";
-                $value =~ s#'#\\'#g;    
-                my @pkg_versions=( "major","minor","subversion",
-                                    "release", "epoch" );
-                $value = "$value', "; 
-                foreach my $ver (@pkg_versions){
-                    my $tmp_value = $ver_ref->{$ver};
-                    if(! $tmp_value ){
-                        $tmp_value = "";
-                    }else{
-                        $tmp_value =~ s#'#\\'#g;
-                    }
-                    $value .=
-                        ( $ver ne "epoch"?"'$tmp_value', ":"'$tmp_value");
-                    $sql .= ", version_$ver";
-                }    
-            }elsif ( $key eq "maintainer_name" || $key eq "packager_name" ){
-                $key = ($key eq "maintainer_name"?"maintainer":"packager");
-                $sql .= ", $key" .  "_email";
-                $value = $passed_ref->{$key}->{name} . "', '"
-                        . $passed_ref->{$key}->{email}; 
-            }else{
-                $value = ($passed_ref->{$key}?trimwhitespace($passed_ref->{$key}):""); 
-                $value =~ s#'#\\'#g;
-            }
+	    $value = ($passed_ref->{$key} ?
+		      trimwhitespace($passed_ref->{$key}) : ""); 
+	    $value =~ s#'#\\'#g;
             $sql_values .= "$comma '$value'";
         }
     }
@@ -1273,7 +1091,9 @@ sub insert_packages {
     print "$debug_msg" if $$options_ref{debug};
     push @$error_strings_ref, $debug_msg;
 
-    print "DB_DEBUG>$0:\n====> in Database::insert_packages: Inserting package($name) into Packages\n" if $$options_ref{verbose};
+    print "DB_DEBUG>$0:\n====> in Database::insert_packages: ".
+	"Inserting package(".$passed_ref->{package}.") into Packages\n"
+	if $$options_ref{verbose};
     my $success = oda::do_sql_command($options_ref,
             $sql,
             "INSERT Table into $table",
@@ -1282,94 +1102,6 @@ sub insert_packages {
     $error_strings_ref = \@error_strings;
     return  $success;
 }
-
-sub insert_pkg_rpmlist {
-    my ($passed_ref,$table,$package_id,$options_ref,$error_strings_ref) = @_;
-    my $sql = "INSERT INTO $table ( ";
-    my $sql_values = " VALUES ( ";
-    
-    my $group_name = "";
-    my $group_arch = "";
-    my $distro = "";
-    my $distro_version = "";
-    $sql .= "package_id";
-    $sql_values .= "'$package_id'";
-
-    my $filter;
-    if( ref($passed_ref) eq "ARRAY") {
-        foreach my $ref (@$passed_ref){
-            $filter = $ref->{filter};
-            if ( ref($ref->{filter}) eq "ARRAY" ){
-                foreach my $each_filter (@$filter){
-                    insert_pkg_rpmlist_helper($sql, $sql_values, $each_filter, $ref, $table);
-                }
-            }else{
-                insert_pkg_rpmlist_helper($sql, $sql_values, $filter, $ref, $table);
-            }
-        }
-    }else{
-        $filter = $passed_ref->{filter};
-        if ( ref($passed_ref->{filter}) eq "ARRAY" ){
-            foreach my $each_filter (@$filter){
-                insert_pkg_rpmlist_helper($sql, $sql_values, $each_filter, $passed_ref, $table);
-            }
-        }else{
-            insert_pkg_rpmlist_helper($sql, $sql_values, $filter, $passed_ref, $table,$options_ref,$error_strings_ref);
-        }
-    }   
-}
-
-sub insert_pkg_rpmlist_helper {
-    my ($sql, $sql_values, $filter, $passed_ref, $table,$options_ref,$error_strings_ref) = @_;
-    my $group_name = ($filter->{group}?$filter->{group}:"all");
-    my $group_arch = ($filter->{architecture}?$filter->{architecture}:"all");
-    my $distro = ($filter->{distribution}->{name}?$filter->{distribution}->{name}:"all");
-    my $distro_version = ($filter->{distribution}->{version}?$filter->{distribution}->{version}:"all");
-    my $inner_sql = "$sql, group_name, group_arch, distro, distro_version"; 
-    my $inner_sql_values = "$sql_values, '$group_name','$group_arch','$distro','$distro_version'"; 
-    insert_rpms( $inner_sql, $inner_sql_values, $passed_ref, $table,$options_ref,$error_strings_ref);
-}
-
-sub insert_rpms {
-    my ($sql, $sql_values, $passed_ref, $table, $options_ref, $error_strings_ref) = @_;
-    my $rpm;
-    print "DB_DEBUG>$0:\n====> in Database::insert_rpms : Inserting the entries of Packages_rpmlists\n"
-        if $$options_ref{verbose};
-    if (ref($passed_ref) eq "ARRAY"){
-        foreach my $ref (@$passed_ref){
-            $rpm = $ref->{pkg};
-            if ( ref($rpm) eq "ARRAY" ){
-                foreach my $each_rpm (@$rpm){
-                    my $inner_sql_values = "$sql_values, '$each_rpm' ";
-                    my $inner_sql = "$sql, rpm ) $inner_sql_values)";
-                    print "DB_DEBUG>$0:\n====> in Database::insert_rpms SQL : $inner_sql\n" if $$options_ref{debug};
-                    do_insert($inner_sql, $table,$options_ref,$error_strings_ref);
-                }
-            }else{
-                my $inner_sql_values = "$sql_values, '". trimwhitespace($rpm)."' ";
-                my $inner_sql .= "$sql, rpm ) $inner_sql_values )\n";
-                print "DB_DEBUG>$0:\n====> in Database::insert_rpms SQL : $inner_sql\n" if $$options_ref{debug};
-                do_insert($inner_sql, $table,$options_ref,$error_strings_ref);
-            }
-        }    
-    }else{
-        $rpm = $passed_ref->{pkg};
-        if ( ref($rpm) eq "ARRAY" ){
-            foreach my $each_rpm (@$rpm){
-                my $inner_sql_values = "$sql_values, '$each_rpm' ";
-                my $inner_sql = "$sql, rpm ) $inner_sql_values)";
-                print "DB_DEBUG>$0:\n====> in Database::insert_rpms SQL : $inner_sql\n" if $$options_ref{debug};
-                do_insert($inner_sql, $table,$options_ref,$error_strings_ref);
-            }
-        }else{
-            my $inner_sql_values = "$sql_values, '". trimwhitespace($rpm)."' ";
-            my $inner_sql .= "$sql, rpm ) $inner_sql_values )\n";
-            print "DB_DEBUG>$0:\n====> in Database::insert_rpms SQL : $inner_sql\n" if $$options_ref{debug};
-            do_insert($inner_sql, $table,$options_ref,$error_strings_ref);
-        }
-    }    
-}
-
 
 # links a node nic to a network in the database
 #
@@ -1785,21 +1517,19 @@ sub update_image_package_status {
 
 
 sub update_packages {
-    my ($passed_ref, $table,$package_id,
-        $name,$path,$table_fields_ref,
-        $options_ref,$error_strings_ref) = @_;
+    my ($passed_ref, $table, $package_id, $table_fields_ref,
+        $options_ref, $error_strings_ref) = @_;
     my $sql = "UPDATE $table SET ";
     my $sql_values = " VALUES ( ";
     my $flag = 0;
     my $comma = "";
-    $sql .= "path='$path', package='$name', ";
     foreach my $key (keys %$passed_ref){
         # If a field name is "group", "__" should be added
         # in front of $key to avoid the conflict of reserved keys
 
-        $key = ( $key eq "maintainer" || $key eq "packager"?$key . "_name":$key );
-        
-        if( $$table_fields_ref{$table}->{$key} && $key ne "package-specific-attribute"){
+        if ($$table_fields_ref{$table}->{$key}
+	    && $key ne "package-specific-attribute") {
+
             $comma = ", " if $flag;
             $key = ( $key eq "group"?"__$key":$key);
             $key = ( $key eq "class"?"__$key":$key);
@@ -1808,35 +1538,9 @@ sub update_packages {
             $key = ( $key eq "__group"?"group":$key);
             $key = ( $key eq "__class"?"class":$key);
             my $value;
-            if( $key eq "version" ){
-                my $ver_ref = $passed_ref->{$key};
-                $value = "$ver_ref->{major}.$ver_ref->{minor}" .
-                    ($ver_ref->{subversion}?".$ver_ref->{subversion}":"") .
-                    "-$ver_ref->{release}";
-                $value =~ s#'#\\'#g;    
-                my @pkg_versions=( "major","minor","subversion",
-                                    "release", "epoch" );
-                $sql .="'$value', "; 
-                foreach my $ver (@pkg_versions){
-                    my $tmp_value = $ver_ref->{$ver};
-                    if(! $tmp_value ){
-                        $tmp_value = "";
-                    }else{
-                        $tmp_value =~ s#'#\\'#g;
-                    }
-                    $value =
-                        ( $ver ne "epoch"?"'$tmp_value', ":"'$tmp_value'");
-                    $sql .= " version_$ver=$value";
-                }    
-            }elsif ( $key eq "maintainer_name" || $key eq "packager_name" ){
-                $key = ($key eq "maintainer_name"?"maintainer":"packager");
-                $sql .= "'". $passed_ref->{$key}->{name}. "', $key" .
-                     "_email='". $passed_ref->{$key}->{email} . "'";
-            }else{
-                $value = ($passed_ref->{$key}?trimwhitespace($passed_ref->{$key}):""); 
-                $value =~ s#'#\\'#g;
-                $sql .= "'$value'";
-            }
+	    $value = ($passed_ref->{$key}?trimwhitespace($passed_ref->{$key}):""); 
+	    $value =~ s#'#\\'#g;
+	    $sql .= "'$value'";
         }
     }
     $sql .= " WHERE id=$package_id\n";
