@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS Package_status(
 -- Packages
 CREATE TABLE IF NOT EXISTS Packages(
     id  integer   auto_increment not null unique primary key,
-    package VARCHAR(100), not null,
+    package VARCHAR(100)    not null,
     version  VARCHAR(100)   not null,
     __class VARCHAR(100),
     __group VARCHAR(100),
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS Packages(
     packager VARCHAR(250),
     url VARCHAR(100),
     vendor VARCHAR(100),
-    description  text,
+    description  text
 )TYPE=INNODB;
 
 -- Images
