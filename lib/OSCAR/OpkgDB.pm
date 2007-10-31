@@ -30,6 +30,7 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 use OSCAR::OCA::OS_Detect;
 use OSCAR::PackagePath;
+use Data::Dumper;
 use Carp;
 
 @EXPORT = qw(
@@ -108,16 +109,18 @@ sub opkg_list_available {
 #   key: opkg name
 #   value: reference to subhash
 #          subhash:
-#              {name}        : short package name
+#              {package}     : short package name
 #              {version}     : package version (and release)
 #              {package}     : long package name (Summary)
 #              {packager}    : packager info
 #              {description} : package description
 #              {class}       : class info (multiplexed into group info)
+#              {group}       : group info from native pkg mgr
+#              {distro}      : compat distro string (e.g. rhel-5-i386)
 ####
 sub opkg_hash_available {
     my %scope = @_;
-    my %o;
+    my (%o, $os);
 
     # filter class?
     my $class_filter;
@@ -125,14 +128,17 @@ sub opkg_hash_available {
 	$class_filter = $scope{class};
 	delete $scope{class};
     }
+    $os = $scope{os} if (defined($scope{os}));
 
-    my $os = OSCAR::OCA::OS_Detect::open(%scope);
+    $os = OSCAR::OCA::OS_Detect::open(%scope) if !$os;
     return () if !$os;
 
-    my $repo = make_repostring($os);
+    my $repo = &make_repostring($os);
+    my $dist = &os_cdistro_string($os);
     my $pkg = $os->{pkg};
     my $isdesc = 1;
     my ($name, $rel, $ver, $packager, $summary, $desc, $class, $conflicts);
+    my $group;
     if ($pkg eq "rpm") {
 	my $cmd="/usr/bin/yume $repo --repoquery --info opkg-*-server";
 	print "Running $cmd" if $verbose;
@@ -142,12 +148,14 @@ sub opkg_hash_available {
 	    if (/^Name\s*: (.*)$/) {
 		if ($name) {
 		    $o{$name} = {
-			name => $name,
+			"package" => $name,
 			version => "$ver-$rel",
 			summary => $summary,
 			packager => $packager,
 			description => $desc,
 			class => $class,
+			group => $group,
+			distro => $dist,
 		    };
 		}
 		$1 =~ /^opkg-(.*)-server$/;
@@ -162,8 +170,12 @@ sub opkg_hash_available {
 	    } elsif (/^Packager\s*:\s*(.*)\s*$/) {
 		$packager = $1;
 	    } elsif (/^Group\s*:\s*(.*)\s*$/) {
-		$class = $1;
-		$class =~ s/^[^:]*://g;
+		$group = $1;
+		$class = "";
+		if ($group =~ m/^([^:]*):([^:]*)/) {
+		    $group = $1;
+		    $class = $2;
+		}
 	    } elsif (/^Summary\s*:\s*(.*), server part\s*$/) {
 		$summary = $1;
 	    } elsif (/^Description\s*:/) {
@@ -175,12 +187,14 @@ sub opkg_hash_available {
 	close CMD;
 	if ($name) {
 	    $o{$name} = {
-		name => $name,
+		"package" => $name,
 		version => "$ver-$rel",
 		summary => $summary,
 		packager => $packager,
 		description => $desc,
 		class => $class,
+		group => $group,
+		distro => $dist,
 	    };
 	}
     } elsif ($pkg eq "deb") {
@@ -200,8 +214,12 @@ sub opkg_hash_available {
 	    } elsif (/^Version: (.*)$/) {
 		$ver = $1;
 	    } elsif (/^Section: (.*)$/) {
-		$class = $1;
-		$class =~ s/^[^:]*://g;
+		$group = $1;
+		$class = "";
+		if ($group =~ m/^([^:]*):([^:]*)/) {
+		    $group = $1;
+		    $class = $2;
+		}
 	    } elsif (/^Maintainer: (.*)$/) {
 		$packager = $1;
 	    } elsif (/^Conflicts: (.*)$/) {
@@ -212,12 +230,14 @@ sub opkg_hash_available {
 	    } elsif (/^Bugs:/) {
 		if ($name) {
 		    $o{$name} = {
-			name => $name,
+			"package" => $name,
 			version => $ver,
 			summary => $summary,
 			packager => $packager,
 			description => $desc,
 			class => $class,
+			group => $group,
+			distro => $dist,
 			conflicts => $conflicts,
 		    };
 		}
@@ -232,12 +252,14 @@ sub opkg_hash_available {
 	close CMD;
 	if ($name) {
 	    $o{$name} = {
-		name => $name,
+		"package" => $name,
 		version => $ver,
 		summary => $summary,
 		packager => $packager,
 		description => $desc,
 		class => $class,
+		group => $group,
+		distro => $dist,
 		conflicts => $conflicts,
 	    };
 	}
@@ -367,6 +389,8 @@ sub opkg_list_installed {
 #              
 ####
 sub opkg_hash_installed {
+    my (%scope) = @_;
+
     my %olist = &opkg_list_installed("api");
     my %opkgs;
 
@@ -391,11 +415,11 @@ sub opkg_hash_installed {
     # go through result and apply the class filter, if needed
     if ($class_filter) {
 	print "Filtering for class = \"$class_filter\"\n" if $verbose;
-	for my $p (keys(%o)) {
-	    my %h = %{$o{$p}};
+	for my $p (keys(%opkgs)) {
+	    my %h = %{$opkgs{$p}};
 	    print "$p -> class: $h{class}" if $verbose;
 	    if ($h{class} ne $class_filter) {
-		delete $o{p};
+		delete $opkgs{$p};
 		print " ... deleted" if $verbose;
 	    }
 	    print "\n" if $verbose;
