@@ -469,7 +469,7 @@ sub opkg_localdeb_info {
     # summary and description, the two are in "Description": the first line
     # is the summary and the other lines are the full description.
     my $description = `dpkg-query -W -f='\${Description}' $p`;
-    my $summary = split("\n", $description);
+    my @summary = split("\n", $description);
     $h{version} = `dpkg-query -W -f='\${VERSION}' $p`;
     $h{package} = $summary[0];
     $h{packager} = `dpkg-query -W -f='\${Maintainer}' $p`;
