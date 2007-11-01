@@ -124,9 +124,12 @@ sub opkg_hash_available {
 
     # filter class?
     my $class_filter;
+    print "opkg_hash_available: scope =\n".Dumper(%scope) if $verbose;
     if (defined($scope{class})) {
 	$class_filter = $scope{class};
 	delete $scope{class};
+	print "opkg_hash_available: class_filter = $class_filter\n"
+	    if $verbose;
     }
     $os = $scope{os} if (defined($scope{os}));
 
@@ -274,7 +277,7 @@ sub opkg_hash_available {
 	    my %h = %{$o{$p}};
 	    print "$p -> class: $h{class}" if $verbose;
 	    if ($h{class} ne $class_filter) {
-		delete $o{p};
+		delete $o{$p};
 		print " ... deleted" if $verbose;
 	    }
 	    print "\n" if $verbose;
