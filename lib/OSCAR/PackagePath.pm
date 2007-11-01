@@ -44,7 +44,9 @@ use Carp;
 	     pkg_extension
 	     pkg_separator
 	     distro_detect_or_die
-	     list_distro_pools);
+	     list_distro_pools
+	     @PKG_SOURCE_LOCATIONS
+	     );
 
 # The possible places where packages may live.  
 

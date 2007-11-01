@@ -198,9 +198,9 @@ sub getPackagesInPackageSet
     # values are "1"s for those packages.
     my @packagesInSet;
     my $packagesInSet;
-#  my $success = OSCAR::Database::get_selected_group_packages(
-#    \@packagesInSet1,\%options,\@errors,$packageSet);
-    @packagesInSet = get_list_opkgs_in_package_set($packageSet);
+    my $success = OSCAR::Database::get_selected_group_packages(
+		      \@packagesInSet1,\%options,\@errors,$packageSet);
+    #@packagesInSet = get_list_opkgs_in_package_set($packageSet);
 
 
     foreach my $pack_ref (@packagesInSet) {
@@ -543,7 +543,7 @@ sub checkboxChangedForSelector
           # Add in any 'core' packages which are selected since they are
           # always required and should never have any conflicts (i.e.
           # become unselected).
-          foreach my $pkg (keys %{ $allPackages })
+          foreach my $pkg (keys %{$allPackages})
 #          foreach my $pkg (@opkgs)
             {
               $reqhash->{$pkg} = 1 if 

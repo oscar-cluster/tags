@@ -121,6 +121,7 @@ $options{debug} = 1
               get_node_package_status_with_group_node
               get_node_package_status_with_node
               get_node_package_status_with_node_package
+	      get_package_info_with_name
               get_packages
               get_packages_switcher
               get_packages_servicelists
@@ -471,10 +472,13 @@ sub get_packages {
 sub get_package_info_with_name {
     my ($opkg, $options_ref, $errors_ref, $ver) = @_;
 
-    carp("The call of this function is deprecated! Please work on removing it!\n".
-	 "On multi-distro clusters this returns just ONE package!\n");
+    print "WARNING: The call of get_package_info_with_name is deprecated!\n";
+    print "         Please work on removing it!\n".
+	"On multi-distro clusters the result may be wrong!\n";
+    my $os = &OSCAR::PackagePath::distro_detect_or_die();
+    my $dist = &OSCAR::PackagePath::os_cdistro_string($os);
     my @results;
-    my %sel = ( package => $opkg );
+    my %sel = ( package => $opkg , distro => $dist );
     $sel{version} = $ver if ($ver);
     &get_packages(\@results, $options_ref, $errors_ref, %sel);
     my $p_ref;

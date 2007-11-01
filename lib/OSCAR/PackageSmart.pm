@@ -80,7 +80,7 @@ sub prepare_pools {
         $format = "";
         print "Analysing $pool\n" if $verbose;
         # Online repo
-        if ( index($pool, "http", 0) >= 0) {
+        if ($pool =~ m,^(http|https|ftp|mirror):,) {
             print "This is an online repository ($pool)\n" if $verbose;
             my $url;
             if ( $pool =~ /\/$/ ) {
@@ -104,7 +104,8 @@ sub prepare_pools {
                 die ("ERROR: Mix of RPM and Deb pools ($prev_format vs. $2),".
                       " we do not know how to deal with that!");
             }
-        } elsif (index($pool, "/tftpboot/", 0) == 0) {
+        } elsif ($pool =~ m,^(file:|/),) {
+	    $pool =~ s,^file:,,;
             # Local pools
             print "$pool is a local pool ($distros, $binaries)\n" if $verbose;
             # we then check pools for common RPMs and common debs

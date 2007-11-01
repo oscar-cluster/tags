@@ -131,9 +131,8 @@ sub getAllPackages # -> $allPackages
   return $allPackages if ($allPackages);
 
   # First, get information on all packages in the local OSCAR packages dir
-  my @requested = ("name","package","__class","description",
-                   "version","path",
-                   "packager_name","packager_email"
+  my @requested = ("package","__class","description",
+                   "version", "packager"
                    # "filter_architecture","filter_distribution",
                    # "filter_distribution_version"
                   );
