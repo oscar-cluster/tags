@@ -204,8 +204,9 @@ sub getPackagesInPackageSet
 
 
     foreach my $pack_ref (@packagesInSet) {
-        $packagesInSet{$pack_ref} = 1;
+        $packagesInSet{$$pack_ref{package}} = 1;
     }
+    print "========\packagesInSet\n=======\n".Dumper(%packagesInSet);
 
     return \%packagesInSet;
 }
