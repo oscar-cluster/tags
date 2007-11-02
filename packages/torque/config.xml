@@ -24,7 +24,6 @@
       <pkg>torque-client</pkg>
       <pkg>torque-modulefile</pkg>
     </requires>
-    <conflicts/>
   </serverDeps>
   <clientDeps>
     <requires>
@@ -33,7 +32,6 @@
       <pkg>torque-client</pkg>
       <pkg>torque-modulefile</pkg>
     </requires>
-    <conflicts/>
   </clientDeps>
   <apiDeps/>
   <changelog>
