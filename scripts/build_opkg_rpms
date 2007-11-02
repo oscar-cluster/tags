@@ -60,6 +60,10 @@ sub opkgc_rpms {
 			or die "Could not move $file to $tdir";
 		    print "Created ".$tdir."/".basename($file)."\n";
 		}
+	    } elsif (/^\[ERROR\] (.*)$/) {
+		print "ERROR: $1";
+		system("xml val --err --xsd /usr/share/opkgc/opkg.xsd $dir/config.xml");
+		die;
 	    }
 	}
 	close IN;
