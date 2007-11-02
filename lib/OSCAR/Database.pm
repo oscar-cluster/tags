@@ -472,11 +472,45 @@ sub get_packages {
 sub get_package_info_with_name {
     my ($opkg, $options_ref, $errors_ref, $ver) = @_;
 
-    print "WARNING: The call of get_package_info_with_name is deprecated!\n";
-    print "         Please work on removing it!\n".
+    carp "WARNING: The call of get_package_info_with_name is deprecated!\n".
+	"         Please work on removing it!\n".
 	"On multi-distro clusters the result may be wrong!\n";
     my $os = &OSCAR::PackagePath::distro_detect_or_die();
     my $dist = &OSCAR::PackagePath::os_cdistro_string($os);
+    my @results;
+    my %sel = ( package => $opkg , distro => $dist );
+    $sel{version} = $ver if ($ver);
+    &get_packages(\@results, $options_ref, $errors_ref, %sel);
+    my $p_ref;
+    if (@results) {
+	$p_ref = pop(@results);
+    }
+    return $p_ref;
+}
+
+#
+# get_one_package:
+#    Return one package hash reference.
+#    Arguments: hash-like selector, e.g. (field => value) will match
+#               the first record where the field has the expected value.
+#
+#    Example:
+#             get_one_package(\%opts, \@errs, package => name);
+#
+# On multi-distro setups this can select multiple packages (one for
+# each distro). If a distro => $distro_string seletor is missing, the
+# local node's distro is replaced.
+#
+# Use this function as replacement for get_package_info_with_name. It should
+# be used for finding the places where a distro-selector is really needed.
+#
+sub get_one_package {
+    my ($options_ref, $errors_ref, %scope) = @_;
+
+    if (!exists($scope{distro})) {
+	my $os = &OSCAR::PackagePath::distro_detect_or_die();
+	$scope{distro} = &OSCAR::PackagePath::os_cdistro_string($os);
+    }
     my @results;
     my %sel = ( package => $opkg , distro => $dist );
     $sel{version} = $ver if ($ver);
@@ -545,7 +579,7 @@ sub get_selected_group_packages {
         $error_strings_ref,
         $group,
         $flag) = @_;
-    $group = get_selected_group($options_ref,$error_strings_ref) if(!$group);    
+    $group = get_selected_group($options_ref,$error_strings_ref) if(!$group);
     $flag = 1 if(! $flag);
     my $sql = "SELECT Packages.id, Packages.package, Packages.version " .
               "From Packages, Group_Packages, Groups " .
@@ -554,7 +588,8 @@ sub get_selected_group_packages {
               "AND Groups.name='$group' ".
               "AND Groups.selected=1 ".
               "AND Group_Packages.selected=$flag";
-    print "DB_DEBUG>$0:\n====> in Database::get_selected_group_packages SQL : $sql\n" if $$options_ref{debug};
+    print "DB_DEBUG>$0:\n====> in Database::get_selected_group_packages ".
+	"SQL : $sql\n" if $$options_ref{debug};
     return do_select($sql,$results_ref,$options_ref,$error_strings_ref);
 }
 
@@ -973,6 +1008,12 @@ sub delete_group_node {
     return do_update($sql,"Group_Nodes", $options_ref, $error_strings_ref);
 }
 
+# Deselect an opkg from a group.
+# Somewhat misleading name...
+#
+# On multi-distro setups the problem is that the group isn't assigned a
+# distro currently, so we don't know which package_id we should really
+# delete. Works on single distro setups.
 sub delete_group_packages {
     my ($group,
         $opkg,
@@ -1822,7 +1863,8 @@ sub set_pkgconfig_var {
     my $opkg = $val{opkg};
     delete $val{opkg};
 
-    my $pref = get_package_info_with_name($opkg,\%options,\@errors);
+    my $pref = &get_one_package(\%options,\@errors, package => $opkg);
+
     croak("No package $opkg found!") if (!$pref);
     my $opkg_id = $pref->{id};
     $val{package_id} = $opkg_id;

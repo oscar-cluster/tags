@@ -147,16 +147,15 @@ sub getAllPackages # -> $allPackages
   #EF# OSCAR::Database::get_packages(\@packages);
   #EF# foreach my $pack_ref (@packages){
   foreach my $pack_ref (values(%opkgs)){
-    my $pack = $$pack_ref{package};
-    foreach my $key (keys %$pack_ref){
-        $allPackages->{$pack}{$key} = $$pack_ref{$key};
-    }    
+      my $pack = $$pack_ref{package};
+      foreach my $key (keys %$pack_ref){
+	  $allPackages->{$pack}{$key} = $$pack_ref{$key};
+      }
   }
 
   my $version;
   my $href;
-  foreach my $pack (keys %{ $allPackages })
-    {
+  foreach my $pack (keys %{ $allPackages }) {
       undef $href;
       $allPackages->{$pack}{location} = "OSCAR";
 
@@ -201,19 +200,17 @@ sub getSubField
   my($package,$field) = @_;
   my($rethash);
 
-  if ($package && $field && (defined $allPackages->{$package}{$field}))
-    {
-      foreach my $href (@{ $allPackages->{$package}{$field} } )
-        { # If the 'type' field is undefined OR defined but empty, 
+  if ($package && $field && (defined $allPackages->{$package}{$field})) {
+      foreach my $href (@{ $allPackages->{$package}{$field} } ) {
+	  # If the 'type' field is undefined OR defined but empty, 
           # assume that 'type' is 'package'.
-          if ( (!defined $href->{type}) ||
-               ((defined $href->{type}) && ($href->{type} eq '')) ||
-               ((defined $href->{type}) && ($href->{type} eq 'package')) )
-            {
+          if ((!defined $href->{type}) ||
+	      ((defined $href->{type}) && ($href->{type} eq '')) ||
+	      ((defined $href->{type}) && ($href->{type} eq 'package'))) {
               $rethash->{$href->{name}} = 1 if (defined $href->{name});
-            }
-        }
-    }
+	  }
+      }
+  }
 
   return $rethash;
 }

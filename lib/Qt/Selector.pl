@@ -566,7 +566,6 @@ sub rowSelectionChanged
 
   # Find the "short name" of the package in that row
   my $package = packageTable->text($row,0);
-  $package = "opkg-" . $package . "-server";
   my $allPackages = SelectorUtils::getAllPackages();
 
   # Update the four infomrational text boxes
@@ -576,15 +575,9 @@ sub rowSelectionChanged
   updateTextBox("conflicts",$package);
 
   # Update the packager names / emails
-  # We read in the names/emails as a single string, but there might have
-  # been more than one packager.  If so , the delimiter is '","'.
-  my @names = split /\",\"/, $allPackages->{$package}{packager};
-  my $packagerStr = "";
-  for (my $arraypos = 0; $arraypos <= $#names; $arraypos++)
-    {
-      $packagerStr .= $names[$arraypos];
-      $packagerStr .= "\n";
-    }
+  my $packagerStr = $allPackages->{$package}{packager};
+  $packagerStr =~ s:,\s*:\n:g;
+  $packagerStr .= "\n";
   packagerTextBox->setText($packagerStr);
 
 }

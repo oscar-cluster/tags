@@ -23,8 +23,8 @@
 # Copyright (c) 2005-2006 Bernard Li <bli@bcgsc.ca>
 #                         All rights reserved.
 #
-# Copyright (c) 2006 Erich Focht <efocht@hpce.nec.com>
-#                    All rights reserved.
+# Copyright (c) 2006-2007 Erich Focht <efocht@hpce.nec.com>
+#                         All rights reserved.
 # 
 # This file is part of the OSCAR software package.  For license
 # information, see the COPYING file in the top level directory of the
@@ -36,7 +36,8 @@
 use strict;
 use Tk;
 use Tk::ROText;
-use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig","/usr/lib/systeminstaller","/usr/lib/systemimager/perl";
+use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig",
+    "/usr/lib/systeminstaller","/usr/lib/systemimager/perl";
 use POSIX;
 use OSCAR::Help;
 use OSCAR::Network;
@@ -229,7 +230,7 @@ my $step_status = get_wizard_status(\%options,\@errors);
 my $manage_status = get_manage_status(\%options,\@errors);
 
 oscar_button($window, $step_string,
-             "Download Additional OSCAR Packages...",
+             "Manage OSCAR Repositories...",
              [sub { my $olddir = Cwd::cwd();
 		    chdir($ENV{OSCAR_HOME} . '/lib/Qt');
 		    system('/usr/bin/perl Opder.pl');
