@@ -202,11 +202,9 @@ sub getPackagesInPackageSet
 		      \@packagesInSet,\%options,\@errors,$packageSet);
     #@packagesInSet = get_list_opkgs_in_package_set($packageSet);
 
-
     foreach my $pack_ref (@packagesInSet) {
         $packagesInSet{$$pack_ref{package}} = 1;
     }
-    print "========\packagesInSet\n=======\n".Dumper(%packagesInSet);
 
     return \%packagesInSet;
 }
