@@ -33,6 +33,7 @@ use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Logger;
 use OSCAR::PackagePath;
 use OSCAR::OpkgDB;
+use OSCAR::OCA::OS_Detect;
 use POSIX; # gives us uname function
 use File::Path;
 use File::Copy;
@@ -67,11 +68,9 @@ my $md5;
 oscar_log_section("Running OSCAR wizard_prep script");
 
 #
-# Detect OS of master node.
+# Get OS of master node.
 #
-# Fails HERE if distro is not supported!
-#
-my $os = &OSCAR::PackagePath::distro_detect_or_die();
+my $os = distro_detect_or_die();
 
 #
 # Locate package pools and create the directories if they don't exist, yet.
@@ -209,19 +208,16 @@ if (exists($ENV{OSCAR_DEVELOPER_MODE})) {
 }
 
 #
-# base prereqs install start before the others, they're done smartly
+# Remove all cached repository metadata: this forces us to reload everything.
 #
-$cmd = "$ipcmd $prereqs_dir/base";
-!system($cmd) or
-    die "Could not install base prereqs!\n";
-
-
-
 # hack...
 # EF: will move to install_prereqs [shell]
+my $orepos = &oscar_repostring($os);
 if ($os->{pkg} eq "rpm") {
-    system("yum clean all");
+    system("yume $orepos clean all");
 }
+
+
 
 oscar_log_subsection("Installing OSCAR wizard prerequisites");
 
@@ -258,6 +254,15 @@ for my $prereq (@ordered_prereqs) {
 }
 goto PREREQS_DONE if (!$do_prereqs);
 
+
+#
+# base prereqs install start before the others, they're done smartly
+#
+$cmd = "$ipcmd $prereqs_dir/base";
+!system($cmd) or
+    die "Could not install base prereqs!\n";
+
+
 $cmd = "$ipcmd --smart " . join(" ",@ordered_prereqs);
 print "\texecuting: $cmd\n" if ($verbose);
 !system($cmd) or die "ERROR: Prerequisites install failure!";
@@ -291,78 +296,95 @@ for my $prereq (@ordered_prereqs) {
 # may have installed some Perl modules that OSCAR requires.
 
 require OSCAR::Package;
+require OSCAR::Opkg;
 
-#deprecated# my $topdir;
-#deprecated# chomp($topdir = `pwd`);
-#deprecated# 
-#deprecated# # Make a list of all available packages.  Do not use 
-#deprecated# # list_installable_package_dirs() here, because that will read 
-#deprecated# # in all the per-package config.xml files. This is in preparation 
-#deprecated# # of running all the package setup scripts, and the setup scripts 
-#deprecated# # must be run *before* reading the XML files in.
-#deprecated# 
-#deprecated# my @PKG_SOURCE_LOCATIONS = @OSCAR::PackagePath::PKG_SOURCE_LOCATIONS;
-#deprecated# 
-#deprecated# 
-#deprecated# # Now that we have a good list of packages, run all the setup scripts.
-#deprecated# 
-#deprecated# oscar_log_subsection("Locating _all_ OSCAR packages");
+#
+#
+#
 
-my %pkgdirs;
-foreach my $d (@PKG_SOURCE_LOCATIONS) {
-    # EF: a package is a package if it has a config.xml file
-    for my $cfg (glob("$d/*/config.xml")) {
-	my $dir = dirname($cfg);
-	my $pkg = basename($dir);
 
-	# [EF] When package exists in multiple placese we use the last occurence
-	#      (usually /var/lib/oscar/packages).
-	#      This makes it easier to override OSCAR builtin packages with
-	#      downloaded ones.
-	if (exists($pkgdirs{$pkg})) {
-	    print "WARNING: Package $pkg found in multiple places. Using $dir!\n";
+
+#
+# Get a list of all opkgs for this node (master node)
+#
+my @opkgs = &opkg_list_available();
+
+
+#
+# Install all API opkgs for this node (master node)
+#
+oscar_log_subsection("Installing API opkgs");
+&OSCAR::Opkg::opkgs_install("api", @opkgs);
+oscar_log_subsection("Successfully installed API opkgs");
+
+
+chomp(my $topdir = `pwd`);
+
+
+# checksum for package files
+$md5 = OSCAR::PackageSmart::checksum_needed("$ENV{OSCAR_HOME}/packages",
+					    "$md5dir/packages.md5",
+					    "*");
+goto PREP_DB if (!$md5);
+
+oscar_log_subsection("Running package setup scripts for ALL packages");
+my @scripts;
+eval("@scripts = @{OSCAR::Package::Phases{setup}}");
+for my $pkg (sort @opkgs) {
+    next if $pkg eq "oda";
+    my $dir = &opkg_api_path($pkg);
+
+    # detect whether we have an executable setup script
+    my $setup;
+    for my $script (@scripts) {
+	if (-x "$dir/scripts/$script") {
+	    $setup = $script;
+	    last;
 	}
-	$pkgdirs{$pkg} = $dir;
     }
-}
+    next if !$setup;
 
-#deprecated# 
-#deprecated# # checksum for package files
-#deprecated# $md5 = OSCAR::PackageSmart::checksum_needed("$ENV{OSCAR_HOME}/packages",
-#deprecated# 					    "$md5dir/packages.md5",
-#deprecated# 					    "*");
-#deprecated# goto PREP_DB if (!$md5);
-#deprecated# 
-#deprecated# oscar_log_subsection("Running package setup scripts for ALL packages");
-#deprecated# for my $pkg (sort keys(%pkgdirs)) {
-#deprecated#     next if $pkg eq "oda";
-#deprecated#     my $dir = $pkgdirs{$pkg};
-#deprecated#     next if (! -x "$dir/scripts/setup");
-#deprecated# 
-#deprecated#     # If it's a good package, run its setup script (if it has one) in
-#deprecated#     # the scripts directory.
-#deprecated#     chdir("$dir/scripts");
-#deprecated#     #
-#deprecated#     # EF: this needs to be eval'd because the OSCAR::Package namespace
-#deprecated#     # does not exist at perl compile time.
-#deprecated#     #
-#deprecated#     eval("OSCAR::Package::run_pkg_script(\$pkg, \"setup\", 1)") 
-#deprecated# 	or croak("Failed running setup script for $pkg");
-#deprecated#     chdir($topdir);
-#deprecated# }
-#deprecated# oscar_log_subsection("Successfully ran package setup scripts");
-#deprecated# 
-#deprecated# 
-#deprecated# 
-#deprecated# 
-#deprecated# # recalculate checksum because "setup" might have changed something
-#deprecated# $md5 = OSCAR::PackageSmart::checksum_files("$ENV{OSCAR_HOME}/packages","*");
-#deprecated# OSCAR::PackageSmart::checksum_write("$md5dir/packages.md5",$md5);
-#deprecated# 
-#deprecated# 
+    # If it's a good package, run its setup script (if it has one) in
+    # the scripts directory.
+    chdir("$dir/scripts");
+    #
+    # EF: this needs to be eval'd because the OSCAR::Package namespace
+    # does not exist at perl compile time.
+    #
+    eval("OSCAR::Package::run_pkg_script(\$pkg, \"setup\", 1)") 
+	or croak("Failed running setup script for $pkg");
+    chdir($topdir);
+}
+oscar_log_subsection("Successfully ran package setup scripts");
+
+
+
+
+# recalculate checksum because "setup" might have changed something
+$md5 = OSCAR::PackageSmart::checksum_files("$ENV{OSCAR_HOME}/packages","*");
+OSCAR::PackageSmart::checksum_write("$md5dir/packages.md5",$md5);
+
+
 
  PREP_DB:
 # Make sure there is a database password
+
+
+
+#
+# TEST
+#
+my %opkgs = &opkg_hash_installed("api");
+print Dumper(%opkgs);
+#die("This was only a test!!!");
+
+# fake definition, must disappear.
+my %pkgdirs;
+
+
+
+
+
 
 oscar_log_subsection("Making sure there is an ODA database password");
 system( "$ENV{OSCAR_HOME}/scripts/make_database_password" );
@@ -379,7 +401,7 @@ eval "use OSCAR::Database";
 #deprecated# 
 #deprecated# 
 
-# Start the database and copy the package xml files into the database
+# Start the database and upload the opkgs information
 oscar_log_subsection("Initializing ODA database");
 my $exit_status =
   system( "$ENV{OSCAR_HOME}/scripts/prepare_oda" ) / 256;
@@ -397,14 +419,65 @@ my $exit_status =
 croak("Couldn't set up a default package set") if $exit_status;
 
 
-#EF#
-#EF# Bad, package dirs are not here, yet.
-#EF#
+
+
+
+
+
+#
+# Try loading the default package set
+# (should this move to populate_default_package_set?)
+#
+
+my $pset = "$ENV{OSCAR_HOME}/share/package_sets/Default/"
+    .&OSCAR::PackagePath::os_cdistro_string($os).".xml";
+
+if (!-e $pset) {
+    die("Default package set file $pset not found!");
+}
+
+#not_working# require OSCAR::psm;
+#not_working# 
+#not_working# # Step 1: We use OSM to parse the XML file and get a hash
+#not_working# print "Parsing the package set...\n" if $verbose;
+#not_working# my $res = OSCAR::psm::select_set ($pset);
+#not_working# 
+#not_working# my %config = OSCAR::psm::package_hash();
+#not_working# print Dumper %config;
+#not_working# my @opkgs_to_install = OSCAR::psm::show_list();
+#not_working# print "The package sets includes: \n".join(", ",@opkgs_to_install)."\n";
+
+#
+# Since psm doesn't work like attempted above, do this manually,
+# without big infrastructure.
+#
+require XML::Simple;
+my $xs = new XML::Simple(keyattr => ["name"], forcearray => [ "opkg", ]);
+my $h = eval { $xs->XMLin($pset); };
+
+print"###########\n###########\n".Dumper($h)."\n############\n###########\n";
+my @opkg_set = @{$h->{packages}->{opkg}};
+my (%options, @errors);
+for my $p (@opkg_set) {
+    &OSCAR::Database::set_group_packages("Default", $p, 2, \%options, \@errors);
+}
+
+
+
+
+
+
+
+
+
+
+#
 # add default configurator settings
+#
 eval ("require OSCAR::Configbox");
 croak("Could not load OSCAR::Configbox") if ($@);
-for my $pkg (sort keys(%pkgdirs)) {
-    my $dir = $pkgdirs{$pkg};
+for my $pkg (sort keys %opkgs) {
+    my $dir = &opkg_api_path($pkg);
     my $cfile = "$dir/configurator.html";
     next if (! -e $cfile);
     OSCAR::Configbox::readInConfigValues($cfile,$pkg,"");
@@ -425,21 +498,17 @@ croak("Couldn't initialize the nics and networks for the oscar server")
 # Get the list of just core packages
 
 my (@results, %options, @errors);
-my %results = &opkg_hash_available(class => "core");
+my %results = &opkg_hash_installed("api", class => "core");
 
 print "=======>>> core packages <<<=======\n".Dumper(%results) if $verbose;
 
-my @packages = keys(%results);
+my @core_opkgs = keys(%results);
 print "==========(( core packages identified: ))=============\n";
 
-oscar_log_subsection("Identified core packages: " . join(' ', @packages));
-
-# OSCAR::Opkg requires XML::Simple which is not available initially but after
-# prereq installation
-require OSCAR::Opkg;
+oscar_log_subsection("Identified core packages: " . join(' ', @core_opkgs));
 
 oscar_log_subsection("Installing server core packages");
-OSCAR::Opkg::opkgs_install_server(@packages);
+&OSCAR::Opkg::opkgs_install("server", @core_opkgs);
 oscar_log_subsection("Successfully installed server core RPMs");
 
  PREP_CORE_NEST:
@@ -468,18 +537,22 @@ set_group_nodes($OSCAR_SERVER_GROUP,\@nodes,\%options,\@errors);
 
 print "Updating the status of core packages from installable to installed\n";
 
-my %results = &opkg_hash_installed(class => "core");
-my @installed_opkgs = keys(%results);
+my %results = &opkg_hash_installed("server", class => "core");
+my @inst_core_opkgs = keys(%results);
+my (@package_results, @errors);
 
-for my $opkg (@installed_opkgs) {
+for my $opkg (@inst_core_opkgs) {
     #
     # add here code to mark packages as installed !!!
     #
 
-# if ( get_packages_with_class($group,\@package_results,\%options,\@errors)){
-#     die "$0:Failed to update the table Node_Package_Status"
-#         if(!update_node_package_status(\%options,"oscar_server",\@package_results,$requested,\@errors));
-# }
+#EF
+#EF what status is set? what is "8"?
+#EF
+
+    die "$0:Failed to update the table Node_Package_Status"
+	if(!update_node_package_status(\%options,"oscar_server",
+				       \@package_results, 8,\@errors));
 }
 
 # UNLOCKING FOR NEST
@@ -488,12 +561,14 @@ for my $opkg (@installed_opkgs) {
 oscar_log_subsection("Done marking installed bits in ODA");
 
 
+
+
  PREP_POST_SERVER_CORE:
 # Run the post_server_rpm_install scripts
 
 oscar_log_subsection("Running post_server_install scripts for " .
                      "server core packages");
-foreach my $package (@packages) 
+foreach my $package (@core_opkgs) 
   {
     OSCAR::Package::run_pkg_script($package,"post_server_install") or 
       croak("Failed running post_server_install for $package");

@@ -54,7 +54,6 @@ use Carp;
                           "/var/lib/oscar/packages",
                         );
 
-
 #
 # Return an OS_Detect hash reference or die.
 # Argument: $img

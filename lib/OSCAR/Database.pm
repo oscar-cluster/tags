@@ -1190,6 +1190,9 @@ sub update_node_package_status {
         my $ver = $$pkg_ref{version};
         my $package_ref = get_package_info_with_name($opkg,$options_ref,$error_strings_ref,$ver);
         my $package_id = $$package_ref{id};
+	if (!$package_id) {
+	    croak("ERROR: could not find package $opkg in the database!\n");
+	}
         my %field_value_hash = ("requested" => $requested);
         my $where = "WHERE package_id=$package_id AND node_id=$node_id";
         if( $requested == 8 && 
@@ -1645,6 +1648,9 @@ sub set_group_packages {
     # "requested" value:
     # if requested = 1 then selected = 0
     # if requested >= 2 then selected = 1
+    #EF
+    #EF what does the weirdness above mean?
+    #EF
     my $selected = 0;
     my $sql = "SELECT Packages.id, Packages.package " .
               "From Packages, Group_Packages " .
@@ -1656,7 +1662,7 @@ sub set_group_packages {
     if (!@results){
         $selected = 1;
         $sql = "INSERT INTO Group_Packages (group_name, package_id, selected) ".
-               "SELECT '$group', id, $selected FROM Packages ".
+               "SELECT '$group', id, '$selected' FROM Packages ".
                "WHERE package='$package'";
         print "DB_DEBUG>$0:\n====> in Database::set_group_packages SQL : $sql\n" if $$options_ref{debug};
         die "DB_DEBUG>$0:\n====>Failed to insert values via << $sql >>"

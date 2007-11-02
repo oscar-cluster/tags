@@ -140,13 +140,14 @@ sub getAllPackages # -> $allPackages
   my %opkgs = ();
   
   my %scope = ();
-  %opkgs  = OSCAR::OpkgDB::opkg_hash_available(%scope);
+  %opkgs  = OSCAR::OpkgDB::opkg_hash_installed("api", %scope);
   $allPackages = \%opkgs;
 
   my @packages = ();
-  OSCAR::Database::get_packages(\@packages);
-  foreach my $pack_ref (@packages){
-    my $pack = "opkg-$$pack_ref{package}-server";
+  #EF# OSCAR::Database::get_packages(\@packages);
+  #EF# foreach my $pack_ref (@packages){
+  foreach my $pack_ref (values(%opkgs)){
+    my $pack = $$pack_ref{package};
     foreach my $key (keys %$pack_ref){
         $allPackages->{$pack}{$key} = $$pack_ref{$key};
     }    
@@ -157,31 +158,24 @@ sub getAllPackages # -> $allPackages
   foreach my $pack (keys %{ $allPackages })
     {
       undef $href;
-      # For each of the OSCAR packages read in above, add a "location" field
-      # to correspond to the Location column of the packagesTable.  
-      if( ! $allPackages->{$pack}{path} ){
-          $allPackages->{$pack}{path} = "/var/lib/oscar/packages/$pack";
-      }
-      $allPackages->{$pack}{location} = 
-        (($allPackages->{$pack}{path} =~ /\/var\/lib\/oscar\/packages/) ?
-         "OPD" : "OSCAR");
+      $allPackages->{$pack}{location} = "OSCAR";
 
-      # Next, get the provides, requires, and conflicts lists for each
-      # package.  Here the {provides}, {requires}, and {conflicts} fields
-      # are arrays of hash references, each containing the two fields {name}
-      # and {type}.  
-      addTypeNameFieldToPackage("provides",$pack);
-      if ((!defined $allPackages->{$pack}{provides}) ||
-          (scalar @{ $allPackages->{$pack}{provides} } < 1))
-        { # If nothing else, a package provides itself.
-          my $href;
-          $href->{type} = "package";
-          $href->{name} = $pack;
-          push @{ $allPackages->{$pack}{provides} }, $href;
-        }
-
-      addTypeNameFieldToPackage("requires",$pack);
-      addTypeNameFieldToPackage("conflicts",$pack);
+      #no_yet# # Next, get the provides, requires, and conflicts lists for each
+      #no_yet# # package.  Here the {provides}, {requires}, and {conflicts} fields
+      #no_yet# # are arrays of hash references, each containing the two fields {name}
+      #no_yet# # and {type}.  
+      #no_yet# addTypeNameFieldToPackage("provides",$pack);
+      #no_yet# if ((!defined $allPackages->{$pack}{provides}) ||
+      #no_yet#     (scalar @{ $allPackages->{$pack}{provides} } < 1))
+      #no_yet#   { # If nothing else, a package provides itself.
+      #no_yet#     my $href;
+      #no_yet#     $href->{type} = "package";
+      #no_yet#     $href->{name} = $pack;
+      #no_yet#     push @{ $allPackages->{$pack}{provides} }, $href;
+      #no_yet#   }
+      #no_yet# 
+      #no_yet# addTypeNameFieldToPackage("requires",$pack);
+      #no_yet# addTypeNameFieldToPackage("conflicts",$pack);
     }
 
   getDependencyTree();

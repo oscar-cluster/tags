@@ -21,21 +21,25 @@ package OSCAR::Opkg;
 #             Geoffroy Vallee <valleegr@ornl.gov>
 #             All rights reserved
 #
-# $Id: Opkg.pm 5884 2007-06-08 07:35:50Z valleegr $
+# (C)opyright Erich Focht <efocht@hpce.nec.com>.
+#             All Rights Reserved.
+#
+# $Id$
 #
 # OSCAR Package module
 #
 # This package contains subroutines for common operations related to
-# the handling of OSCAR Packages (opkg)
+# the handling of OSCAR Packages (opkg).
+# [EF]: Some of the stuff in Packages.pm should be moved here!
 
 use strict;
 use lib "$ENV{OSCAR_HOME}/lib";
 use vars qw(@EXPORT);
 use base qw(Exporter);
 use File::Basename;
-use XML::Simple;
 use Data::Dumper;
 use OSCAR::Database;
+use OSCAR::PackagePath;
 use Carp;
 
 @EXPORT = qw(
@@ -82,11 +86,13 @@ sub get_list_opkg_dirs {
 
 ###############################################################################
 # Install the server part of the passed OPKGs on the local system             #
-# Parameter: list of OPKGs.                                                   #
-# Return:    none.                                                            #
+# Parameters:                                                                 #
+#            type of opkg to be installed (one of api, server, client)        #
+#            list of OPKGs.                                                   #
+# Return:    none.     (should return some error some time...)                #
 ###############################################################################
-sub opkgs_install_server {
-    my (@opkgs) = (@_);
+sub opkgs_install {
+    my ($type, @opkgs) = (@_);
 
     if (!scalar(@opkgs)) {
 	croak("No opkgs passed!");
@@ -95,9 +101,7 @@ sub opkgs_install_server {
     #
     # Detect OS of master node.
     #
-    # Fails HERE if distro is not supported!
-    #
-    my $os = &OSCAR::PackagePath::distro_detect_or_die();
+    my $os = &distro_detect_or_die();
 
     #
     # Locate package pools and create the directories if they don't exist, yet.
@@ -115,7 +119,14 @@ sub opkgs_install_server {
         croak "\nERROR: Could not create PackMan instance!\n";
     }
 
-    my @olist = map { "opkg-".$_."-server" } @opkgs;
+    my @olist;
+    if ($type eq "api") {
+	@olist = map { "opkg-".$_ } @opkgs;
+    } elsif ($type =~ /^(client|server)$/) {
+	@olist = map { "opkg-".$_."-$type" } @opkgs;
+    } else {
+	croak("Unsupported opkg type: $type");
+    }
     my ($err, @out) = $pm->smart_install(@olist);
     if (!$err) {
         print "Error occured during smart_install:\n";

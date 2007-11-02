@@ -30,6 +30,7 @@ use base qw(Exporter);
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Database;
 use OSCAR::PackagePath;
+use OSCAR::OpkgDB;
 use OSCAR::Logger;
 use File::Basename;
 use File::Copy;
@@ -80,58 +81,6 @@ $VERSION = sprintf("r%d", q$Revision$ =~ /(\d+)/);
           );
 
 
-#########################################################################
-#  Subroutine: getOdaPackageDir                                         #
-#  Parameter : The name of an OSCAR package (directory)                 #
-#  Returns   : The "directory" field in the ODA database for the        #
-#              passed-in package, or undef if not defined               # 
-#  This subroutine takes in the name of an OSCAR package (i.e. the      #
-#  directory name under the 'packages' directory for the package) and   #
-#  returns the 'directory' field for that package.  This is necessary   #
-#  because a package can be in either the OSCAR tree or the OPD tree.   #
-#  However, if the oda database hasn't been set up yet or the           #
-#  directory entry for the passed-in package doesn't exist, then we     #
-#  fall back on the old method of finding the directory, namely         #
-#  iterate throught the directories in the PKG_SOURCE_LOCATIONS list    #
-#  and try to find the package directory.                               #
-#########################################################################
-sub getOdaPackageDir { # ($pkg) -> $pkgdir
-    my $pkg = shift;
-    my @list = (); 
-    my $retdir = undef;
-    
-    # First, check to see if the oda database has been created.  If not, then
-    # don't bother to ask oda for the package's directory.
-
-    my $odaProblem = system('mysqlshow oscar >/dev/null 2>&1');
-    if (!$odaProblem) {
-	my @tables = ("Packages");
-	my $success = single_dec_locked("SELECT path FROM " .
-					"Packages WHERE package='$pkg'",
-					"read",
-					\@tables,
-					\@list);
-	Carp::carp("Could not do oda command 'SELECT path" .
-		   " FROM Packages WHERE package=$pkg '") if (!$success);
-
-	my $dir_ref = $list[0] if (defined $list[0]);
-	$retdir = $$dir_ref{path};
-    }
-
-    # Couldn't find the directory via oda - resort to old method.  Search
-    # through the list of 'packages' directories and return the first one that
-    # has the passed-in package as a subdirectory.
-    if ((!defined $retdir) || (!-d $retdir)) {
-	foreach my $pkgdir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-	    if (-d "$pkgdir/$pkg") {
-		$retdir = "$pkgdir/$pkg";
-		last;
-	    }
-	}
-    }
-    return $retdir;
-}
-
 #
 # run_pkg_script - runs the package script for a specific package
 #
@@ -144,7 +93,7 @@ sub run_pkg_script {
 	return undef;
     }
 
-    my $pkgdir = getOdaPackageDir($pkg);
+    my $pkgdir = &opkg_api_path($pkg);
     return 0 unless ((defined $pkgdir) && (-d $pkgdir));
     foreach my $scriptname (@$scripts) {
 	my $script = "$pkgdir/scripts/$scriptname";

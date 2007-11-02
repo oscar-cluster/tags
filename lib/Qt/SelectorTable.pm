@@ -197,17 +197,17 @@ sub getPackagesInPackageSet
     # hash where the keys are the (short) names of the packages and the
     # values are "1"s for those packages.
     my @packagesInSet;
-    my $packagesInSet;
+    my %packagesInSet;
     my $success = OSCAR::Database::get_selected_group_packages(
-		      \@packagesInSet1,\%options,\@errors,$packageSet);
+		      \@packagesInSet,\%options,\@errors,$packageSet);
     #@packagesInSet = get_list_opkgs_in_package_set($packageSet);
 
 
     foreach my $pack_ref (@packagesInSet) {
-        $packagesInSet->{$pack_ref} = 1;
+        $packagesInSet{$pack_ref} = 1;
     }
 
-    return $packagesInSet;
+    return \%packagesInSet;
 }
 
 sub getPackagesInstalled
@@ -365,7 +365,7 @@ sub populateTable
         }
 
       # Go through table and check the boxes ON if 
-      #   (a) the package is supposed to be installed OR 
+      #   (a) the package is supposed to bepackages installed OR 
       #   (b) the package is currently installed and not supposed to be
       #       uninstalled.
       for (my $rownum = 0; $rownum < numRows(); $rownum++)
