@@ -122,6 +122,7 @@ $options{debug} = 1
               get_node_package_status_with_node
               get_node_package_status_with_node_package
 	      get_package_info_with_name
+              get_package_ids
               get_packages
               get_packages_switcher
               get_packages_servicelists
@@ -162,6 +163,7 @@ $options{debug} = 1
               update_node_package_status_hash
               update_node_package_status
               update_packages
+	      where_ids
 
               dec_already_locked
               locking
@@ -452,7 +454,7 @@ sub get_packages {
         $error_strings_ref,
 	%sel) = @_;
 
-    croak("ERROR: distro string is empty!") if (!$sel{distro});
+    #croak("ERROR: distro string is empty!") if (!$sel{distro});
     my $sql = "SELECT * FROM Packages WHERE ";
     if (defined($sel{class})) {
 	$sel{__class} = $sel{class};
@@ -489,41 +491,34 @@ sub get_package_info_with_name {
 }
 
 #
-# get_one_package:
-#    Return one package hash reference.
+# get_package_ids:
+#    Return array of package ids matching the selection criteria.
 #    Arguments: hash-like selector, e.g. (field => value) will match
 #               the first record where the field has the expected value.
 #
 #    Example:
-#             get_one_package(\%opts, \@errs, package => name);
-#
-# On multi-distro setups this can select multiple packages (one for
-# each distro). If a distro => $distro_string seletor is missing, the
-# local node's distro is replaced.
+#         @a = get_package_ids(\%opts, \@errs, package => name);
 #
 # Use this function as replacement for get_package_info_with_name. It should
 # be used for finding the places where a distro-selector is really needed.
 #
-sub get_one_package {
+sub get_package_ids {
     my ($options_ref, $errors_ref, %scope) = @_;
-
-    if (!exists($scope{distro})) {
-	my $os = &OSCAR::PackagePath::distro_detect_or_die();
-	$scope{distro} = &OSCAR::PackagePath::os_cdistro_string($os);
-    }
-    my @results;
-    my %sel = ( package => $opkg , distro => $dist );
-    $sel{version} = $ver if ($ver);
-    &get_packages(\@results, $options_ref, $errors_ref, %sel);
-    my $p_ref;
-    if (@results) {
-	$p_ref = pop(@results);
-    }
-    return $p_ref;
+    my (@pkgs, @res);
+    &get_packages(\@pkgs, $options_ref, $errors_ref, %scope);
+    @res = map { $_->{id} } @pkgs;
+    return @res;
 }
 
+#
+# Build string usable for WHERE sql query part.
+#
+sub where_ids {
+    my ($field, @ids) = @_;
 
-
+    my @w = map { "$field=$_" } @ids;
+    return "( ".join(" OR ", @w)." )";
+}
 
 sub get_packages_switcher {
     my ($results_ref,
@@ -1021,20 +1016,21 @@ sub delete_group_packages {
         $error_strings_ref,
         $ver) = @_;
 
-    my $package_ref = get_package_info_with_name($opkg,$options_ref,$error_strings_ref,$ver);
-    my $package_id = $$package_ref{id};
-    if($package_id){
+    my %scope = ( package => $opkg );
+    $scope{version} = $ver if $ver;
+    my @ids = &get_package_ids($options_ref,$error_strings_ref, %scope);
+    if (@ids) {
         my $sql = "UPDATE Group_Packages SET selected=0 ".
-            "WHERE group_name='$group' AND package_id=$package_id";
+            "WHERE group_name='$group' AND ".&where_ids("package_id",@ids);
         print "DB_DEBUG>$0:\n====> in Database::delete_group_packages SQL : $sql\n" if $$options_ref{debug};
         die "DB_DEBUG>$0:\n====>Failed to delete values via << $sql >>"
-            if! do_update($sql,"Group_Packages", $options_ref, $error_strings_ref);
+            if !&do_update($sql,"Group_Packages", $options_ref, $error_strings_ref);
 
         # Set "should_not_be_installed" to the package status    
-        update_node_package_status(
-              $options_ref,$OSCAR_SERVER,$opkg,1,$error_strings_ref);
-    }      
-    return 1;    
+        &update_node_package_status($options_ref, $OSCAR_SERVER, $opkg, 1,
+				    $error_strings_ref);
+    }
+    return 1;
 }
 
 sub delete_groups {
@@ -1220,22 +1216,25 @@ sub update_node_package_status {
         $packages = \@temp_packages;
     }    
     # If requested is one of the names of the fields being passed in, convert it
-	# to the enum version instead of the string
-	if($requested && $requested !~ /\d/) {
-		$requested = get_status_num($options_ref, $requested, $error_strings_ref);
-	}
+    # to the enum version instead of the string
+    if($requested && $requested !~ /\d/) {
+	$requested = get_status_num($options_ref, $requested, $error_strings_ref);
+    }
     my $node_ref = get_node_info_with_name($node,$options_ref,$error_strings_ref);
     my $node_id = $$node_ref{id};
     foreach my $pkg_ref (@$packages) {
         my $opkg = $$pkg_ref{package};
         my $ver = $$pkg_ref{version};
-        my $package_ref = get_package_info_with_name($opkg,$options_ref,$error_strings_ref,$ver);
-        my $package_id = $$package_ref{id};
-	if (!$package_id) {
+
+	my %scope = ( package => $opkg );
+	$scope{version} = $ver if $ver;
+	my @ids = &get_package_ids($options_ref, $error_strings_ref, %scope);
+	if (!@ids) {
 	    croak("ERROR: could not find package $opkg in the database!\n");
 	}
         my %field_value_hash = ("requested" => $requested);
-        my $where = "WHERE package_id=$package_id AND node_id=$node_id";
+        my $where = "WHERE ".&where_ids("package_id", @ids).
+	    " AND node_id=$node_id";
         if( $requested == 8 && 
             ( $$options_ref{debug} || defined($ENV{DEBUG_OSCAR_WIZARD}) ) ){
             print "DB_DEBUG>$0:\n====> in Database::update_node_package_status Updating the status of $opkg to \"installed\".\n";
@@ -1248,11 +1247,14 @@ sub update_node_package_status {
         }
         my @results = ();
         my $table = "Node_Package_Status";
-        get_node_package_status_with_node_package($node,$opkg,\@results,$options_ref,$error_strings_ref);
+        &get_node_package_status_with_node_package($node, $opkg, \@results,
+						   $options_ref,
+						   $error_strings_ref);
         if (@results) {
             my $pstatus_ref = pop @results;
             my $ex_status = $$pstatus_ref{ex_status};
-            $field_value_hash{requested} = $ex_status if($ex_status == 8 && $requested == 2);
+            $field_value_hash{requested} = $ex_status
+		if($ex_status == 8 && $requested == 2);
             $field_value_hash{ex_status} = $$pstatus_ref{requested};
 
             # If $requested is 8(finished), set the "ex_status" to 8
@@ -1262,16 +1264,24 @@ sub update_node_package_status {
             #
             # NOTE : the "selected" field is only for PackageInUn
             #
-            $field_value_hash{ex_status} = $requested if($requested == 8 && $ex_status != 2);
+            $field_value_hash{ex_status} = $requested 
+		if ($requested == 8 && $ex_status != 2);
             $field_value_hash{selected} = $selected if ($selected);
             die "DB_DEBUG>$0:\n====>Failed to update the status of $opkg"
-                if(!update_table($options_ref,$table,\%field_value_hash, $where, $error_strings_ref));
+                if (!&update_table($options_ref,$table,\%field_value_hash,
+				   $where, $error_strings_ref));
         } else {
+	    #EF
+	    #EF Unfinished! Hack to keep things going. 
+	    #EF
+	    my $package_id = $ids[0];
             %field_value_hash = ("node_id" => $node_id,
                                  "package_id"=>$package_id,
                                  "requested" => $requested);
             die "DB_DEBUG>$0:\n====>Failed to insert values into table $table"
-                if(!insert_into_table ($options_ref,$table,\%field_value_hash,$error_strings_ref));
+                if (!&insert_into_table ($options_ref,$table,
+					 \%field_value_hash,
+					 $error_strings_ref));
         }
     }
     return 1;
@@ -1335,71 +1345,96 @@ sub get_pkg_status_num {
 # current, status, etc.).  The values are the values that should be put
 # into the database.
 sub update_node_package_status_hash {
-	my ($options_ref,
-		$node,
-		$passed_pkg,
-		$field_value_hash,
-		$error_strings_ref,
-		$passed_ver) = @_;
-	my $packages;
-	
-	# Get the information passed in about a package
-	if(ref($passed_pkg) eq "ARRAY") {
-		$packages = $passed_pkg;
+    my ($options_ref,
+	$node,
+	$passed_pkg,
+	$field_value_hash,
+	$error_strings_ref,
+	$passed_ver) = @_;
+    my $packages;
+    
+    # Get the information passed in about a package
+    if (ref($passed_pkg) eq "ARRAY") {
+	$packages = $passed_pkg;
+    } else {
+	my %opkg = ();
+	my @temp_packages = ();
+	$opkg{package} = $passed_pkg;
+	$opkg{version} = $passed_ver;
+	push @temp_packages, \%opkg;
+	$packages = \@temp_packages;
+    }
+    
+    # If requested is one of the names of the fields being passed in, convert it
+    # to the enum version instead of the string
+    if(exists $$field_value_hash{requested}) {
+	$$field_value_hash{requested} = get_status_num($options_ref, $$field_value_hash{requested}, $error_strings_ref);
+    }
+    
+    # If current is one of the names of the fields being passed in, convert it
+    # to the enum version instead of the string
+    if (exists $$field_value_hash{curr}) {
+	$$field_value_hash{curr} = &get_status_num($options_ref,
+						   $$field_value_hash{curr},
+						   $error_strings_ref);
+    }
+
+    # If status is one of the names of the fields being passed in, convert it
+    # to the enum version instead of the string
+    if (exists $$field_value_hash{status}) {
+	$$field_value_hash{status} = 
+	    &get_pkg_status_num($options_ref, $$field_value_hash{status},
+				$error_strings_ref);
+    }
+
+    # Get the internal id for the node
+    my $node_ref = &get_node_info_with_name($node, $options_ref,
+					    $error_strings_ref);
+    my $node_id = $$node_ref{id};
+    
+    # Get more information about the package
+    foreach my $pkg_ref (@$packages) {
+	my $opkg = $$pkg_ref{package};
+	my $ver = $$pkg_ref{version};
+	my %scope = ( package => $opkg );
+	$scope{version} = $ver if $ver;
+	my @ids = &get_package_ids($options_ref,$error_strings_ref,
+				   %scope);
+	my $where = "WHERE ".&where_ids("package_id", @ids).
+	    " AND node_id=$node_id";
+	# Check to see if there is an entry in the table already
+	my @field = ("package_id");
+	my @result;
+	&select_table($options_ref, "Node_Package_Status", \@field,
+		      $where, \@result, $error_strings_ref);
+	#EF#
+	#EF# Unfinished!!!
+	#EF#
+	#EF# temporary hack to keep it going
+	my $package_id = $ids[0];
+	if ($result[0]->{package_id} &&
+	    $result[0]->{package_id} == $package_id) {
+	    die "DB_DEBUG>$0:\n====>Failed to update the request for $opkg" 
+		if (!&update_table($options_ref,
+				   "Node_Package_Status",
+				   $field_value_hash, $where,
+				   $error_strings_ref));
 	} else {
-		my %opkg = ();
-		my @temp_packages = ();
-		$opkg{package} = $passed_pkg;
-		$opkg{version} = $passed_ver;
-		push @temp_packages, \%opkg;
-		$packages = \@temp_packages;
+	    #EF#
+	    #EF# Unfinished!!!
+	    #EF#
+	    #EF# temporary hack to keep it going
+	    my $package_id = $ids[0];
+	    $$field_value_hash{package_id} = $package_id;
+	    $$field_value_hash{node_id} = $node_id;
+	    die "DB_DEBUG>$0:\n====>Failed to insert the request for $opkg" 
+		if (!&insert_into_table($options_ref,
+					"Node_Package_Status",
+					$field_value_hash,
+					$error_strings_ref));
 	}
-	
-	# If requested is one of the names of the fields being passed in, convert it
-	# to the enum version instead of the string
-	if(exists $$field_value_hash{requested}) {
-		$$field_value_hash{requested} = get_status_num($options_ref, $$field_value_hash{requested}, $error_strings_ref);
-	}
-	
-	# If current is one of the names of the fields being passed in, convert it
-	# to the enum version instead of the string
-	if(exists $$field_value_hash{curr}) {
-		$$field_value_hash{curr} = get_status_num($options_ref, $$field_value_hash{curr}, $error_strings_ref);
-	}
-	
-	# If status is one of the names of the fields being passed in, convert it
-	# to the enum version instead of the string
-	if(exists $$field_value_hash{status}) {
-		$$field_value_hash{status} = get_pkg_status_num($options_ref, $$field_value_hash{status}, $error_strings_ref);
-	}
-	
-	# Get the internal id for the node
-	my $node_ref = get_node_info_with_name($node,$options_ref,$error_strings_ref);
-	my $node_id = $$node_ref{id};
-	
-	# Get more information about the package
-	foreach my $pkg_ref (@$packages) {
-		my $opkg = $$pkg_ref{package};
-		my $ver = $$pkg_ref{version};
-		my $package_ref = get_package_info_with_name($opkg,$options_ref,$error_strings_ref,$ver);
-		my $package_id = $$package_ref{id};
-		my $where = "WHERE package_id=$package_id AND node_id=$node_id";
-		
-		# Check to see if there is an entry in the table already
-		my @field = ("package_id");
-		my @result;
-		select_table($options_ref, "Node_Package_Status", \@field, $where, \@result, $error_strings_ref);
-		if($result[0]->{package_id} && $result[0]->{package_id} == $package_id) {
-			die "DB_DEBUG>$0:\n====>Failed to update the request for $opkg" 
-        		if(!update_table($options_ref,"Node_Package_Status",$field_value_hash, $where, $error_strings_ref));
-        } else {
-        	$$field_value_hash{package_id} = $package_id;
-        	$$field_value_hash{node_id} = $node_id;
-        	die "DB_DEBUG>$0:\n====>Failed to insert the request for $opkg" 
-        		if(!insert_into_table($options_ref,"Node_Package_Status",$field_value_hash, $error_strings_ref));
-        }
-	}
-	return 1;
+    }
+    return 1;
 }
 
 # Updates the status information for a package by passing in a hash
@@ -1863,7 +1898,10 @@ sub set_pkgconfig_var {
     my $opkg = $val{opkg};
     delete $val{opkg};
 
-    my $pref = &get_one_package(\%options,\@errors, package => $opkg);
+    #EF
+    #EF Unfinished. This table should get rid of the package index!
+    #EF
+    my $pref = &get_package_info_with_name($opkg, \%options,\@errors);
 
     croak("No package $opkg found!") if (!$pref);
     my $opkg_id = $pref->{id};
