@@ -209,8 +209,8 @@ sub get_image_default_settings {
     my @errors;
     my $save_text = $outfile;
     my $extraflags = "--filename=$outfile";
-    # WARNING!! We deactivate the OPKG management via SystemInstaller
-    $extraflags = "";
+    #EF# WARNING!! We deactivate the OPKG management via SystemInstaller
+    #EF#$extraflags = "";
     if (exists $ENV{OSCAR_VERBOSE}) {$extraflags .= " --verbose";}
 
     my $diskfile = get_disk_file($arch, $disk_type);
