@@ -162,26 +162,17 @@ foreach my $package (sort(keys(%o))) {
 
     my %opkg = %{$o{$package}};
 
-    if (is_installed($package,$pkg_version)) {
-	my $package_id = &delete_packages_related_table($package,
-							\%options,
-							\@error_strings,
-							$pkg_version);
-	if ($package_id) {
-	    update_packages(\%opkg,
-			    "Packages",
-			    $package_id,
-			    \%table_fields_hash,
-			    \%options,
-			    \@error_strings);
-	}
-
+    my $package_id = &is_installed($package,$pkg_version);
+    if ($package_id) {
+	&delete_packages_related_table($package, \%options, \@error_strings);
+	&update_packages(\%opkg, "Packages", $package_id, \%table_fields_hash,
+			    \%options, \@error_strings);
     } else {
 	print Dumper(\%opkg) if $options{debug};
 	
 	# Insert into "Packages" table
-	insert_packages(\%opkg, "Packages", \%table_fields_hash,
-			\%options, \@error_strings);
+	&insert_packages(\%opkg, "Packages", \%table_fields_hash,
+			 \%options, \@error_strings);
     }
 }
 
@@ -227,28 +218,15 @@ sub is_installed {
 }
 
 sub delete_packages_related_table {
-    my ($package,$options_ref,$error_ref,$version) = @_;
+    my ($package,$options_ref,$error_ref) = @_;
     my $where = "";
-    my @results;
-    my %scope = ( package => $package, distro => $distro_string );
-    $scope{version} = $version if ($version);
-    &get_packages(\@results, \%options, \@error_strings, %scope);
-    my $package_ref = pop(@results);
-    my $package_id = $$package_ref{id};
 
     my @list_of_tables = ("Packages_servicelists",
                           "Packages_switcher");
     foreach my $table_name (@list_of_tables){
-        if ($table_name eq "Packages_conflicts" ||
-            $table_name eq "Packages_provides" ||
-            $table_name eq "Packages_requires"){
-            $where = "WHERE p1_id='$package_id'";
-        }else{
-            $where = "WHERE package_id='$package_id'";
-        }
-        delete_table($options_ref,$table_name, $where ,$error_ref);
+	$where = "WHERE package='$package'";
+        &delete_table($options_ref, $table_name, $where ,$error_ref);
     }
-    return $package_id;
 }
 
 

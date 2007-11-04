@@ -95,7 +95,7 @@ update_hosts($ip) or croak("Couldn't add required host entries to /etc/hosts");
 # Get a list of all non-core packages
 # and list of RPMs from the non-core packages
 my $sel_group = get_selected_group;
-my @opkgs = list_selected_packages("noncore",$sel_group);
+my @opkgs = &list_selected_packages("noncore", $sel_group);
 my @opkgs_list;
 my @pkgs;
 my @qerrors;
@@ -103,9 +103,7 @@ foreach my $pkg_ref ( @opkgs ) {
     my $opkg = $$pkg_ref{package};
     my $ver = $$pkg_ref{version};
     push @opkgs_list, $opkg;
-    push @pkgs, pkgs_of_opkg($opkg, $ver, \@qerrors,
-			     group => $OSCAR_SERVER_GROUP,
-			     chroot => "/" );
+    push @pkgs, "opkg-$opkg-server";
 }
 oscar_log_subsection("Identified non-core packages: " . join(' ', @opkgs_list));
 
