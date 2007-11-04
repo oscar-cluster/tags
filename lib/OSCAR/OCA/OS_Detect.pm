@@ -119,7 +119,7 @@ sub open {
 	    last;
 	}
     }
-    if (($path eq "/") && !$LOCAL_NODE_OS) {
+    if (("$path" eq "/") && !$LOCAL_NODE_OS) {
 	$LOCAL_NODE_OS = $ret;
     }
     return $ret;
