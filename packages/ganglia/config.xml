@@ -34,10 +34,15 @@
     </requires>
     <requires>
       <filters>
-        <dist>suse</dist>
         <dist>sles</dist>
       </filters>
       <pkg>php4-gd</pkg>
+    </requires>
+    <requires>
+      <filters>
+        <dist>suse</dist>
+      </filters>
+      <pkg>php5-gd</pkg>
     </requires>
   </serverDeps>
   <clientDeps>
