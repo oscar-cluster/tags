@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS Nodes(
     cpu_speed VARCHAR(100),
     dns_domain VARCHAR(100),
     fqdn VARCHAR(100),
-    group_id  integer not null default 0,
+    group_name  VARCHAR(100),
     hostname VARCHAR(100),
     id  integer   auto_increment not null unique primary key,
     image_id  integer not null default 0,
@@ -110,9 +110,9 @@ CREATE TABLE IF NOT EXISTS Nodes(
     units VARCHAR(100),
     virtual VARCHAR(100),
     KEY cluster_id ( cluster_id ),
-    KEY group_id ( group_id ),
+    KEY group_name ( group_name ),
     CONSTRAINT Nodes_ibfk_1 FOREIGN KEY (cluster_id) REFERENCES Clusters (id) ON DELETE CASCADE,
-    CONSTRAINT Nodes_ibfk_2 FOREIGN KEY (group_id) REFERENCES Groups (id) ON DELETE CASCADE
+    CONSTRAINT Nodes_ibfk_2 FOREIGN KEY (group_name) REFERENCES Groups (name) ON DELETE CASCADE ON UPDATE CASCADE
 )TYPE=INNODB;
 
 -- OscarFileServer
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS Packages_servicelists(
     PRIMARY KEY (package, service),
     KEY package ( package ),
     KEY group_name ( group_name ),
-    CONSTRAINT Packages_servicelists_ibfk_1 FOREIGN KEY (package) REFERENCES Packages (package) ON DELETE CASCADE,
+    CONSTRAINT Packages_servicelists_ibfk_1 FOREIGN KEY (package) REFERENCES Packages (package) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT Packages_servicelists_ibfk_2 FOREIGN KEY (group_name) REFERENCES Groups (name) ON DELETE CASCADE ON UPDATE CASCADE
 )TYPE=INNODB;
 
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS Packages_switcher(
     switcher_tag VARCHAR(100),
     PRIMARY KEY (package, switcher_name),
 --    KEY package ( package ),
-    CONSTRAINT Packages_switcher_ibfk_1 FOREIGN KEY (package) REFERENCES Packages (package) ON DELETE CASCADE
+    CONSTRAINT Packages_switcher_ibfk_1 FOREIGN KEY (package) REFERENCES Packages (package) ON DELETE CASCADE ON UPDATE CASCADE
 )TYPE=INNODB;
 
 -- Packages_config
