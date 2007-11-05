@@ -208,7 +208,8 @@ sub duplicateButton_clicked
   if (packageSetsListBox->currentItem() >= 0)
     { 
       my $lastSet = packageSetsListBox->currentText();
-      my $currSet = createNewPackageSet($lastSet);
+      my $newSet = $lastSet."_copy";
+      my $currSet = createNewPackageSet($newSet);
 
       # Copy all of the packages listed in the old package set
       # over to the newly created package set.
@@ -217,23 +218,22 @@ sub duplicateButton_clicked
       my $success = OSCAR::Database::get_group_packages_with_groupname(
             $lastSet,\@results,\%options,\@errors);
       Carp::carp("Could not do oda command 'get_group_packages_with_groupname " .
-        $lastSet . "'") if (!$success);
-      foreach my $pack (@packagesInSet)
-        {
+        $lastSet . "'")
+	  if (!$success);
+      print Dumper(@results);
+      @packagesInSet = map { $_->{package} } @results;
+      foreach my $pack (@packagesInSet) {
           $success = OSCAR::Database::set_group_packages(
-                $lastSet,$pack,2,\%options,\@errors);
+                $newSet,$pack,2,\%options,\@errors);
           Carp::carp("Could not do oda command 'set_group_packages " .
             "$pack $currSet'") if (!$success);
-        }
+      }
       
       # Finally, refresh the listbox with the new entry
       refreshPackageSetsListBox();
     }
 
 }
-
-sub renameButton_clicked
-{
 
 #########################################################################
 #  Subroutine: renameButton_clicked                                     #
@@ -244,75 +244,62 @@ sub renameButton_clicked
 #  new name.  It then renames that item in the ListBox and in the oda   #
 #  database.                                                            #
 #########################################################################
-
-  # Check to see if we actually have something selected in the listbox
-  if (packageSetsListBox->currentItem() >= 0)
-    { 
-      my $response;
-      my $foundit;
-      my $count;
-      my $success;
-      my $error = 0;
-      my $ok = 0;
-      my $outputstr = "Enter a new name for '" . 
-                      packageSetsListBox->currentText() . "':";
-      do # Keep prompting the user for a new name until success
-        {
-          $ok = 0;  # Was the OK button pressed, or the Cancel button?
-          $error = 0;
-          $response = Qt::InputDialog::getText("Rename Package Set",
-                        $outputstr, Qt::LineEdit::Normal(), "", $ok, this);
-          $response = SelectorUtils::compactSpaces($response);
-          $response =~ s/ /_/g; # Change spaces to underscores
-
-          if (($ok) && (length($response) > 0))
-            {
-              # Check to see if the new string already exists
-              $foundit = 0;
-              for ($count=0; 
-                   ($count < packageSetsListBox->count()) && (!$foundit); 
-                   $count++)
-                {
-                  $foundit = 1 if 
-                    (lc(packageSetsListBox->text($count)) eq lc($response));
-                }
-              
-              if ($foundit)
-                {
-                  $error = 1;
-                  $outputstr = "Package Set '$response' already exists. \n" .
-                               "Enter a new name for '" . 
-                               packageSetsListBox->currentText() . "':";
-                }
-              else
-                {
-                  my $selected = packageSetsListBox->currentText();
-                  $success = OSCAR::Database::set_groups(
-                    $selected,\%options,\@errors);
-                  if ($success)
-                    {
-                      refreshPackageSetsListBox();
-                    }
-                  else
-                    {
-                      Carp::carp("Could not do oda command " . 
-                        "'rename_package_set $selected $response'");
-                    }
-                }
-            }
-          elsif ($ok) # BUT, the input string turned out to be empty
-            { 
-              $error = 1;
-              $outputstr = "Please try again. \nEnter a new name for '".
-                           packageSetsListBox->currentText(). "':";
-            }
-        } while ($error);
+sub renameButton_clicked {
+    # Check to see if we actually have something selected in the listbox
+    if (packageSetsListBox->currentItem() >= 0) { 
+	my $response;
+	my $foundit;
+	my $count;
+	my $success;
+	my $error = 0;
+	my $ok = 0;
+	my $outputstr = "Enter a new name for '" . 
+	    packageSetsListBox->currentText() . "':";
+	do { # Keep prompting the user for a new name until success
+	    $ok = 0;  # Was the OK button pressed, or the Cancel button?
+	    $error = 0;
+	    $response = Qt::InputDialog::getText("Rename Package Set",
+						 $outputstr,
+						 Qt::LineEdit::Normal(),
+						 "", $ok, this);
+	    $response = SelectorUtils::compactSpaces($response);
+	    $response =~ s/ /_/g; # Change spaces to underscores
+	    
+	    if (($ok) && (length($response) > 0)) {
+		# Check to see if the new string already exists
+		$foundit = 0;
+		for ($count=0; 
+		     ($count < packageSetsListBox->count()) && (!$foundit); 
+		     $count++) {
+		    $foundit = 1
+			if (lc(packageSetsListBox->text($count)) eq lc($response));
+		}
+		if ($foundit) {
+		    $error = 1;
+		    $outputstr = "Package Set '$response' already exists. \n" .
+			"Enter a new name for '" . 
+			packageSetsListBox->currentText() . "':";
+		} else {
+		    my $selected = packageSetsListBox->currentText();
+		    $success = OSCAR::Database::rename_group($selected,
+							     $response,
+							     \%options,
+							     \@errors);
+		    if ($success) {
+			refreshPackageSetsListBox();
+		    } else {
+			carp("Could not do oda command " . 
+			     "'rename_package_set $selected $response'");
+		    }
+		}
+	    } elsif ($ok) { # BUT, the input string turned out to be empty
+		$error = 1;
+		$outputstr = "Please try again. \nEnter a new name for '".
+		    packageSetsListBox->currentText(). "':";
+	    }
+	} while ($error);
     }
-
 }
-
-sub deleteButton_clicked
-{
 
 #########################################################################
 #  Subroutine: deleteButton_clicked                                     #
@@ -322,6 +309,8 @@ sub deleteButton_clicked
 #  package set currently selected in the ListBox and removes it from    #
 #  both the ListBox and the oda database.                               #
 #########################################################################
+sub deleteButton_clicked {
+
 
   # Make sure that we have at least 2 items in the list 
   # and that at least one of them is selected.
@@ -337,14 +326,11 @@ sub deleteButton_clicked
         }
       else 
         {
-          Carp::carp("Could not do oda command 'delete_package_set $selected'");
+          carp("Could not do oda command 'delete_package_set $selected'");
         }
     }
 
 }
-
-sub newCoreButton_clicked
-{
 
 #########################################################################
 #  Subroutine: newCoreButton_clicked                                    #
@@ -354,6 +340,7 @@ sub newCoreButton_clicked
 #  a new package set named "Core" (with _copy appended as needed)       #
 #  and adds only core packages to that set.                             #
 #########################################################################
+sub newCoreButton_clicked {
 
   my $currSet = createNewPackageSet("Core");
   # Add all "core" packages to this set
@@ -364,8 +351,8 @@ sub newCoreButton_clicked
         {
           my $success = OSCAR::Database::set_group_packages(
                 $currSet,$pack,2,\%options,\@errors);
-          Carp::carp("Could not do oda command 'set_group_packages " .
-            "$pack $currSet'") if (!$success);
+          carp("Could not do oda command 'set_group_packages " .
+	       "$pack $currSet'") if (!$success);
         }
     }
 
