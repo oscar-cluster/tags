@@ -69,6 +69,7 @@ use SystemInstaller::Env;
 use SystemInstaller::Tk::Common;
 use Carp;
 use FileHandle;
+use File::Basename;
 use vars qw($config);
 
 # First of all, enforce that the user running this script is 'root'
@@ -492,8 +493,11 @@ sub build_oscar_image {
     my $step_string = "";
     $step_string = "Step $step_number: " if $mode eq "install";
 
+    # Rewrite package group files, we will need them!
+    &OSCAR::Opkg::write_pgroup_files();
+
     # We get the default settings for images.
-    my %vars = get_image_default_settings ();
+    my %vars = &get_image_default_settings();
 
     # Update settings: ee set the last few points specific to the current
     # situation.
@@ -505,6 +509,13 @@ sub build_oscar_image {
                     };
     $vars{postinstall} = \&postimagebuild;
     $vars{step_number} = $step_number;
+    my @pgroups;
+    my $ppath = $OSCAR::PackagePath::PGROUP_PATH;
+    for my $d (glob("$ppath/*.pgroup")) {
+	my $f = basename($d, ".pgroup");
+	push @pgroups, { label => "$f", path => "$d" };
+    }
+    $vars{package_group} = \@pgroups;
 
     createimage_window($window, %vars);
 }

@@ -40,6 +40,7 @@ use OSCAR::PackageSmart;
 use Carp;
 use Data::Dumper;
 use OSCAR::OCA::OS_Detect;
+use OSCAR::Opkg;
 
 ## Begin distribution specific stuff ##
 
@@ -94,38 +95,19 @@ update_hosts($ip) or croak("Couldn't add required host entries to /etc/hosts");
 
 # Get a list of all non-core packages
 # and list of RPMs from the non-core packages
-my $sel_group = get_selected_group;
-my @opkgs = &list_selected_packages("noncore", $sel_group);
-my @opkgs_list;
-my @pkgs;
-my @qerrors;
-foreach my $pkg_ref ( @opkgs ) {
-    my $opkg = $$pkg_ref{package};
-    my $ver = $$pkg_ref{version};
-    push @opkgs_list, $opkg;
-    push @pkgs, "opkg-$opkg-server";
+my $sel_group = &get_selected_group();
+my @ohlist = &list_selected_packages("noncore", $sel_group);
+my @opkgs;
+foreach my $p (@ohlist) {
+    push @opkgs, $$p{package};
 }
-oscar_log_subsection("Identified non-core packages: " . join(' ', @opkgs_list));
-
+oscar_log_subsection("Identified non-core packages: " . join(' ', @opkgs));
 
 # Now install the pkgs that we found
 
 oscar_log_subsection("Installing server non-core packages " .
 		     "(core packages already installed)");
-
-my $pm = &OSCAR::PackageSmart::prepare_pools($verbose,$oscar_pkg_pool,$distro_pkg_pool);
-if (!$pm) {
-    croak "\nERROR: Could not create PackMan instance!\n";
-}
-# If the list of packages we have to install is empty, we do nothing
-if (@pkgs > 0) {
-    oscar_log_subsection("Smart_install: ".join(",",@pkgs));
-    my ($ret, @out) = $pm->smart_install(@pkgs);
-    if (!$ret) {
-        print "Error occured during server pkgs install:\n".join("\n",@out)."\n";
-        croak("Couldn't install the required packages needed for OSCAR");
-    }
-}
+&OSCAR::Opkg::opkgs_install("server", @opkgs);
 oscar_log_subsection("Successfully installed server non-core binary packages");
 
 #
@@ -158,7 +140,8 @@ oscar_log_subsection("Marking installed bit in ODA for server non-core RPMS");
 
 my $requested = 8; # "Installed" flag for the Node_Package_Status"
 die "$0:Failed to update the table Node_Package_Status"
-    if(!update_node_package_status(\%options,$OSCAR_SERVER_NODE,\@opkgs,$requested,\@errors));
+    if(!&update_node_package_status(\%options, $OSCAR_SERVER_NODE, \@ohlist,
+				    $requested,\@errors));
 
 
 # UNLOCKING FOR NEST
@@ -171,10 +154,10 @@ oscar_log_subsection("Done marking installed bits in ODA");
 
 oscar_log_subsection("Running post_server_install scripts " .
 		     "for server non-core packages");
-foreach my $opkg (@opkgs_list) {
+foreach my $opkg (@opkgs) {
     # if($opkg ne "networking"){   # EF: why was this here?
                                    # if it doesn't work, fix it!  
-    run_pkg_script($opkg,"post_server_install") 
+    &run_pkg_script($opkg,"post_server_install") 
         or croak("Failed running post_server_install for $opkg");
 }
 oscar_log_subsection("Successfully ran server non-core package ".

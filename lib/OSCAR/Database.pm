@@ -103,6 +103,7 @@ $options{debug} = 1
               get_client_nodes_info
               get_cluster_info_with_name
               get_gateway
+              get_group_packages
               get_group_packages_with_groupname
               get_groups
               get_groups_for_packages
@@ -358,9 +359,8 @@ sub get_client_nodes {
     my ($results_ref,
         $options_ref,
         $errors_ref) = @_;
-    my $sql = "SELECT Nodes.* FROM Nodes, Groups ".
-            "WHERE Groups.id=Nodes.group_id ".
-            "AND Groups.name='oscar_clients'";
+    my $sql = "SELECT * FROM Nodes ".
+            "WHERE group_name='oscar_clients'";
     print "DB_DEBUG>$0:\n====> in Database::get_client_nodes SQL : $sql\n" if $$options_ref{debug};
     return do_select($sql,$results_ref, $options_ref, $errors_ref);
 }
@@ -528,7 +528,7 @@ sub get_selected_group {
     my ($options_ref,
         $errors_ref) = @_;
     my $sql = "SELECT id, name From Groups " .
-              "WHERE Groups.selected=1 ";
+              "WHERE selected=1 ";
     my @results = ();
     print "DB_DEBUG>$0:\n====> in Database::get_selected_group SQL : $sql\n"
 	if $$options_ref{debug};
@@ -549,10 +549,9 @@ sub get_selected_group_packages {
         $flag) = @_;
     $group = &get_selected_group($options_ref,$errors_ref) if (!$group);
     $flag = 1 if (!$flag);
-    my $sql = "SELECT Packages.id, Packages.package, Packages.version " .
-              "From Packages, Group_Packages, Groups " .
-              "WHERE Packages.package=Group_Packages.package ".
-              "AND Group_Packages.group_name=Groups.name ".
+    my $sql = "SELECT Group_Packages.package " .
+              "From Group_Packages, Groups " .
+              "WHERE Group_Packages.group_name=Groups.name ".
               "AND Groups.name='$group' ".
               "AND Groups.selected=1 ".
               "AND Group_Packages.selected=$flag";
@@ -569,6 +568,24 @@ sub get_unselected_group_packages {
     return &get_selected_group_packages($results_ref, $options_ref,
 					$errors_ref, $group, 0);
 }
+
+#
+# Return selected packages in a group
+#
+sub get_group_packages {
+    my ($group,
+	$results_ref,
+        $options_ref,
+        $errors_ref) = @_;
+    my $sql = "SELECT package FROM Group_Packages " .
+              "WHERE group_name='$group' ".
+              "AND selected=1";
+    print "DB_DEBUG>$0:\n====> in Database::get_group_packages ".
+	"SQL : $sql\n" if $$options_ref{debug};
+    return &do_select($sql, $results_ref, $options_ref, $errors_ref);
+}
+
+
 
 # Get the list of packages to install at the step "PackageInUn".
 # This subroutine checks the flag "selected" and get the list of
@@ -629,10 +646,9 @@ sub get_group_packages_with_groupname {
         $results_ref,
         $options_ref,
         $errors_ref) = @_;
-    my $sql = "SELECT Packages.id, Packages.package " .
-              "From Packages, Group_Packages " .
-              "WHERE Packages.package=Group_Packages.package ".
-              "AND Group_Packages.group_name='$group'";
+    my $sql = "SELECT package " .
+              "From Group_Packages " .
+              "WHERE Group_Packages.group_name='$group'";
     print "DB_DEBUG>$0:\n====> in ".
 	"Database::get_group_packages_with_groupname SQL : $sql\n"
 	if $$options_ref{debug};
@@ -1605,10 +1621,7 @@ sub set_group_nodes {
         $nodes_ref,
         $options_ref,
         $errors_ref) = @_;
-    my @groups = ();
-    my $group_ref = &get_groups(\@groups, $options_ref, $errors_ref, $group);
-    my $group_id = $$group_ref{id};
-    my %field_value_hash = ( "group_id" => $group_id );
+    my %field_value_hash = ( "group_name" => $group );
     my $success = 0;
     foreach my $node (@$nodes_ref){
         my $node_ref = &get_node_info_with_name($node, $options_ref,
@@ -1723,6 +1736,20 @@ sub set_groups_selected {
         die "DB_DEBUG>$0:\n====>Failed to update values via << $sql >>"
             if !&do_insert($sql, "Groups", $options_ref, $errors_ref);
     }    
+    return 1;
+}
+
+sub rename_group {
+    my ($old_name,
+	$new_name,
+        $options_ref,
+        $errors_ref) = @_;
+
+    my $sql = "UPDATE Groups SET name='$new_name' WHERE name='$old_name'";
+        print "DB_DEBUG>$0:\n====> in Database::rename_group SQL : $sql\n"
+	    if $$options_ref{debug};
+    die "DB_DEBUG>$0:\n====>Failed to update values via << $sql >>"
+	if !&do_update($sql,"Groups", $options_ref, $errors_ref);
     return 1;
 }
 
@@ -1940,8 +1967,8 @@ sub set_node_with_group {
 						      $options_ref,
 						      $errors_ref);
         my $cluster_id = $$cluster_ref{id} if $cluster_ref;
-        $sql = "INSERT INTO Nodes (cluster_id, name, group_id) ".
-               "SELECT $cluster_id, '$node', id FROM Groups WHERE name='$group'";
+        $sql = "INSERT INTO Nodes (cluster_id, name, group_name) ".
+               "SELECT $cluster_id, '$node', '$group'";
         print "DB_DEBUG>$0:\n====> in Database::set_node_with_group SQL: $sql\n" 
             if $$options_ref{debug};
         die "DB_DEBUG>$0:\n====>Failed to insert values via << $sql >>"
