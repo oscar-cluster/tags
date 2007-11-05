@@ -375,7 +375,7 @@ OSCAR::PackageSmart::checksum_write("$md5dir/packages.md5",$md5);
 # TEST
 #
 my %opkgs = &opkg_hash_installed("api");
-print Dumper(%opkgs);
+print Dumper(%opkgs) if $verbose > 3;
 #die("This was only a test!!!");
 
 # fake definition, must disappear.
@@ -417,8 +417,6 @@ croak("Couldn't set up oda database") if $exit_status;
 my $exit_status =
   system("$ENV{OSCAR_HOME}/scripts/populate_default_package_set")/256;
 croak("Couldn't set up a default package set") if $exit_status;
-
-
 
 
 
@@ -499,12 +497,7 @@ croak("Couldn't initialize the nics and networks for the oscar server")
 
 my (@results, %options, @errors);
 my %results = &opkg_hash_installed("api", class => "core");
-
-print "=======>>> core packages <<<=======\n".Dumper(%results) if $verbose;
-
 my @core_opkgs = keys(%results);
-print "==========(( core packages identified: ))=============\n";
-
 oscar_log_subsection("Identified core packages: " . join(' ', @core_opkgs));
 
 oscar_log_subsection("Installing server core packages");
