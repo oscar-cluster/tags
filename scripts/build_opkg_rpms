@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
+
 use strict;
-use lib "$ENV{OSCAR_HOME}/lib";
+use Cwd;
 use File::Basename;
-use OSCAR::OCA::OS_Detect;
 
 $ENV{LC_ALL}="C";
 
@@ -13,6 +13,22 @@ if (!scalar(@odir)) {
     print "Usage: $0 <OPKG_PATH> ...\n";
     exit 1;
 }
+
+my $pwd = cwd();
+my $OHOME;
+
+if (-d "$pwd/../scripts" && -d "$pwd/../packages" && -d "$pwd/../share") {
+    $OHOME=dirname($pwd);
+    $ENV{OSCAR_HOME} = $OHOME;
+    print "OHOME = $OHOME\n";
+} else {
+    print "You must execute this program from within the scripts/ directory\n",
+    "of an OSCAR tree!\n";
+    exit 1;
+}
+
+eval "use lib \"$ENV{OSCAR_HOME}/lib\"";
+require OSCAR::OCA::OS_Detect;
 
 my $os = OSCAR::OCA::OS_Detect::open();
 my $dist = $os->{compat_distro};
