@@ -115,8 +115,8 @@ if ((scalar keys %table_fields_hash) == 0) {
     oda::list_fields(\%options,"Packages",\%fields,\@error_strings);
     my %packages_hash = %fields;
     foreach my $field (keys %packages_hash) {
-        if($field == "__group"){ $field = "group"; }
-        if($field == "__class"){ $field = "class"; }
+        if($field eq "__group"){ $field = "group"; }
+        if($field eq "__class"){ $field = "class"; }
         $packages_hash{$field} = 1;
     }
     $table_fields_hash{"Packages"} = \%packages_hash;
