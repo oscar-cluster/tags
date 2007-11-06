@@ -373,7 +373,7 @@ sub newAllButton_clicked
 #  and adds ALL packages to that set.                                   #
 #########################################################################
 
-  my $currSet = createNewPackageSet("All");
+  my $currSet = createNewPackageSet("new_All");
   # Add all packages to this set
   my $allPackages = SelectorUtils::getAllPackages();
   foreach my $pack (keys %{ $allPackages })
