@@ -45,7 +45,7 @@ use Qt::attributes qw(
 
 use lib "$ENV{OSCAR_HOME}/lib"; use OSCAR::Database;
 use Qt::signals refreshPackageSets => [];
-use SelectorUtils;
+use Qt::SelectorUtils;
 
 my %options = ();
 my @errors = ();
@@ -343,12 +343,12 @@ sub deleteButton_clicked {
 #########################################################################
 sub newCoreButton_clicked {
 
-  my $currSet = createNewPackageSet("Core");
+  my $currSet = createNewPackageSet("new_Core");
   # Add all "core" packages to this set
   my $allPackages = SelectorUtils::getAllPackages();
   foreach my $pack (keys %{ $allPackages })
     {
-      if ($allPackages->{$pack}{__class} eq "core")
+      if ($allPackages->{$pack}{class} eq "core")
         {
           my $success = OSCAR::Database::set_group_packages(
                 $currSet,$pack,2,\%options,\@errors);
