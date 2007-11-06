@@ -89,7 +89,7 @@ if($file ne '') {
     #reset all core and included packages to selected and others to unselected 
     if($inun == 1) { 
         foreach my $pack (keys %{$allPackages}) { 
-            if($$allPackages{$pack}{__class} eq "core" || $$allPackages{$pack}{__class} eq "included") { 
+            if($$allPackages{$pack}{class} eq "core" || $$allPackages{$pack}{class} eq "included") { 
                 processInput("select -q $pack"); 
             } else { 
                 processInput("unselect -q $pack"); 
@@ -156,12 +156,12 @@ sub printPackages
         print "   Status           Name          Class        Version\n---------------------------------------------------------\n";
         foreach my $package (keys %{$allPackages})
         {
-            if($$allPackages{$package}{__class} eq "core")
+            if($$allPackages{$package}{class} eq "core")
             {
                 #Need to set up these variables to be printed out
                 $printStatus = $$allPackages{$package}{status};
                 $printPackage = $package;
-                $printClass = $$allPackages{$package}{__class};
+                $printClass = $$allPackages{$package}{class};
                 $printVersion = $$allPackages{$package}{version};
                 
                 #Print out the information
@@ -175,12 +175,12 @@ sub printPackages
         print "   Status           Name          Class        Version\n---------------------------------------------------------\n";
         foreach my $package (keys %{$allPackages})
         {
-            if($$allPackages{$package}{__class} eq "included")
+            if($$allPackages{$package}{class} eq "included")
             {
                 #Need to set up these variables to be printed out
                 $printStatus = $$allPackages{$package}{status};
                 $printPackage = $package;
-                $printClass = $$allPackages{$package}{__class};
+                $printClass = $$allPackages{$package}{class};
                 $printVersion = $$allPackages{$package}{version};
                 
                 #Print out the information
@@ -195,11 +195,11 @@ sub printPackages
         foreach my $package (keys %{$allPackages})
         {
             #Need to set up these variables to be printed out
-            if($$allPackages{$package}{__class} eq "third-party")
+            if($$allPackages{$package}{class} eq "third-party")
             {
                 $printStatus = $$allPackages{$package}{status};
                 $printPackage = $package;
-                $printClass = $$allPackages{$package}{__class};
+                $printClass = $$allPackages{$package}{class};
                 $printVersion = $$allPackages{$package}{version};
                 
                 #Print out the information
@@ -216,7 +216,7 @@ sub printPackages
             #Need to set up these variables to be printed out
             $printStatus = $$allPackages{$package}{status};
             $printPackage = $package;
-            $printClass = $$allPackages{$package}{__class};
+            $printClass = $$allPackages{$package}{class};
             $printVersion = $$allPackages{$package}{version};
             
             #Print out the information
@@ -345,7 +345,7 @@ sub processInput
         }
 
         #Make sure the package exists
-        if(defined $$allPackages{$packagename} && $$allPackages{$packagename}{__class} ne "core")
+        if(defined $$allPackages{$packagename} && $$allPackages{$packagename}{class} ne "core")
         {
             $requested = 1;
             $$allPackages{$packagename}{status} = "Unselected";
@@ -371,7 +371,7 @@ sub processInput
         {
             print "Package name " . $packagename . " not recognized\n" unless $quiet;
         }
-        elsif($$allPackages{$packagename}{__class} eq "core")
+        elsif($$allPackages{$packagename}{class} eq "core")
         {
             print "Cannot unselect core packages\n" unless $quiet;
         }
