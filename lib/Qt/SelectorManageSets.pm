@@ -21,6 +21,7 @@ use utf8;
 package SelectorManageSets;
 use Qt;
 use Qt::isa qw(Qt::Dialog);
+use Data::Dumper;
 use Qt::slots
     refreshPackageSetsListBox => [],
     createNewPackageSet => [],
