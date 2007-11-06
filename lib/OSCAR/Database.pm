@@ -22,7 +22,7 @@ package OSCAR::Database;
 # 
 # Copyright (c) 2005 Bernard Li <bli@bcgsc.ca>
 #
-# Copyright (c) 2006 Erich Focht <efocht@hpce.nec.com>
+# Copyright (c) 2006-2007 Erich Focht <efocht@hpce.nec.com>
 #
 
 #
@@ -823,7 +823,9 @@ sub get_groups {
         $errors_ref,
         $group)= @_;
     my $sql ="SELECT * FROM Groups ";
-    if(defined $group){ $sql .= "WHERE name='$group'"; }
+    if (defined $group) { 
+	$sql .= "WHERE name='$group'";
+    }
     print "DB_DEBUG>$0:\n====> in Database::get_groups SQL : $sql\n" 
         if $$options_ref{debug};
     die "DB_DEBUG>$0:\n====>Failed to query values via << $sql >>"

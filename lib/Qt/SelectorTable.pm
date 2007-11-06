@@ -311,11 +311,11 @@ sub populateTable
           my $opkg_class;
           if ($allPackages->{$pack}{group}){
               $opkg_class = $allPackages->{$pack}{group};
-              if ($allPackages->{$pack}{__class}) {
-                  $opkg_class .= ":" . $allPackages->{$pack}{__class};
+              if ($allPackages->{$pack}{class}) {
+                  $opkg_class .= ":" . $allPackages->{$pack}{class};
               }
-          }elsif($allPackages->{$pack}{__class}){
-              $opkg_class = $allPackages->{$pack}{__class};
+          }elsif($allPackages->{$pack}{class}){
+              $opkg_class = $allPackages->{$pack}{class};
           }
           $item = SelectorTableItem(this,Qt::TableItem::Never(),
                                     $opkg_class);
@@ -546,8 +546,8 @@ sub checkboxChangedForSelector
 #          foreach my $pkg (@opkgs)
             {
               $reqhash->{$pkg} = 1 if 
-                ((defined $allPackages->{$package}{__class}) &&
-                 ($allPackages->{$package}{__class} eq 'core'));
+                ((defined $allPackages->{$package}{class}) &&
+                 ($allPackages->{$package}{class} eq 'core'));
             }
 
           # Get a list of packages conflicting with the required ones.
@@ -623,8 +623,8 @@ sub checkboxChangedForSelector
           $reqhash = SelectorUtils::getIsRequiredByList($reqhash,$package);
           foreach $reqkey (keys %{ $reqhash })
             {
-              if (!((defined $allPackages->{$reqkey}{__class}) &&
-                    ($allPackages->{$reqkey}{__class} eq 'core')))
+              if (!((defined $allPackages->{$reqkey}{class}) &&
+                    ($allPackages->{$reqkey}{class} eq 'core')))
                 {
                   setCheckBoxForPackage($reqkey,0);
                   if ((defined $packagesInSet->{$reqkey}) || 
@@ -714,8 +714,8 @@ sub checkboxChangedForUpdater
       $reqhash = SelectorUtils::getIsRequiredByList($reqhash,$package);
       foreach $reqkey (keys %{ $reqhash })
         {
-          if (!((defined $allPackages->{$reqkey}{__class}) &&
-                ($allPackages->{$reqkey}{__class} eq 'core')))
+          if (!((defined $allPackages->{$reqkey}{class}) &&
+                ($allPackages->{$reqkey}{class} eq 'core')))
             {
               setCheckBoxForPackage($reqkey,0);
             }
