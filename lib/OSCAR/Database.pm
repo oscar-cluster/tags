@@ -1014,7 +1014,7 @@ sub delete_groups {
         $errors_ref) = @_;
     my @results = ();
     &get_groups(\@results, $options_ref, $errors_ref, $group);
-    if (!@results) {
+    if (@results) {
         my $sql = "DELETE FROM Groups WHERE name='$group'";
         print "DB_DEBUG>$0:\n====> in Database::delete_groups SQL : $sql\n"
 	    if $$options_ref{debug};
