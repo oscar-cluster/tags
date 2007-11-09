@@ -91,7 +91,7 @@ my $separator = &OSCAR::PackagePath::pkg_separator();
 
 vprint("OSCAR pkg path: $oscar_pkg_pool\n");
 vprint("Distro pkg path: $distro_pkg_pool\n");
-vprint("Prereq paths: ".join(",",@prereqs))."\n";
+vprint("Prereq paths: ".join(",",@prereqs)."\n");
 
 #
 # Is this "smart mode"? Then load PackMan and regenerate the metadata cache
@@ -476,7 +476,7 @@ sub vprint {
 # matching block!
 ############################################################################
 sub get_config {
-    my ($path, $distro, $distver, $arch) = @_;
+    my ($path, $distro, $distrover, $arch) = @_;
     local *IN;
     my (@config, $line, $match);
     
@@ -487,6 +487,7 @@ sub get_config {
 	    my ($d,$v,$a) = ($1,$2,$3);
 	    $d =~ s/\*/\.*/g;
 	    $v =~ s/\*/\.*/g;
+	    $v =~ s/\|/\\|/g;
 	    $a =~ s/\*/\.*/g;
 	    my $str = "$distro:$distrover:$arch";
 	    my $mstr = "$d:$v:$a";
