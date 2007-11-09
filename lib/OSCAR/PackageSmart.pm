@@ -71,7 +71,7 @@ sub prepare_pools {
     my $archs = "i386|x86_64|ia64|ppc|ppc64";
     # List of all supported distros. May be nice if we can get this list 
     # from OS_Detect.
-    my $distros = "debian|fc|mdv|rhel|suse|redhat|yellowdog";
+    my $distros = "debian|fc|mdv|rhel|suse|redhat|yellowdog|ydl";
     my $format = "";
     # Before to prepare a pool, we try to detect the binary package format
     # associated Not that for a specific pool or set of pools, it is not
