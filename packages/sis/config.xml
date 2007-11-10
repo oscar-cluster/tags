@@ -79,7 +79,7 @@
     <requires>
       <filters>
         <dist>ydl</dist>
-        <arch>ppc64</arch>
+        <arch>ppc</arch>
       </filters>
       <pkg>systemimager-ppc64-ps3boot-standard</pkg>
       <pkg>systemimager-ppc64-ps3initrd_template</pkg>
