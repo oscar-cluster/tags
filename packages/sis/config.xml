@@ -50,6 +50,7 @@
         <dist>rhel</dist>
         <dist>fc</dist>
         <dist>mdv</dist>
+        <dist>ydl</dist>
       </filters>
       <pkg>atftp-server</pkg>
     </requires>
@@ -74,6 +75,14 @@
       </filters>
       <pkg>systemimager-i386boot-standard</pkg>
       <pkg>systemimager-i386initrd_template</pkg>
+    </requires>
+    <requires>
+      <filters>
+        <dist>ydl</dist>
+        <arch>ppc64</arch>
+      </filters>
+      <pkg>systemimager-ppc64-ps3boot-standard</pkg>
+      <pkg>systemimager-ppc64-ps3initrd_template</pkg>
     </requires>
     <requires>
       <filters>
@@ -134,6 +143,11 @@
   </clientDeps>
   <apiDeps/>
   <changelog>
+    <versionEntry version="4.0.0-2">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-10T00:15:23+01:00">
+        <item>Updated to support YDL</item>
+      </changelogEntry>
+    </versionEntry>
     <versionEntry version="4.0.0-1">
       <changelogEntry authorName="Erich Focht" date="2007-11-05T00:31:22+01:00">
         <item>Updated systemimager to 4.0.0-1.</item>

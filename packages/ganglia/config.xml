@@ -28,6 +28,7 @@
       <filters>
         <dist>fc</dist>
         <dist>rhel</dist>
+        <dist>ydl</dist>
       </filters>
       <pkg>php-gd</pkg>
       <pkg>php-common</pkg>
@@ -52,6 +53,11 @@
   </clientDeps>
   <apiDeps/>
   <changelog>
+    <versionEntry version="3.0.5-2">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-10T00:20:22-04:00">
+        <item>Updated to support YDL</item>
+      </changelogEntry>
+    </versionEntry>
     <versionEntry version="3.0.5-1">
       <changelogEntry authorName="Bernard Li" date="2007-10-08T20:03:56-04:00">
         <item>Update to version 3.0.5</item>

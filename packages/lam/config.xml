@@ -159,6 +159,7 @@ visualized either at runtime or post-mortem.</description>
         <dist>fc</dist>
         <dist>rhel</dist>
         <dist>suse</dist>
+        <dist>ydl</dist>
       </filters>
       <pkg>libaio</pkg>
       <pkg>libaio-devel</pkg>
@@ -194,6 +195,7 @@ visualized either at runtime or post-mortem.</description>
         <dist>fc</dist>
         <dist>rhel</dist>
         <dist>suse</dist>
+        <dist>ydl</dist>
       </filters>
       <pkg>libaio</pkg>
       <pkg>libaio-devel</pkg>
@@ -226,6 +228,11 @@ visualized either at runtime or post-mortem.</description>
   <apiDeps>
   </apiDeps>
   <changelog>
+    <versionEntry version="7.1.4-7">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-10T00:24:22-04:00">
+        <item>Updated to support YDL</item>
+      </changelogEntry>
+    </versionEntry>
     <versionEntry version="7.1.4-6">
       <changelogEntry authorName="Erich Focht" date="2007-10-13T12:07:15-04:00">
         <item>Updated to upstream version 7.1.4</item>
