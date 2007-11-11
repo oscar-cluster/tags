@@ -69,7 +69,7 @@ nightly: baserpms
 	mkdir -p packages/base/distro/common-rpms
 	mv oscar-base-*.rpm packages/base/distro/common-rpms
 	cd dist; ./newmake.sh --base --srpms --all-repos --nightly
-	rm -rf packages/base/distro/common-rpms
+	rm -rf packages/base/distro/common-rpms ../oscar-base-*.tar.gz ../oscar-srpms-*.tar.gz
 
 #
 # Install the repositories needed on the local machine to /tftpboot/oscar,
