@@ -111,12 +111,12 @@ srcdir=`dirname $RUNDIR`
 
 umask 022
 cd $srcdir
-OSCAR_VERSION=`dist/get-oscar-version.sh VERSION`
+OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION`
 if [ -n "$NIGHTLY" ]; then
-    OSCAR_VERSION=`dist/get-oscar-version.sh VERSION --nightly`
+    OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION --nightly`
 fi
-OSCAR_GREEK_VERSION=`dist/get-oscar-version.sh VERSION --greek`
-OSCAR_SVN_VERSION=`dist/get-oscar-version.sh VERSION --svn`
+OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
+OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`
 
 ############################################################################
 

@@ -29,7 +29,7 @@ all:
 	@echo "... there is no default target ..."
 	@echo "Use one of: dist test install clean"
 
-OSCAR_VERSION ?= $(shell dist/get-oscar-version.sh VERSION)
+OSCAR_VERSION ?= $(shell scripts/get-oscar-version.sh VERSION)
 PKG        = $(shell env OSCAR_HOME=`pwd` scripts/distro-query | \
 	       awk '/packaging method/{print $$NF}')
 ARCH       = $(shell scripts/get_arch)
