@@ -49,11 +49,11 @@ libraries.</description>
   </apiDeps>
   <changelog>
     <versionEntry version="1.2.7-8">
-      <changelogEntry authorName="Erich Focht" date="2007-07-13T11:22:53+02:00">
-        <item>converted to new opkg format</item>
-      </changelogEntry>
       <changelogEntry authorName="Erich Focht" date="2007-10-06T11:22:53+02:00">
         <item>Fixed wrong dependencies from autoconversion.</item>
+      </changelogEntry>
+      <changelogEntry authorName="Erich Focht" date="2007-07-13T11:22:53+02:00">
+        <item>converted to new opkg format</item>
       </changelogEntry>
     </versionEntry>
   </changelog>

@@ -239,11 +239,11 @@ visualized either at runtime or post-mortem.</description>
       </changelogEntry>
     </versionEntry>
     <versionEntry version="7.1.2-6">
-      <changelogEntry authorName="Geoffroy Vallee" date="2007-09-13T12:07:15-04:00">
-        <item>Port to the new OPKG format (OPKGC).</item>
-      </changelogEntry>
       <changelogEntry authorName="Erich Focht" date="2007-10-06T12:07:15-04:00">
         <item>Fixed bogus requires of server and client deps.</item>
+      </changelogEntry>
+      <changelogEntry authorName="Geoffroy Vallee" date="2007-09-13T12:07:15-04:00">
+        <item>Port to the new OPKG format (OPKGC).</item>
       </changelogEntry>
     </versionEntry>
   </changelog>

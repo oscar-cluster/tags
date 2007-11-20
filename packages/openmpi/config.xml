@@ -46,11 +46,11 @@
   <apiDeps/>
   <changelog>
     <versionEntry version="1.2.3-1">
-      <changelogEntry authorName="Bernard Li" date="2007-08-21T12:06:14-04:00">
-        <item>Convert to the new OPKG API (for OPKGC)</item>
-      </changelogEntry>
       <changelogEntry authorName="Erich Focht" date="2007-10-06T12:06:14-04:00">
         <item>Fixed completely wrong dependencies.</item>
+      </changelogEntry>
+      <changelogEntry authorName="Bernard Li" date="2007-08-21T12:06:14-04:00">
+        <item>Convert to the new OPKG API (for OPKGC)</item>
       </changelogEntry>
     </versionEntry>
   </changelog>
