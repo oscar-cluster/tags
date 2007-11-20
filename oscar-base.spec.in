@@ -91,6 +91,7 @@ Scripts for OSCAR clustering base package.
 %{basedir}/images/*
 %{basedir}/install_cluster
 %{basedir}/oscarsamples/*
+%{basedir}/packages/*
 %{basedir}/share/*
 %{basedir}/testing/*
 %{basedir}/tmp/

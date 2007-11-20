@@ -148,11 +148,15 @@ baserpms:
 		> oscar-base.spec
 	mkdir oscar-base-$(OSCAR_VERSION)
 	cp -rl `ls -1 | grep -v oscar-base-$(OSCAR_VERSION)` oscar-base-$(OSCAR_VERSION)
-	tar czvf oscar-base-$(OSCAR_VERSION).tar.gz --exclude packages \
+	( cd oscar-base-$(OSCAR_VERSION); \
+	  for p in packages/* ; do \
+	    if [ ! -e $$p/prereq.cfg ]; then rm -rf $$p; fi; \
+	  done; )
+	tar czvf oscar-base-$(OSCAR_VERSION).tar.gz \
 		--exclude dist --exclude .svn --exclude \*.tar.gz \
 		--exclude \*.spec.in --exclude src --exclude \*~ \
 		--exclude share/prereqs/\*/distro \
-		--exclude share/prereqs/\*/SRPMS oscar-base-$(OSCAR_VERSION)
+		--exclude share/prereqs/\*/SRPMS oscar-base-$(OSCAR_VERSION) 
 	rm -rf oscar-base-$(OSCAR_VERSION)
 	rpmbuild -tb oscar-base-$(OSCAR_VERSION).tar.gz && \
 	mv `rpm --eval '%{_topdir}'`/RPMS/noarch/oscar-base-*$(OSCAR_VERSION)-*.noarch.rpm . && \
