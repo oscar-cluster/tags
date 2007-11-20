@@ -79,6 +79,9 @@ if (!$i) {
     exit 1;
 }
 
+# fix bogus autoinstallscripts
+&fixup_ai_script();
+
 my $imageconf = $configdir."/".$image;
 my $scconf = "$imagedir/etc/systemconfig/systemconfig.conf";
 my $masterconf = $base."/configurator.html";
@@ -260,4 +263,27 @@ sub update_cluster {
     system("scpush --image $image $v $scconf /etc/systemconfig/");
     print "Running systemconfigurator to enable new config.\n";
     system("scexec --image $image -- systemconfigurator $v --runboot");
+}
+
+#
+# fixup autoinstall script which is bogus for newer systemimagers
+#
+sub fixup_ai_script {
+    my $s = "/var/lib/systemimager/scripts/$image.master";
+    !system("mv $s $s.orig") or croak "Could not rename $s";
+    open IN, "$s.orig" or croak "$!";
+    open OUT, ">$s" or croak "$!";
+    my $found = 0;
+    while (<IN>) {
+	chomp;
+	if (/^\# Fix device names in boot-loader configuration/) {
+	    $found = 1;
+	}
+	print OUT "$_\n" if !$found;
+	if ($found && /^fi$/) {
+	    $found = 0;
+	}
+    }
+    close OUT;
+    close IN;	
 }

@@ -143,6 +143,12 @@
   </clientDeps>
   <apiDeps/>
   <changelog>
+    <versionEntry version="4.0.0-3">
+      <changelogEntry authorName="Erich Focht" date="2007-11-20T18:51:22+01:00">
+        <item>Updated systemconfigurator to version 2.2.11-1.</item>
+        <item>Added fixup script for bad systemimager versions doing the rewrite of boot devices.</item>
+      </changelogEntry>
+    </versionEntry>
     <versionEntry version="4.0.0-2">
       <changelogEntry authorName="DongInn Kim" date="2007-11-10T00:15:23+01:00">
         <item>Updated to support YDL</item>
