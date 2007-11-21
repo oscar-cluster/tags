@@ -83,6 +83,7 @@
       </filters>
       <pkg>systemimager-ppc64-ps3boot-standard</pkg>
       <pkg>systemimager-ppc64-ps3initrd_template</pkg>
+      <pkg>dhcp</pkg>
     </requires>
     <requires>
       <filters>
@@ -144,6 +145,9 @@
   <apiDeps/>
   <changelog>
     <versionEntry version="4.0.0-3">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-21T14:24:30+01:00">
+        <item>Add a requirement "dhcp" for ydl ppc</item>
+      </changelogEntry>
       <changelogEntry authorName="Erich Focht" date="2007-11-20T18:51:22+01:00">
         <item>Updated systemconfigurator to version 2.2.11-1.</item>
         <item>Added fixup script for bad systemimager versions doing the rewrite of boot devices.</item>
