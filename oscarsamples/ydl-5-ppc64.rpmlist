@@ -62,10 +62,8 @@ gnuplot
 gpm
 grep
 groff
-grub
 gtk2
 gzip
-hdparm
 hwdata
 info
 initscripts
@@ -152,7 +150,6 @@ setup
 setuptool
 shadow-utils
 slang
-slocate
 strace
 switchdesk
 sysklogd
