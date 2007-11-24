@@ -84,6 +84,7 @@
       <pkg>systemimager-ppc64-ps3boot-standard</pkg>
       <pkg>systemimager-ppc64-ps3initrd_template</pkg>
       <pkg>dhcp</pkg>
+      <pkg>xinetd</pkg>
     </requires>
     <requires>
       <filters>
