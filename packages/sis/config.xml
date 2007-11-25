@@ -146,6 +146,9 @@
   <apiDeps/>
   <changelog>
     <versionEntry version="4.0.0-3">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-24T21:00:24+05:00">
+        <item>Add a requirement "xinetd" for ydl ppc</item>
+      </changelogEntry>
       <changelogEntry authorName="DongInn Kim" date="2007-11-21T14:24:30+01:00">
         <item>Add a requirement "dhcp" for ydl ppc</item>
       </changelogEntry>
