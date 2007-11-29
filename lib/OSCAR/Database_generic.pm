@@ -253,7 +253,6 @@ sub update_table {
     $sql .= " $where ";
     my $debug_msg = "DB_DEBUG>$0:\n====> in Database::update_table SQL : $sql\n";
     print "$debug_msg" if $$options_ref{debug};
-    print "$debug_msg";
     push @$error_strings_ref, $debug_msg;
     my $error_msg = "Failed to update values to $table table";
     my $success = oda::do_sql_command($options_ref,
