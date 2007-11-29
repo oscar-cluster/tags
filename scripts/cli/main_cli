@@ -42,7 +42,7 @@ my $skipnet = '';
 my $skipcomplete = '';
 my $skiptest = '';
 my $help = '';
-my $bootscript = "$ENV{OSCAR_HOME}/src/cli/simple_complete.pl";
+my $bootscript = "$ENV{OSCAR_HOME}/scripts/cli/simple_complete.pl";
 
 # Parses the command line and sets the varaibles
 GetOptions('help' => \$help, 'skipselector' => \$skipselector, 'skipbuild' => \$skipbuild, 'skipinstall' => \$skipinstall, 'skipdefine' => \$skipdefine, 'skipnet' => \$skipnet, 'skipcomplete' => \$skipcomplete, 'skiptest' => \$skiptest, 'opkgselector=s' => \$selectorfile, 'buildimage=s' => \$buildfile, 'defineclients=s' => \$definefile, 'networkclients=s' => \$netfile, 'bootscript=s' => \$bootscript);

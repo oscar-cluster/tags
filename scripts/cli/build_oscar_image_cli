@@ -12,7 +12,7 @@
 #   trunk/scripts/oscar_wizard
 
 use strict;
-use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig","/usr/lib/systeminstaller","/usr/lib/systemimager/perl","$ENV{OSCAR_HOME}/src/cli";
+use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig","/usr/lib/systeminstaller","/usr/lib/systemimager/perl","$ENV{OSCAR_HOME}/scripts/cli";
 use OSCAR::Logger;
 use OSCAR::PackagePath;
 use OSCAR::Database;
