@@ -221,7 +221,7 @@ sub duplicateButton_clicked
       Carp::carp("Could not do oda command 'get_group_packages_with_groupname " .
         $lastSet . "'")
 	  if (!$success);
-      print Dumper(@results);
+      print Dumper(@results) if $ENV{OSCAR_VERBOSE} ;
       @packagesInSet = map { $_->{package} } @results;
       foreach my $pack (@packagesInSet) {
           $success = OSCAR::Database::set_group_packages(

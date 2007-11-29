@@ -453,7 +453,8 @@ require XML::Simple;
 my $xs = new XML::Simple(keyattr => ["name"], forcearray => [ "opkg", ]);
 my $h = eval { $xs->XMLin($pset); };
 
-print"###########\n###########\n".Dumper($h)."\n############\n###########\n";
+print"###########\n###########\n".Dumper($h)."\n############\n###########\n"
+    if $verbose > 3;
 my @opkg_set = @{$h->{packages}->{opkg}};
 my (%options, @errors);
 for my $p (@opkg_set) {
