@@ -18,6 +18,7 @@
         <opkg>openmpi</opkg>
         <opkg>opium</opkg>
         <opkg>pvm</opkg>
+        <opkg>rapt</opkg>
         <opkg>sc3</opkg>
         <opkg>sis</opkg>
         <opkg>switcher</opkg>
