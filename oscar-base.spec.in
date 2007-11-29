@@ -83,6 +83,7 @@ Scripts for OSCAR clustering base package.
 
 %files
 %defattr(-,root,root)
+%dir %{basedir}/
 %dir %{basedir}/doc/
 %dir %{basedir}/images/
 %dir %{basedir}/oscarsamples/
