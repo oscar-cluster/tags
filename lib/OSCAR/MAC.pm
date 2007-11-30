@@ -129,16 +129,22 @@ sub __setup_dhcpd {
     !system($cmd) or (carp "Couldn't mkdhcpconf", return undef);
     oscar_log_subsection("Step $step_number: Successfully ran command");
 
-    my $dhcpd_leases = "/var/lib/dhcp/dhcpd.leases";
+    my $dhcpd_leases;
+    my $dhcpd_dir;
 
-    # Fedora Core 5+'s dhcpd.leases file is located in a slightly different
-    # directory
-    if ( ($os->{'distro'} eq "fedora") && ($os->{'distro_version'} >= "5") ) {
-        $dhcpd_leases = "/var/lib/dhcpd/dhcpd.leases";
+    if ( -e "/var/lib/dhcp" ) {
+        $dhcpd_dir = "/var/lib/dhcp";
+    } elsif ( -e "/var/lib/dhcpd" ) {
+        $dhcpd_dir = "/var/lib/dhcpd";
     }
 
-    if(!-e "$dhcpd_leases") {
-        open(OUT,">$dhcpd_leases") or (carp "Couldn't create dhcpd.leases files", return undef);
+    $dhcpd_leases = "$dhcpd_dir/dhcpd.leases";
+
+    if ( ! -e "$dhcpd_leases" ) {
+        if (! open(OUT,">$dhcpd_leases") ) {
+            carp "Couldn't create file $dhcpd_leases";
+            return undef;
+        }
         close(OUT);
     }
 
