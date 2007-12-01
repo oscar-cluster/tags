@@ -4,6 +4,8 @@
 #
 # Copyright (c) 2006 Oak Ridge National Laboratory.
 #                  All rights reserved.
+# Copyright (c) 2007 The Trustees of Indiana University
+#                  All rights reserved.
 #
 # This is the main script for the Command Line Installer
 # The CLI mirrors the GUI installer by using the same steps only in
@@ -22,6 +24,7 @@ use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systeminstaller","/usr/lib/systemimager
 use OSCAR::Logger;
 use OSCAR::CLI_MAC;
 use OSCAR::WizardEnv;
+use OSCAR::Database;
 use Getopt::Long;
 
 $ENV{OSCAR_UI}="cli";
@@ -43,6 +46,9 @@ my $skipcomplete = '';
 my $skiptest = '';
 my $help = '';
 my $bootscript = "$ENV{OSCAR_HOME}/scripts/cli/simple_complete.pl";
+
+my %options = ();
+my @errors = ();
 
 # Parses the command line and sets the varaibles
 GetOptions('help' => \$help, 'skipselector' => \$skipselector, 'skipbuild' => \$skipbuild, 'skipinstall' => \$skipinstall, 'skipdefine' => \$skipdefine, 'skipnet' => \$skipnet, 'skipcomplete' => \$skipcomplete, 'skiptest' => \$skiptest, 'opkgselector=s' => \$selectorfile, 'buildimage=s' => \$buildfile, 'defineclients=s' => \$definefile, 'networkclients=s' => \$netfile, 'bootscript=s' => \$bootscript);
@@ -111,13 +117,17 @@ unless ($skipinstall) {
     oscar_log_section("Installing OSCAR Server Packages");
     my $cmd = "$ENV{OSCAR_HOME}/scripts/install_server $interface";
     oscar_log_subsection("Running command: $cmd");
-    if(!system($cmd))
+    my $success_status = system($cmd);
+    if(!$success_status)
     {
-        oscar_log_section("Packages Successfully Installed");
+#        die("Cancelled Step 3 - Install OSCAR Server Packages")
+#            if $success_status == 9;
+        oscar_log_subsection("OSCAR Server Packages Successfully Installed");
+        set_wizard_status("build_image",\%options,\@errors);
     }
     else
     {
-        oscar_log_section("Packages not Installed!");
+        oscar_log_subsection("Packages not Installed!");
         die ("Failed Step 3 - Install OSCAR Server Packages");
     }
 }
@@ -131,7 +141,19 @@ unless ($skipbuild) {
     $cmd = $cmd . " --file $buildfile" if ($buildfile ne " ");
     $cmd = $cmd . " $interface";
     oscar_log_subsection("Running command: $cmd");
-    !system($cmd) or (die "Failed on Step 4 - Build OSCAR Client Image");
+    my $success_status = system($cmd);
+    chomp(my $sis_cmd = `which mksiimage`);
+    my @images = `$sis_cmd --List | grep systemimager`;
+    if(!$success_status ){
+        if ( $#images == -1 ){
+            die("Cancelled Step 4 - Build OSCAR Client Image");
+        }
+        oscar_log_subsection("OSCAR Image is Successfully built");
+        set_wizard_status("addclients",\%options,\@errors);
+    }else{
+        oscar_log_subsection("Failed to build OSCAR Image!");
+        die "Failed on Step 4 - Build OSCAR Client Image";
+    }
 }
 
 # Step 5 - Define OSCAR Clients
@@ -140,12 +162,41 @@ unless ($skipdefine) {
     $cmd = $cmd . " --file $definefile" if ($definefile ne " ");
     $cmd = $cmd . " $interface";
     oscar_log_subsection("Running command: $cmd");
-    !system($cmd) or die "Failed on Step 5 - Define OSCAR Clients";
+    my $success_status = system($cmd);
+    if(!$success_status){
+#        die("Cancelled Step 6 - Define OSCAR Clients")
+#            if $success_status == 9;
+        oscar_log_subsection("OSCAR client(s) are Successfully defined!");
+        my @tmp_next_steps = ("netboot", 
+                              "delete_nodes5",
+                              "monitor_deployment",
+                              "netbootmgr",
+                              "ganglia");
+        foreach my $next_step (@tmp_next_steps){                          
+            if ($next_step eq "netboot" || $next_step eq "post_install" ){
+                set_wizard_status($next_step,\%options,\@errors);
+            } else {
+                set_manage_status($next_step,\%options,\@errors);
+            } 
+        }
+    }else{
+        oscar_log_subsection("Failed to define OSCAR client(s)!");
+        die "Failed on Step 5 - Define OSCAR Clients";
+    }
 }
 
 # Step 6 Setup networking
 unless ($skipnet) {
-    !OSCAR::CLI_MAC::mac_cli($netfile, 6, {interface => $interface}, 'netboot') or die "Failed on Step 6 - Setup Networking";
+    my $success_status = !OSCAR::CLI_MAC::mac_cli($netfile, 6, {interface => $interface}, 'netboot');
+    if(!$success_status){
+#        die("Cancelled Step 6 - Setup Networking")
+#            if $success_status == 9;
+        oscar_log_subsection("OSCAR client(s) are Successfully imaged!");
+        set_wizard_status("post_install",\%options,\@errors);
+    }else{
+        oscar_log_subsection("Failed to setup OSCAR network!");
+        die "Failed on Step 6 - Setup Networking";
+    }
 }
 
 # Step 7 Complete Cluster Setup
@@ -166,8 +217,12 @@ unless ($skipcomplete) {
     
     oscar_log_section("Complete Cluster Setup");
     my $cmd = $ENV{OSCAR_HOME} . "/scripts/post_install";
-    if(!system($cmd)) {
+    my $success_status = system($cmd);
+    if(!$success_status){
+#        die("Cancelled Step 7 - Complete Cluster Setup")
+#            if $success_status == 9;
         oscar_log_subsection("Successfully completed the cluster install");
+        set_wizard_status("test_install",\%options,\@errors);
     } else {
         oscar_log_subsection("Failed to properly complete the cluter install; please check the logs");
         die ("Failed on Step 7 - Complete Cluster Setup");
@@ -181,10 +236,14 @@ WizardEnv::update_env();
 unless ($skiptest) {
     oscar_log_section("Test Cluster Setup");
     my $cmd = $ENV{OSCAR_HOME} . "/testing/test_cluster";
-    if (!system($cmd)) {
+    my $success_status = system($cmd);
+    if(!$success_status){
+#        die("Cancelled Step 8 - Test Cluster Setup")
+#            if $success_status == 9;
         oscar_log_subsection("Step 8 - Successfully tested the cluster setup");
     } else {
         oscar_log_subsection("Failed to properly test the cluster setup");
         die ("Failed on Step 8 - Test Cluster Setup");
     }
 }
+
