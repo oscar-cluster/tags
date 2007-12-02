@@ -238,11 +238,11 @@ if(($ARCH eq "i386") || ($ARCH eq "x86_64")) {
         if ( system("sed 's|SKIP_LOCAL_CONFIG=y|SKIP_LOCAL_CONFIG=y MONITOR_SERVER=\$imageserver MONITOR_CONSOLE=yes|g' $netboot_cfg_d/default > $netboot_cfg_d/default.new && mv $netboot_cfg_d/default.new $netboot_cfg_d/default") ) {
             croak("Unable to update $netboot_cfg_d/default file to skip local.cfg and support si_monitor.");
         }
+        $ARCH = "ppc64-ps3" if (-d "/usr/share/systemimager/boot/ppc64-ps3");
     }else{
         croak("$ARCH is not a known architecture");
     }
 }
-
 my $bootpackage = "standard";
 my $kernel = "/usr/share/systemimager/boot/$ARCH/$bootpackage/kernel";
 my $ramdisk = "/usr/share/systemimager/boot/$ARCH/$bootpackage/initrd.img";
