@@ -116,7 +116,7 @@ $ENV{OSCAR_HEAD_INTERNAL_INTERFACE}=$adapter;
 &oscar_home_env();
 
 # First of all, we do some system checking
-if ( system("./scripts/system-sanity") == 1 ) {
+if ( system("./scripts/system-sanity") ) {
 	die "ERROR: There are basic system configuration issues (see log).\n";
 }
 print "System checked\n";

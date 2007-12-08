@@ -54,7 +54,7 @@ foreach my $file (@files) {
 if ($failure_flag) {
     exit (1);
 } elsif ($warning_flag) {
-    exit (2);
+    exit (0);
 } else {
     exit (0);
 }
