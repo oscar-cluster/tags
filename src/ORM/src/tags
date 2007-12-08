@@ -1,0 +1,184 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+COMMANDEXECUTIONTHREAD_H	CommandExecutionThread.h	26;"	d
+CommandExecutionThread	CommandExecutionThread.cpp	/^CommandExecutionThread::CommandExecutionThread(QObject *parent) $/;"	f	class:CommandExecutionThread
+CommandExecutionThread	CommandExecutionThread.h	/^class CommandExecutionThread : public QThread $/;"	c
+GET_LIST_OPKGS	CommandExecutionThread.h	48;"	d
+GET_LIST_REPO	CommandExecutionThread.h	47;"	d
+ORMAddRepoDialog	ORM_AddRepoGUI.cpp	/^ORMAddRepoDialog::ORMAddRepoDialog(QDialog *parent) $/;"	f	class:ORMAddRepoDialog
+ORMAddRepoDialog	ORM_AddRepoGUI.h	/^class ORMAddRepoDialog : public QDialog, public Ui_AddRepoDialog$/;"	c
+ORMMainWindow	ORM_MainGUI.cpp	/^ORMMainWindow::ORMMainWindow(QDialog *parent)$/;"	f	class:ORMMainWindow
+ORMMainWindow	ORM_MainGUI.h	/^class ORMMainWindow : public QDialog, public MainWindow$/;"	c
+ORMWaitDialog	ORM_WaitDialog.cpp	/^ORMWaitDialog::ORMWaitDialog(QDialog *parent, QString repo_url)$/;"	f	class:ORMWaitDialog
+ORMWaitDialog	ORM_WaitDialog.h	/^class ORMWaitDialog : public QDialog, public Ui_WaitDialog$/;"	c
+ORM_ADDREPOGUI_H	ORM_AddRepoGUI.h	22;"	d
+ORM_MAINGUI_H	ORM_MainGUI.h	22;"	d
+ORM_WAITDIALOG_H	ORM_WaitDialog.h	22;"	d
+PSTREAMS_VERSION	pstream.h	60;"	d
+REDI_PSTREAM_H_SEEN	pstream.h	32;"	d
+Tokenize	ORM_MainGUI.cpp	/^void ORMMainWindow::Tokenize(const string& str,$/;"	f	class:ORMMainWindow
+XORM_AddRepoDialog	ORM_AddRepoGUI.h	/^    class XORM_AddRepoDialog: public ORMAddRepoDialog {};$/;"	c	namespace:xorm
+XORM_CommandExecutionThread	CommandExecutionThread.h	/^    class XORM_CommandExecutionThread: public CommandExecutionThread {};$/;"	c	namespace:xorm
+XORM_MainWindow	ORM_MainGUI.h	/^    class XORM_MainWindow: public ORMMainWindow {};$/;"	c	namespace:xorm
+XORM_WaitDialog	ORM_WaitDialog.h	/^    class XORM_WaitDialog: public ORMWaitDialog {};$/;"	c	namespace:xorm
+add_repo_to_list	ORM_MainGUI.cpp	/^void ORMMainWindow::add_repo_to_list()$/;"	f	class:ORMMainWindow
+add_widget	ORM_MainGUI.h	/^    ORMAddRepoDialog add_widget;$/;"	m	class:ORMMainWindow
+argv_type	pstream.h	/^      typedef typename pbase_type::argv_type        argv_type;$/;"	t	class:redi::basic_ipstream
+argv_type	pstream.h	/^      typedef typename pbase_type::argv_type        argv_type;$/;"	t	class:redi::basic_opstream
+argv_type	pstream.h	/^      typedef typename pbase_type::argv_type        argv_type;$/;"	t	class:redi::basic_pstream
+argv_type	pstream.h	/^      typedef typename pbase_type::argv_type        argv_type;$/;"	t	class:redi::basic_rpstream
+argv_type	pstream.h	/^    typedef std::vector<std::string>          argv_type;$/;"	t	struct:redi::pstreams
+basic_ipstream	pstream.h	/^      basic_ipstream( const std::string& file,$/;"	f	class:redi::basic_ipstream
+basic_ipstream	pstream.h	/^      basic_ipstream()$/;"	f	class:redi::basic_ipstream
+basic_ipstream	pstream.h	/^      basic_ipstream(const std::string& command, pmode mode = pstdout)$/;"	f	class:redi::basic_ipstream
+basic_ipstream	pstream.h	/^    class basic_ipstream$/;"	c	namespace:redi
+basic_opstream	pstream.h	/^      basic_opstream( const std::string& file,$/;"	f	class:redi::basic_opstream
+basic_opstream	pstream.h	/^      basic_opstream()$/;"	f	class:redi::basic_opstream
+basic_opstream	pstream.h	/^      basic_opstream(const std::string& command, pmode mode = pstdin)$/;"	f	class:redi::basic_opstream
+basic_opstream	pstream.h	/^    class basic_opstream$/;"	c	namespace:redi
+basic_pstream	pstream.h	/^      basic_pstream( const std::string& file,$/;"	f	class:redi::basic_pstream
+basic_pstream	pstream.h	/^      basic_pstream()$/;"	f	class:redi::basic_pstream
+basic_pstream	pstream.h	/^      basic_pstream(const std::string& command, pmode mode = pstdout|pstdin)$/;"	f	class:redi::basic_pstream
+basic_pstream	pstream.h	/^    class basic_pstream$/;"	c	namespace:redi
+basic_pstreambuf	pstream.h	/^    basic_pstreambuf<C,T>::basic_pstreambuf( const std::string& file,$/;"	f	class:redi::basic_pstreambuf
+basic_pstreambuf	pstream.h	/^    basic_pstreambuf<C,T>::basic_pstreambuf()$/;"	f	class:redi::basic_pstreambuf
+basic_pstreambuf	pstream.h	/^    basic_pstreambuf<C,T>::basic_pstreambuf(const std::string& command, pmode mode)$/;"	f	class:redi::basic_pstreambuf
+basic_pstreambuf	pstream.h	/^    class basic_pstreambuf$/;"	c	namespace:redi
+basic_rpstream	pstream.h	/^      basic_rpstream( const std::string& file,$/;"	f	class:redi::basic_rpstream
+basic_rpstream	pstream.h	/^      basic_rpstream()$/;"	f	class:redi::basic_rpstream
+basic_rpstream	pstream.h	/^      basic_rpstream(const std::string& command, pmode mode = pstdout|pstdin)$/;"	f	class:redi::basic_rpstream
+basic_rpstream	pstream.h	/^    class basic_rpstream$/;"	c	namespace:redi
+buf_	pstream.h	/^      streambuf_type    buf_;     \/\/\/< The stream buffer.$/;"	m	class:redi::pstream_common
+buf_read_src	pstream.h	/^      enum buf_read_src { rsrc_out = 0, rsrc_err = 1 };$/;"	g	class:redi::basic_pstreambuf
+bufsz	pstream.h	/^    enum { bufsz = 32 };  \/\/\/< Size of pstreambuf buffers.$/;"	e	enum:redi::pstreams::__anon1
+char_type	pstream.h	/^      typedef CharT                             char_type;$/;"	t	class:redi::basic_pstreambuf
+close	pstream.h	/^    basic_pstreambuf<C,T>::close()$/;"	f	class:redi::basic_pstreambuf
+close	pstream.h	/^    pstream_common<C,T>::close()$/;"	f	class:redi::pstream_common
+close_fd	pstream.h	/^  close_fd(pstreams::fd_type& fd)$/;"	f	namespace:redi
+command	pstream.h	/^    pstream_common<C,T>::command() const$/;"	f	class:redi::pstream_common
+command_	pstream.h	/^      std::string       command_; \/\/\/< The command used to start the process.$/;"	m	class:redi::pstream_common
+create_add_repo_window	ORM_MainGUI.cpp	/^void ORMMainWindow::create_add_repo_window() $/;"	f	class:ORMMainWindow
+create_buffers	pstream.h	/^    basic_pstreambuf<C,T>::create_buffers(pmode mode)$/;"	f	class:redi::basic_pstreambuf
+destroy_buffers	pstream.h	/^    basic_pstreambuf<C,T>::destroy_buffers(pmode mode)$/;"	f	class:redi::basic_pstreambuf
+display_opkgs_from_repo	ORM_MainGUI.cpp	/^void ORMMainWindow::display_opkgs_from_repo()$/;"	f	class:ORMMainWindow
+do_open	pstream.h	/^    pstream_common<C,T>::do_open( const std::string& file,$/;"	f	class:redi::pstream_common
+do_open	pstream.h	/^    pstream_common<C,T>::do_open(const std::string& command, pmode mode)$/;"	f	class:redi::pstream_common
+empty_buffer	pstream.h	/^    basic_pstreambuf<C,T>::empty_buffer()$/;"	f	class:redi::basic_pstreambuf
+err	pstream.h	/^      err()$/;"	f	class:redi::basic_ipstream
+err	pstream.h	/^      err()$/;"	f	class:redi::basic_pstream
+err	pstream.h	/^      err()$/;"	f	class:redi::basic_rpstream
+error	pstream.h	/^    basic_pstreambuf<C,T>::error() const$/;"	f	class:redi::basic_pstreambuf
+error_	pstream.h	/^      int           error_;       \/\/ hold errno if fork() or exec() fails$/;"	m	class:redi::basic_pstreambuf
+exited	pstream.h	/^    basic_pstreambuf<C,T>::exited()$/;"	f	class:redi::basic_pstreambuf
+fd_t	pstream.h	/^      typedef fd_type                           fd_t;$/;"	t	class:redi::basic_pstreambuf
+fd_type	pstream.h	/^    typedef int                               fd_type;$/;"	t	struct:redi::pstreams
+fill_buffer	pstream.h	/^    basic_pstreambuf<C,T>::fill_buffer()$/;"	f	class:redi::basic_pstreambuf
+fopen	pstream.h	/^    basic_pstreambuf<C,T>::fopen(std::FILE*& in, std::FILE*& out, std::FILE*& err)$/;"	f	class:redi::basic_pstreambuf
+fopen	pstream.h	/^    pstream_common<C,T>::fopen(std::FILE*& in, std::FILE*& out, std::FILE*& err)$/;"	f	class:redi::pstream_common
+fork	pstream.h	/^    basic_pstreambuf<C,T>::fork(pmode mode)$/;"	f	class:redi::basic_pstreambuf
+init	CommandExecutionThread.cpp	/^void CommandExecutionThread::init (QString url, int m)$/;"	f	class:CommandExecutionThread
+init_rbuffers	pstream.h	/^    basic_pstreambuf<C,T>::init_rbuffers()$/;"	f	class:redi::basic_pstreambuf
+int_type	pstream.h	/^      typedef typename traits_type::int_type    int_type;$/;"	t	class:redi::basic_pstreambuf
+iostream_type	pstream.h	/^      typedef std::basic_iostream<CharT, Traits>    iostream_type;$/;"	t	class:redi::basic_pstream
+ipstream	pstream.h	/^  typedef basic_ipstream<char> ipstream;$/;"	t	namespace:redi
+is_open	pstream.h	/^    basic_pstreambuf<C,T>::is_open() const$/;"	f	class:redi::basic_pstreambuf
+is_open	pstream.h	/^    pstream_common<C,T>::is_open() const$/;"	f	class:redi::pstream_common
+istream_type	pstream.h	/^      typedef std::basic_istream<CharT, Traits>     istream_type;$/;"	t	class:redi::basic_ipstream
+istream_type	pstream.h	/^      typedef std::basic_istream<CharT, Traits>     istream_type;$/;"	t	class:redi::basic_rpstream
+kill	pstream.h	/^    basic_pstreambuf<C,T>::kill(int signal)$/;"	f	class:redi::basic_pstreambuf
+kill_popup	ORM_MainGUI.cpp	/^void ORMMainWindow::kill_popup(QString list_repos, QString list_opkgs)$/;"	f	class:ORMMainWindow
+main	main.cpp	/^int main(int argc, char *argv[])$/;"	f
+mode	CommandExecutionThread.h	/^    int mode;$/;"	m	class:CommandExecutionThread
+off_type	pstream.h	/^      typedef typename traits_type::off_type    off_type;$/;"	t	class:redi::basic_pstreambuf
+opd_thread	ORM_MainGUI.h	/^    CommandExecutionThread opd_thread;$/;"	m	class:ORMMainWindow
+open	pstream.h	/^      open( const std::string& file,$/;"	f	class:redi::basic_ipstream
+open	pstream.h	/^      open( const std::string& file,$/;"	f	class:redi::basic_opstream
+open	pstream.h	/^      open( const std::string& file,$/;"	f	class:redi::basic_pstream
+open	pstream.h	/^      open( const std::string& file,$/;"	f	class:redi::basic_rpstream
+open	pstream.h	/^      open(const std::string& command, pmode mode = pstdin)$/;"	f	class:redi::basic_opstream
+open	pstream.h	/^      open(const std::string& command, pmode mode = pstdout)$/;"	f	class:redi::basic_ipstream
+open	pstream.h	/^      open(const std::string& command, pmode mode = pstdout|pstdin)$/;"	f	class:redi::basic_pstream
+open	pstream.h	/^      open(const std::string& command, pmode mode = pstdout|pstdin)$/;"	f	class:redi::basic_rpstream
+open	pstream.h	/^    basic_pstreambuf<C,T>::open( const std::string& file,$/;"	f	class:redi::basic_pstreambuf
+open	pstream.h	/^    basic_pstreambuf<C,T>::open(const std::string& command, pmode mode)$/;"	f	class:redi::basic_pstreambuf
+opstream	pstream.h	/^  typedef basic_opstream<char> opstream;$/;"	t	namespace:redi
+ostream_type	pstream.h	/^      typedef std::basic_ostream<CharT, Traits>     ostream_type;$/;"	t	class:redi::basic_opstream
+ostream_type	pstream.h	/^      typedef std::basic_ostream<CharT, Traits>     ostream_type;$/;"	t	class:redi::basic_rpstream
+out	pstream.h	/^      out()$/;"	f	class:redi::basic_ipstream
+out	pstream.h	/^      out()$/;"	f	class:redi::basic_pstream
+out	pstream.h	/^      out()$/;"	f	class:redi::basic_rpstream
+overflow	pstream.h	/^    basic_pstreambuf<C,T>::overflow(int_type c)$/;"	f	class:redi::basic_pstreambuf
+pbackfail	pstream.h	/^    basic_pstreambuf<C,T>::pbackfail(int_type c)$/;"	f	class:redi::basic_pstreambuf
+pbase_type	pstream.h	/^      typedef pstream_common<CharT, Traits>         pbase_type;$/;"	t	class:redi::basic_ipstream
+pbase_type	pstream.h	/^      typedef pstream_common<CharT, Traits>         pbase_type;$/;"	t	class:redi::basic_opstream
+pbase_type	pstream.h	/^      typedef pstream_common<CharT, Traits>         pbase_type;$/;"	t	class:redi::basic_pstream
+pbase_type	pstream.h	/^      typedef pstream_common<CharT, Traits>         pbase_type;$/;"	t	class:redi::basic_rpstream
+pbsz	pstream.h	/^    enum { pbsz  = 2 };   \/\/\/< Number of putback characters kept.$/;"	e	enum:redi::pstreams::__anon2
+peof	pstream.h	/^    basic_pstreambuf<C,T>::peof()$/;"	f	class:redi::basic_pstreambuf
+peof	pstream.h	/^    peof(std::basic_ostream<C,T>& s)$/;"	f	namespace:redi
+pmode	pstream.h	/^      typedef typename pbase_type::pmode            pmode;$/;"	t	class:redi::basic_ipstream
+pmode	pstream.h	/^      typedef typename pbase_type::pmode            pmode;$/;"	t	class:redi::basic_opstream
+pmode	pstream.h	/^      typedef typename pbase_type::pmode            pmode;$/;"	t	class:redi::basic_pstream
+pmode	pstream.h	/^      typedef typename pbase_type::pmode            pmode;$/;"	t	class:redi::basic_rpstream
+pmode	pstream.h	/^    typedef std::ios_base::openmode           pmode;$/;"	t	struct:redi::pstreams
+pos_type	pstream.h	/^      typedef typename traits_type::pos_type    pos_type;$/;"	t	class:redi::basic_pstreambuf
+ppid_	pstream.h	/^      pid_t         ppid_;        \/\/ pid of process$/;"	m	class:redi::basic_pstreambuf
+pstderr	pstream.h	/^    static const pmode pstderr = std::ios_base::app; \/\/\/< Read from stderr$/;"	m	struct:redi::pstreams
+pstdin	pstream.h	/^    static const pmode pstdin  = std::ios_base::out; \/\/\/< Write to stdin$/;"	m	struct:redi::pstreams
+pstdout	pstream.h	/^    static const pmode pstdout = std::ios_base::in;  \/\/\/< Read from stdout$/;"	m	struct:redi::pstreams
+pstream	pstream.h	/^  typedef basic_pstream<char> pstream;$/;"	t	namespace:redi
+pstream_common	pstream.h	/^    class pstream_common$/;"	c	namespace:redi
+pstream_common	pstream.h	/^    pstream_common<C,T>::pstream_common( const std::string& file,$/;"	f	class:redi::pstream_common
+pstream_common	pstream.h	/^    pstream_common<C,T>::pstream_common()$/;"	f	class:redi::pstream_common
+pstream_common	pstream.h	/^    pstream_common<C,T>::pstream_common(const std::string& command, pmode mode)$/;"	f	class:redi::pstream_common
+pstreambuf	pstream.h	/^  typedef basic_pstreambuf<char> pstreambuf;$/;"	t	namespace:redi
+pstreams	pstream.h	/^  struct pstreams$/;"	s	namespace:redi
+rbuffer	pstream.h	/^    basic_pstreambuf<C,T>::rbuffer()$/;"	f	class:redi::basic_pstreambuf
+rbuffer_	pstream.h	/^      char_type*    rbuffer_[2];$/;"	m	class:redi::basic_pstreambuf
+rbufstate_	pstream.h	/^      char_type*    rbufstate_[3];$/;"	m	class:redi::basic_pstreambuf
+rdbuf	pstream.h	/^    pstream_common<C,T>::rdbuf() const$/;"	f	class:redi::pstream_common
+read	pstream.h	/^    basic_pstreambuf<C,T>::read(char_type* s, std::streamsize n)$/;"	f	class:redi::basic_pstreambuf
+read_err	pstream.h	/^    basic_pstreambuf<C,T>::read_err(bool readerr)$/;"	f	class:redi::basic_pstreambuf
+redi	pstream.h	/^namespace redi$/;"	n
+repo_url	CommandExecutionThread.h	/^    QString repo_url;$/;"	m	class:CommandExecutionThread
+rpipe	pstream.h	/^    basic_pstreambuf<C,T>::rpipe()$/;"	f	class:redi::basic_pstreambuf
+rpipe	pstream.h	/^    basic_pstreambuf<C,T>::rpipe(buf_read_src which)$/;"	f	class:redi::basic_pstreambuf
+rpipe_	pstream.h	/^      fd_type       rpipe_[2];    \/\/ two pipes to read from, stdout and stderr$/;"	m	class:redi::basic_pstreambuf
+rpstream	pstream.h	/^  typedef basic_rpstream<char> rpstream;$/;"	t	namespace:redi
+rsrc_	pstream.h	/^      buf_read_src  rsrc_;$/;"	m	class:redi::basic_pstreambuf
+rsrc_err	pstream.h	/^      enum buf_read_src { rsrc_out = 0, rsrc_err = 1 };$/;"	e	enum:redi::basic_pstreambuf::buf_read_src
+rsrc_out	pstream.h	/^      enum buf_read_src { rsrc_out = 0, rsrc_err = 1 };$/;"	e	enum:redi::basic_pstreambuf::buf_read_src
+run	CommandExecutionThread.cpp	/^void CommandExecutionThread::run()$/;"	f	class:CommandExecutionThread
+showmanyc	pstream.h	/^    basic_pstreambuf<C,T>::showmanyc()$/;"	f	class:redi::basic_pstreambuf
+status	pstream.h	/^    basic_pstreambuf<C,T>::status() const$/;"	f	class:redi::basic_pstreambuf
+status_	pstream.h	/^      int           status_;      \/\/ hold exit status of child process$/;"	m	class:redi::basic_pstreambuf
+streambuf_type	pstream.h	/^      typedef basic_pstreambuf<CharT, Traits>       streambuf_type;$/;"	t	class:redi::pstream_common
+switch_read_buffer	pstream.h	/^    basic_pstreambuf<C,T>::switch_read_buffer(buf_read_src src)$/;"	f	class:redi::basic_pstreambuf
+sync	pstream.h	/^    basic_pstreambuf<C,T>::sync()$/;"	f	class:redi::basic_pstreambuf
+traits_type	pstream.h	/^      typedef Traits                            traits_type;$/;"	t	class:redi::basic_pstreambuf
+underflow	pstream.h	/^    basic_pstreambuf<C,T>::underflow()$/;"	f	class:redi::basic_pstreambuf
+wait	pstream.h	/^    basic_pstreambuf<C,T>::wait(bool nohang)$/;"	f	class:redi::basic_pstreambuf
+wait_popup	ORM_MainGUI.h	/^    ORMWaitDialog*  wait_popup;$/;"	m	class:ORMMainWindow
+wbuffer_	pstream.h	/^      char_type*    wbuffer_;$/;"	m	class:redi::basic_pstreambuf
+wpipe	pstream.h	/^    basic_pstreambuf<C,T>::wpipe()$/;"	f	class:redi::basic_pstreambuf
+wpipe_	pstream.h	/^      fd_type       wpipe_;       \/\/ pipe used to write to process' stdin$/;"	m	class:redi::basic_pstreambuf
+write	pstream.h	/^    basic_pstreambuf<C,T>::write(const char_type* s, std::streamsize n)$/;"	f	class:redi::basic_pstreambuf
+xorm	CommandExecutionThread.h	/^namespace xorm {$/;"	n
+xorm	ORM_AddRepoGUI.h	/^namespace xorm {$/;"	n
+xorm	ORM_MainGUI.h	/^namespace xorm {$/;"	n
+xorm	ORM_WaitDialog.h	/^namespace xorm {$/;"	n
+xsputn	pstream.h	/^    basic_pstreambuf<C,T>::xsputn(const char_type* s, std::streamsize n)$/;"	f	class:redi::basic_pstreambuf
+~CommandExecutionThread	CommandExecutionThread.cpp	/^CommandExecutionThread::~CommandExecutionThread()$/;"	f	class:CommandExecutionThread
+~ORMAddRepoDialog	ORM_AddRepoGUI.cpp	/^ORMAddRepoDialog::~ORMAddRepoDialog ()$/;"	f	class:ORMAddRepoDialog
+~ORMMainWindow	ORM_MainGUI.cpp	/^ORMMainWindow::~ORMMainWindow() $/;"	f	class:ORMMainWindow
+~ORMWaitDialog	ORM_WaitDialog.cpp	/^ORMWaitDialog::~ORMWaitDialog ()$/;"	f	class:ORMWaitDialog
+~basic_ipstream	pstream.h	/^      ~basic_ipstream()$/;"	f	class:redi::basic_ipstream
+~basic_opstream	pstream.h	/^      ~basic_opstream() { }$/;"	f	class:redi::basic_opstream
+~basic_pstream	pstream.h	/^      ~basic_pstream() { }$/;"	f	class:redi::basic_pstream
+~basic_pstreambuf	pstream.h	/^    basic_pstreambuf<C,T>::~basic_pstreambuf()$/;"	f	class:redi::basic_pstreambuf
+~basic_rpstream	pstream.h	/^      ~basic_rpstream() { }$/;"	f	class:redi::basic_rpstream
+~pstream_common	pstream.h	/^    pstream_common<C,T>::~pstream_common()$/;"	f	class:redi::pstream_common
