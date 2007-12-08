@@ -78,6 +78,7 @@ sub opkg_list_available {
     } elsif ($pkg eq "deb") {
 	#TODO# add search option to rapt
 	my $cmd="/usr/bin/rapt $repo --names-only search 'opkg-.*-server'";
+    my $cmd="/usr/bin/rapt --repo $repo --names-only search 'opkg-.*-server'";
 	print "Running $cmd" if $verbose;
 	open CMD, "$cmd |" or die "Error: $!";
 	while (<CMD>) {
@@ -153,7 +154,7 @@ sub opkg_hash_available {
 	my @opkgs = &opkg_list_available(%scope);
 	@opkgs = map { "opkg-$_" } @opkgs;
 	#TODO# add show option to rapt
-	my $cmd="/usr/bin/rapt $repo show ".join(" ", @opkgs);
+	my $cmd="/usr/bin/rapt --repo $repo show ".join(" ", @opkgs);
 	print "Running $cmd" if $verbose;
 	open CMD, "$cmd |" or die "Error: $!";
 	while (<CMD>) {

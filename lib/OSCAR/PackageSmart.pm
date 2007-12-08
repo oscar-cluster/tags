@@ -33,6 +33,7 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 use OSCAR::OCA::OS_Detect;
 use OSCAR::PackMan;           # this only works when PackMan has arrived!
+use OSCAR::Distro;
 use File::Basename;
 use Switch;
 use Cwd;

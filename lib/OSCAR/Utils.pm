@@ -31,10 +31,32 @@ use OSCAR::OCA::OS_Detect;
 use Carp;
 
 @EXPORT = qw(
+            get_oscar_version
+            is_a_valid_string
             is_element_in_array
             print_array
             print_hash
             );
+
+###############################################################################
+# function to get the OSCAR base version 
+# inputs: Nothing
+# outputs : number version number of OSCAR
+###############################################################################
+sub get_oscar_version {
+    my $cmd = "$ENV{OSCAR_HOME}/scripts/get-oscar-version.sh";
+    my $ver_file = "$ENV{OSCAR_HOME}/VERSION";
+    chomp(my $oscar_version = `$cmd $ver_file --base`);
+    return $oscar_version;
+}
+
+###############################################################################
+# function to be defined by Geoffroy
+# inputs: 
+# outputs : 
+###############################################################################
+sub is_a_valid_string{
+}
 
 ###############################################################################
 # function to do a debug print of a hash
