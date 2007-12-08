@@ -22,10 +22,12 @@ package OSCAR::Network;
 use strict;
 use lib "$ENV{OSCAR_HOME}/lib";
 use vars qw($VERSION @EXPORT);
+use File::Copy;
 use OSCAR::Database qw (
                         get_gateway
                         get_nics_info_with_node
                        );
+use OSCAR::Logger qw ( verbose );
 use POSIX;
 use Carp;
 use base qw(Exporter);
@@ -45,7 +47,7 @@ my $ipregex = '\d+\.\d+\.\d+\.\d+';
 # interface2ip - returns the ip addr, broadcast, and netmask of an interface
 #
 
-sub interface2ip {
+sub interface2ip ($) {
     my $interface = shift;
     my ($ip, $broadcast, $net);
 
