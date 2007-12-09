@@ -33,7 +33,6 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 use OSCAR::OCA::OS_Detect;
 use OSCAR::PackMan;           # this only works when PackMan has arrived!
-use OSCAR::Distro;
 use File::Basename;
 use Switch;
 use Cwd;
@@ -70,13 +69,19 @@ sub prepare_pools {
     my $prev_format = "";
     my $binaries = "rpms|debs";
     my $archs = "i386|x86_64|ia64|ppc|ppc64";
-    # List of all supported distros. 
-    my @distros_list = OSCAR::Distro::get_list_of_supported_distros_id();
-    my $distros = "";
-    for (my $i=0; $i<scalar(@distros_list)-1; $i++) {
-        $distros .= @distros_list[$i] . "|";
-    }
-    $distros .= $distros_list[scalar(@distros_list)-1];
+    # List of all supported distros. May be nice if we can get this list  
+    # from OS_Detect. 
+    my $distros = "debian|fc|mdv|rhel|suse|redhat|yellowdog|ydl"; 
+#    Take out the solution using a little smarter way until we figure out
+#    implemeting XML::Simple in a proper time.
+#    Coordinated with Geoffroy.
+#    # List of all supported distros. 
+#    my @distros_list = OSCAR::Distro::get_list_of_supported_distros_id();
+#    my $distros = "";
+#    for (my $i=0; $i<scalar(@distros_list)-1; $i++) {
+#        $distros .= @distros_list[$i] . "|";
+#    }
+#    $distros .= $distros_list[scalar(@distros_list)-1];
     my $format = "";
     # Before to prepare a pool, we try to detect the binary package format
     # associated Not that for a specific pool or set of pools, it is not

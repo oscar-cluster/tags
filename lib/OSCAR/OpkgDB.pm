@@ -77,16 +77,15 @@ sub opkg_list_available {
 	close CMD;
     } elsif ($pkg eq "deb") {
 	#TODO# add search option to rapt
-	my $cmd="/usr/bin/rapt $repo --names-only search 'opkg-.*-server'";
-    my $cmd="/usr/bin/rapt --repo $repo --names-only search 'opkg-.*-server'";
-	print "Running $cmd" if $verbose;
-	open CMD, "$cmd |" or die "Error: $!";
-	while (<CMD>) {
-	    if (m/^opkg-(.*)-server -/) {
-		$opkgs{$1} = 1;
-	    }
-	}
-	close CMD;
+        my $cmd="/usr/bin/rapt --repo $repo --names-only search 'opkg-.*-server'";
+        print "Running $cmd" if $verbose;
+        open CMD, "$cmd |" or die "Error: $!";
+        while (<CMD>) {
+            if (m/^opkg-(.*)-server -/) {
+            $opkgs{$1} = 1;
+            }
+        }
+        close CMD;
     } else {
 	return undef;
     }
