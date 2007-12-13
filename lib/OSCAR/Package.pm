@@ -107,7 +107,7 @@ sub run_pkg_script {
 	return undef;
     }
     
-    my $pkdir = get_scripts_dir($pkg, $phase);
+    my $pkgdir = get_scripts_dir($pkg, $phase);
     return 0 unless ((defined $pkgdir) && (-d $pkgdir));
     foreach my $scriptname (@$scripts) {
 	my $script = "$pkgdir/$scriptname";
@@ -129,7 +129,8 @@ sub run_pkg_script {
 
 sub run_pkg_script_chroot {
   my ($pkg, $dir) = @_;
-  my $scripts = $PHASES{post_rpm_install};
+  my $phase = "post_rpm_install";
+  my $scripts = $PHASES{$phase};
   if (!$scripts) 
     {
       carp("No such phase 'post_rpm_install' in OSCAR package API");
