@@ -82,6 +82,20 @@ $VERSION = sprintf("r%d", q$Revision$ =~ /(\d+)/);
 
 
 #
+# get_pkg_dir - return directory where scripts can be found for a given
+#               package and phase
+#
+
+sub get_scripts_dir {
+    my ($pkg, $phase);
+    if ($phase == 'test_root' || $phase == 'test_user') {
+	return "/var/lib/oscar/testing/$pkg";
+    } else {
+	return "/var/lib/oscar/packages/$pkg";
+    }
+}
+
+#
 # run_pkg_script - runs the package script for a specific package
 #
 
@@ -92,11 +106,11 @@ sub run_pkg_script {
 	carp("No such phase '$phase' in OSCAR package API");
 	return undef;
     }
-
-    my $pkgdir = &opkg_api_path($pkg);
+    
+    my $pkdir = get_scripts_dir($pkg, $phase);
     return 0 unless ((defined $pkgdir) && (-d $pkgdir));
     foreach my $scriptname (@$scripts) {
-	my $script = "$pkgdir/scripts/$scriptname";
+	my $script = "$pkgdir/$scriptname";
 	if (-e $script) {
 	    oscar_log_subsection("About to run $script for $pkg") if $verbose;
 	    $ENV{OSCAR_PACKAGE_HOME} = $pkgdir;
@@ -122,11 +136,11 @@ sub run_pkg_script_chroot {
       return undef;
     }
 
-  my $pkgdir = getOdaPackageDir($pkg);
+  my $pkgdir = get_pkg_dir($pkg, $phase);
   return undef unless ((defined $pkgdir) && (-d $pkgdir));
   foreach my $scriptname (@$scripts) 
     {
-      my $script = "$pkgdir/scripts/$scriptname";
+      my $script = "$pkgdir/$scriptname";
       if (-e $script) 
         {
           oscar_log_subsection("About to run $script for $pkg");
@@ -142,11 +156,12 @@ sub run_in_chroot {
     my $base = basename($script);
     my $nscript = "$dir/tmp/$base";
     copy($script, $nscript) 
-    or (carp("Couldn't copy $script to $nscript"), return undef);
+	or (carp("Couldn't copy $script to $nscript"), return undef);
     chmod 0755, $nscript;
     !system("chroot $dir /tmp/$base") 
-    or (carp("Couldn't run /tmp/$script"), return undef);
-    unlink $nscript or (carp("Couldn't remove $nscript"), return undef);
+	or (carp("Couldn't run /tmp/$script"), return undef);
+    unlink $nscript 
+	or (carp("Couldn't remove $nscript"), return undef);
     return 1;
 }
 
