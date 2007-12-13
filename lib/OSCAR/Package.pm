@@ -136,7 +136,7 @@ sub run_pkg_script_chroot {
       return undef;
     }
 
-  my $pkgdir = get_pkg_dir($pkg, $phase);
+  my $pkgdir = get_scripts_dir($pkg, $phase);
   return undef unless ((defined $pkgdir) && (-d $pkgdir));
   foreach my $scriptname (@$scripts) 
     {
