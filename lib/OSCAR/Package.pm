@@ -87,8 +87,8 @@ $VERSION = sprintf("r%d", q$Revision$ =~ /(\d+)/);
 #
 
 sub get_scripts_dir {
-    my ($pkg, $phase);
-    if ($phase == 'test_root' || $phase == 'test_user') {
+    my ($pkg, $phase) = @_;
+    if ($phase eq 'test_root' || $phase eq 'test_user') {
 	return "/var/lib/oscar/testing/$pkg";
     } else {
 	return "/var/lib/oscar/packages/$pkg";
