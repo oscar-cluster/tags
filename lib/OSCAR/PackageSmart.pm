@@ -34,6 +34,7 @@ use base qw(Exporter);
 use OSCAR::OCA::OS_Detect;
 use OSCAR::PackMan;           # this only works when PackMan has arrived!
 use File::Basename;
+use Switch;
 use Cwd;
 use Carp;
 
@@ -67,36 +68,86 @@ sub prepare_pools {
 
     my $prev_format = "";
     my $binaries = "rpms|debs";
-    my $archs = "i386|x86_64|ia64";
+    my $archs = "i386|x86_64|ia64|ppc|ppc64";
+    # List of all supported distros. May be nice if we can get this list  
+    # from OS_Detect. 
+    my $distros = "debian|fc|mdv|rhel|suse|redhat|yellowdog|ydl"; 
+#    Take out the solution using a little smarter way until we figure out
+#    implemeting XML::Simple in a proper time.
+#    Coordinated with Geoffroy.
+#    # List of all supported distros. 
+#    my @distros_list = OSCAR::Distro::get_list_of_supported_distros_id();
+#    my $distros = "";
+#    for (my $i=0; $i<scalar(@distros_list)-1; $i++) {
+#        $distros .= @distros_list[$i] . "|";
+#    }
+#    $distros .= $distros_list[scalar(@distros_list)-1];
     my $format = "";
-    # Before to prepare a pool, we try to detect the binary package format associated
-    # Not that for a specific pool or set of pools, it is not possible to mix deb and 
-    # rpm based pools.
+    # Before to prepare a pool, we try to detect the binary package format
+    # associated Not that for a specific pool or set of pools, it is not
+    # possible to mix deb and rpm based pools.
     for my $pool (@pools) {
         $format = "";
         print "Analysing $pool\n" if $verbose;
-        if ( ($pool =~ /(.*)\-($binaries)$/) ) {
-            if ($prev_format ne "" && $prev_format ne $2) {
-                carp ("ERROR: Mix of RPM and Deb pools ($prev_format vs. $2),".
-                      " we do not know how to deal with that!");
+        # Online repo
+        if ($pool =~ m,^(http|https|ftp|mirror):,) {
+            print "This is an online repository ($pool)\n" if $verbose;
+            my $url;
+            if ( $pool =~ /\/$/ ) {
+                $url = $pool . "repodata/repomd.xml";
+            } else {
+                $url = $pool . "/repodata/repomd.xml";
             }
-            $format = $2;
-            print "Pool format: $format\n" if $verbose;
-        }
-        else {
-            my @files = glob("$pool/*.rpm");
-            if (scalar(@files) > 0) {
+            my $cmd = "wget -S --delete-after -q $url";
+            print "Testing remote repository type by using command: $cmd... " if $verbose;
+            if (!system("wget -S --delete-after -q $url")) {
+                print "[yum]\n" if $verbose;
                 $format = "rpms";
-            } else { 
+            } else {
+                # if the repository is not a yum repository, we assume this is
+                # a Debian repo. Therefore we assume that all specified repo
+                # are valid.
+                print "[deb]\n" if $verbose;
                 $format = "debs";
             }
-            print "Pool format: $format\n";
             if ($prev_format ne "" && $prev_format ne $format) {
-                carp ("ERROR: Mix of RPM and Deb pools ($prev_format vs. $2),".
+                die ("ERROR: Mix of RPM and Deb pools ($prev_format vs. $2),".
                       " we do not know how to deal with that!");
             }
+        } elsif ($pool =~ m,^(file:|/),) {
+	    $pool =~ s,^file:,,;
+            # Local pools
+            print "$pool is a local pool ($distros, $binaries)\n" if $verbose;
+            # we then check pools for common RPMs and common debs
+            if ( ($pool =~ /(.*)\-($binaries)$/) ) {
+                if ($prev_format ne "" && $prev_format ne $2) {
+                    die ("ERROR: Mix of RPM and Deb pools ($prev_format vs. ".
+                          "$2), we do not know how to deal with that!");
+                }
+                $format = $2;
+                print "Pool format: $format\n" if $verbose;
+            } else {
+                # Finally we check pools in tftpboot for specific distros
+                if ( ($pool =~ /($distros)/) ) {
+                    print ("Pool associated to distro $1\n") if $verbose;
+                    switch ($1) {
+                        case "debian" { $format = "debs" }
+                        else { $format = "rpms" }
+                    }
+                } else {
+                    die ("ERROR: Impossible to detect the distro ".
+                         "associated to the pool $pool");
+                }
+                print "Pool format: $format\n";
+                if ($prev_format ne "" && $prev_format ne $format) {
+                    die ("ERROR: Mix of RPM and Deb pools ($prev_format vs. ".
+                          "$1), we do not know how to deal with that!");
+                }
+            }
+            $prev_format = $format;
+        } else {
+            die "ERROR: Impossible to recognize pool $pool";
         }
-        $prev_format = $format;
     }
     print "Binary package format for the image: $format\n" if $verbose;
 

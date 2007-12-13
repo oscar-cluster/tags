@@ -1,91 +1,88 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<oscar 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:oscar-config="http://sf.net/oscar/2005/config.xml"
-  xsi:schemaLocation="http://sf.net/oscar/2005/config.xml oscar-config.xsd"
->
-  <name>Ganglia</name>
-
-  <version>
-    <major>3</major>
-    <minor>0</minor>
-    <subversion>3</subversion>
-    <release>4</release>
-    <epoch>1</epoch>
-  </version>
-
+<oscar>
+  <name>ganglia</name>
   <class>included</class>
-
   <summary>distributed monitoring and execution system</summary>
+  <description>Ganglia is a scalable distributed monitoring system for high-performance computing systems such as clusters and Grids.</description>
   <license>BSD</license>
   <group>Application/System</group>
   <uri>http://ganglia.sourceforge.net</uri>
-
-  <maintainer>
-    <name>Matt Massie</name>
-    <email>massie@cs.berkeley.edu</email>
-  </maintainer>
-
-  <packager>
-    <name>Bernard Li</name>
-    <email>bli@bcgsc.ca</email>
-  </packager>
-
-  <description>Ganglia is a scalable distributed monitoring system for high-performance computing systems such as clusters and Grids.</description>
-
-  <binary-package-list>
-      <pkg>ganglia-gmond</pkg>
-  </binary-package-list>  
-
-  <binary-package-list>
-      <filter>
-        <group>oscar_server</group>
-      </filter>
-
+  <authors>
+    <author cat="upstream">
+      <name>Matt Massie</name>
+      <email>massie@cs.berkeley.edu</email>
+    </author>
+    <author cat="maintainer">
+      <name>Erich Focht</name>
+      <email>efocht@hpce.nec.com</email>
+    </author>
+  </authors>
+  <serverDeps>
+    <requires>
       <pkg>ganglia-gmetad</pkg>
+      <pkg>ganglia-gmond</pkg>
       <pkg>ganglia-web</pkg>
       <pkg>rrdtool</pkg>
-  </binary-package-list>
-
-  <binary-package-list>
-      <filter>
-        <group>oscar_server</group>
-        <distribution>
-          <name>fc</name>
-        </distribution>
-      </filter>
-  
-      <filter>
-        <group>oscar_server</group>
-        <distribution>
-          <name>rhel</name>
-          <version>4</version>
-        </distribution>
-      </filter>
-
+    </requires>
+    <requires>
+      <filters>
+        <dist>fc</dist>
+        <dist>rhel</dist>
+        <dist>ydl</dist>
+      </filters>
       <pkg>php-gd</pkg>
-  </binary-package-list>
-
-  <binary-package-list>
-      <filter>
-        <group>oscar_server</group>
-        <distribution>
-          <name>suse</name>
-        </distribution>
-      </filter>
-
+      <pkg>php-common</pkg>
+    </requires>
+    <requires>
+      <filters>
+        <dist>sles</dist>
+      </filters>
       <pkg>php4-gd</pkg>
-  </binary-package-list>
-
-  <servicelist>
-      <service>gmond</service>
-  </servicelist>
-
-  <servicelist>
-      <filter>
-        <group>oscar_server</group>
-      </filter>
-
-      <service>gmetad</service>
-  </servicelist>
+    </requires>
+    <requires>
+      <filters>
+        <dist>suse</dist>
+      </filters>
+      <pkg>php5-gd</pkg>
+    </requires>
+  </serverDeps>
+  <clientDeps>
+    <requires>
+      <pkg>ganglia-gmond</pkg>
+    </requires>
+  </clientDeps>
+  <apiDeps/>
+  <changelog>
+    <versionEntry version="3.0.5-2">
+      <changelogEntry authorName="DongInn Kim" date="2007-11-10T00:20:22-04:00">
+        <item>Updated to support YDL</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="3.0.5-1">
+      <changelogEntry authorName="Bernard Li" date="2007-10-08T20:03:56-04:00">
+        <item>Update to version 3.0.5</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="1:3.0.4-4">
+      <changelogEntry authorName="DongInn Kim" date="2007-10-08T15:02:13+02:00">
+        <item>Add another dependency: php-common for RHEL of server</item>
+        <item>and clientDeps tag was not closed. I added the closing tag.</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="1:3.0.4-3">
+      <changelogEntry authorName="Erich Focht" date="2007-10-08T15:02:13+02:00">
+        <item>Dependency of -server was missing gmond. Added.</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="1:3.0.4-2">
+      <changelogEntry authorName="Erich Focht" date="2007-10-06T15:02:13+02:00">
+        <item>fixed dependencies for client</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="1:3.0.4-1">
+      <changelogEntry authorName="Erich Focht" date="2007-09-07T15:02:13+02:00">
+        <item>converted package to opkgc format</item>
+      </changelogEntry>
+    </versionEntry>
+  </changelog>
 </oscar>

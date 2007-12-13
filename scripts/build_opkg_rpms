@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+
+
+use strict;
+use Cwd;
+use File::Basename;
+
+$ENV{LC_ALL}="C";
+
+my @odir = @ARGV;
+
+if (!scalar(@odir)) {
+    print "Usage: $0 <OPKG_PATH> ...\n";
+    exit 1;
+}
+
+my $pwd = cwd();
+my $OHOME;
+
+if (-d "$pwd/../scripts" && -d "$pwd/../packages" && -d "$pwd/../share") {
+    $OHOME=dirname($pwd);
+    $ENV{OSCAR_HOME} = $OHOME;
+    print "OHOME = $OHOME\n";
+} else {
+    print "You must execute this program from within the scripts/ directory\n",
+    "of an OSCAR tree!\n";
+    exit 1;
+}
+
+eval "use lib \"$ENV{OSCAR_HOME}/lib\"";
+require OSCAR::OCA::OS_Detect;
+
+my $os = OSCAR::OCA::OS_Detect::open();
+my $dist = $os->{compat_distro};
+my $ver  = $os->{compat_distrover};
+my $arch = $os->{arch};
+
+for my $d (@odir) {
+    $d =~ s,/$,,g;
+    &opkgc_rpms($d);
+}
+exit 0;
+
+
+
+sub opkgc_rpms {
+    my ($dir) = @_;
+
+    my $tdir = $dir."/distro/".$dist.$ver."-".$arch;
+    chomp(my $tmpo = `mktemp /tmp/bld_opkg_XXXXXXX`);
+
+    my $cmd = "opkgc -v -v -v --dist $dist --input $dir > $tmpo 2>&1";
+    print "Executing: $cmd...\n";
+    my $err = system($cmd);
+    #system("cat $tmpo");
+    if ($err) {
+	print "EEEE: Building opkg RPMs for $dir failed.\n";
+        my $efile = "$dir.err";
+	!system("mv $tmpo $efile")
+	    or die "Could not move $tmpo to $efile: $!";
+	print "=EE= Full output is in $efile =EE=\n";
+	exit 1;
+    } else {
+	local *IN;
+	open IN, "$tmpo" or die "Could not open file $tmpo";
+	while (<IN>) {
+	    chomp;
+	    if (/^\[DEBUG\] Wrote: (.*)$/) {
+		my $file = $1;
+		if ($file =~ /.noarch.rpm$/) {
+		    if (! -d $tdir) {
+			!system("mkdir -p $tdir")
+			    or die "Could not create $tdir: $!";
+		    }
+		    !system("mv $file $tdir")
+			or die "Could not move $file to $tdir";
+		    print "Created ".$tdir."/".basename($file)."\n";
+		}
+	    } elsif (/^\[ERROR\] (.*)$/) {
+		print "ERROR: $1";
+		system("xml val --err --xsd /usr/share/opkgc/opkg.xsd $dir/config.xml");
+		die;
+	    }
+	}
+	close IN;
+	!system("rm $tmpo") or die "Could not remove $tmpo : $!";
+    }
+}

@@ -39,18 +39,20 @@ use utf8;
 
 use Qt;
 use Qt::isa qw(Qt::MainWindow);
+use lib $ENV{OSCAR_HOME}."/src/Installer";
 use InstallerWorkspace;
 use InstallerImages;
 use InstallerParseXML;
 use InstallerUtils;
 use InstallerErrorDialog;
 use Qt::slots
-    fileNew => [],
-    fileOpen => [],
-    fileSave => [],
-    fileSaveAs => [],
-    filePrint => [],
-    fileExit => [],
+#### Taken out because we did not want it in the GUI.
+#    fileNew => [],
+#    fileOpen => [],
+#    fileSave => [],
+#    fileSaveAs => [],
+#    filePrint => [],
+#    fileExit => [],
     helpIndex => [],
     helpContents => [],
     helpAbout => [],
@@ -66,17 +68,17 @@ use Qt::attributes qw(
     installerWorkspace
     centralWidget
     gridLayout
-    fileMenu
+#    fileMenu
     tasksMenu
     toolsMenu
     windowMenu
     helpMenu
-    fileNewAction
-    fileOpenAction
-    fileSaveAction
-    fileSaveAsAction
-    filePrintAction
-    fileExitAction
+#    fileNewAction
+#    fileOpenAction
+#    fileSaveAction
+#    fileSaveAsAction
+#    filePrintAction
+#    fileExitAction
     windowCascadeAction
     windowTileAction
     helpContentsAction
@@ -109,6 +111,7 @@ my @windowList;
 
 sub NEW
 {
+    print "Creating a new MainWindow object\n";
 #########################################################################
 
 =item C<NEW($parent, $name, $flags)>
@@ -148,85 +151,97 @@ like C<classname->>C<NEW(args...)>.
   setCaption(trUtf8("OSCAR Wizard Installer") );
 
   # Set up the grid layout for the central widget and InstallerWorkspace
+  print "Setting up the grid layout\n";
+  print "Setting the central widget...\n";
   centralWidget = Qt::Widget(this,"InstallerCentralWidget");
   setCentralWidget(centralWidget);
   gridLayout = Qt::GridLayout(centralWidget,1,1,1);
+  print "Setting the Installer Workspace widget...\n";
   installerWorkspace = InstallerWorkspace(centralWidget,"InstallerWorkspace");
   gridLayout->addWidget(installerWorkspace,0,0);
 
   # Create the status bar
+  print "Creating the status bar\n";
   statusBar();
 
-  # Create pulldown menus.  First: File menu
-  fileMenu = Qt::PopupMenu(this);
-  menuBar()->insertItem("",fileMenu,1);
-  menuBar()->findItem(1)->setText(trUtf8("&File"));
-
-  fileNewAction = Qt::Action(this,"fileNewAction");
-  fileNewAction->setIconSet(
-    Qt::IconSet(InstallerUtils::getPixmap("filenew.png")));
-  fileNewAction->setText(trUtf8("New"));
-  fileNewAction->setMenuText(trUtf8("&New"));
-  fileNewAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+N")));
-  fileNewAction->addTo(fileMenu);
-
-  fileOpenAction = Qt::Action(this,"fileOpenAction");
-  fileOpenAction->setIconSet(
-    Qt::IconSet(InstallerUtils::getPixmap("fileopen.png")));
-  fileOpenAction->setText(trUtf8("Open"));
-  fileOpenAction->setMenuText(trUtf8("&Open..."));
-  fileOpenAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+O")));
-  fileOpenAction->addTo(fileMenu);
-
-  fileSaveAction = Qt::Action(this,"fileSaveAction");
-  fileSaveAction->setIconSet(
-    Qt::IconSet(InstallerUtils::getPixmap("filesave.png")));
-  fileSaveAction->setText(trUtf8("Save"));
-  fileSaveAction->setMenuText(trUtf8("&Save"));
-  fileSaveAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+S")));
-  fileSaveAction->addTo(fileMenu);
-
-  fileSaveAsAction = Qt::Action(this,"fileSaveAsAction");
-  fileSaveAsAction->setText(trUtf8("Save As"));
-  fileSaveAsAction->setMenuText(trUtf8("Save &As..."));
-  fileSaveAsAction->addTo(fileMenu);
-
-  fileMenu->insertSeparator();
-
-  filePrintAction = Qt::Action(this,"filePrintAction");
-  filePrintAction->setIconSet(
-    Qt::IconSet(InstallerUtils::getPixmap("print.png")));
-  filePrintAction->setText(trUtf8("Print"));
-  filePrintAction->setMenuText(trUtf8("&Print..."));
-  filePrintAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+P")));
-  filePrintAction->addTo(fileMenu);
-
-  fileMenu->insertSeparator();
-
-  fileExitAction = Qt::Action(this,"fileExitAction");
-  fileExitAction->setIconSet(
-    Qt::IconSet(InstallerUtils::getPixmap("close.png")));
-  fileExitAction->setText(trUtf8("Exit"));
-  fileExitAction->setMenuText(trUtf8("E&xit"));
-  fileExitAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+Q")));
-  fileExitAction->addTo(fileMenu);
+##################################################
+#  File menu for OSCAR GUI.
+##################################################
+#  # Create pulldown menus.  First: File menu
+#  print "Creating the pulldown menus\n";
+#  fileMenu = Qt::PopupMenu(this);
+#  menuBar()->insertItem("",fileMenu,1);
+#  menuBar()->findItem(1)->setText(trUtf8("&File"));
+#
+#  fileNewAction = Qt::Action(this,"fileNewAction");
+#  fileNewAction->setIconSet(
+#    Qt::IconSet(InstallerUtils::getPixmap("filenew.png")));
+#  fileNewAction->setText(trUtf8("New"));
+#  fileNewAction->setMenuText(trUtf8("&New"));
+#  fileNewAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+N")));
+#  fileNewAction->addTo(fileMenu);
+#
+#  fileOpenAction = Qt::Action(this,"fileOpenAction");
+#  fileOpenAction->setIconSet(
+#    Qt::IconSet(InstallerUtils::getPixmap("fileopen.png")));
+#  fileOpenAction->setText(trUtf8("Open"));
+#  fileOpenAction->setMenuText(trUtf8("&Open..."));
+#  fileOpenAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+O")));
+#  fileOpenAction->addTo(fileMenu);
+#
+#  fileSaveAction = Qt::Action(this,"fileSaveAction");
+#  fileSaveAction->setIconSet(
+#    Qt::IconSet(InstallerUtils::getPixmap("filesave.png")));
+#  fileSaveAction->setText(trUtf8("Save"));
+#  fileSaveAction->setMenuText(trUtf8("&Save"));
+#  fileSaveAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+S")));
+#  fileSaveAction->addTo(fileMenu);
+#
+#  fileSaveAsAction = Qt::Action(this,"fileSaveAsAction");
+#  fileSaveAsAction->setText(trUtf8("Save As"));
+#  fileSaveAsAction->setMenuText(trUtf8("Save &As..."));
+#  fileSaveAsAction->addTo(fileMenu);
+#
+#  fileMenu->insertSeparator();
+#
+#  filePrintAction = Qt::Action(this,"filePrintAction");
+#  filePrintAction->setIconSet(
+#    Qt::IconSet(InstallerUtils::getPixmap("print.png")));
+#  filePrintAction->setText(trUtf8("Print"));
+#  filePrintAction->setMenuText(trUtf8("&Print..."));
+#  filePrintAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+P")));
+#  filePrintAction->addTo(fileMenu);
+#
+#  fileMenu->insertSeparator();
+#
+#  fileExitAction = Qt::Action(this,"fileExitAction");
+#  fileExitAction->setIconSet(
+#    Qt::IconSet(InstallerUtils::getPixmap("close.png")));
+#  fileExitAction->setText(trUtf8("Exit"));
+#  fileExitAction->setMenuText(trUtf8("E&xit"));
+#  fileExitAction->setAccel(Qt::KeySequence(trUtf8("Ctrl+Q")));
+#  fileExitAction->addTo(fileMenu);
 
   # Read in all of the XML file configuration information for Tasks/Tools
+  print "Reading the XML configuration file...\n";
   readInstallerXMLFile();
 
   # Second: Tasks menu 
+  print "Creating tasks menu...\n";
   tasksMenu = Qt::PopupMenu(this);
   menuBar()->insertItem("",tasksMenu,2);
   menuBar()->findItem(2)->setText(trUtf8("&Tasks"));
   populateTasksMenu();
 
   # Third: Tools menu
+  print "Creating tools menu...\n";
   toolsMenu = Qt::PopupMenu(this);
   menuBar()->insertItem("",toolsMenu,3);
   menuBar()->findItem(3)->setText(trUtf8("T&ools"));
   populateToolsMenu();
 
   # Fourth: Window menu - updated when Tools/Tasks are created/destroyed
+  print "Creating the window menu...\n";
   windowMenu = Qt::PopupMenu(this,"windowMenu");
   menuBar()->insertItem("",windowMenu,4);
   menuBar()->findItem(4)->setText(trUtf8("&Window"));
@@ -244,6 +259,7 @@ like C<classname->>C<NEW(args...)>.
   windowMenu->insertSeparator();
 
   # Fifth: Help menu - Not sure about how much help there will be...
+  print "Creating the help menu...\n";
   helpMenu = Qt::PopupMenu(this);
   menuBar()->insertItem("",helpMenu,5);
   menuBar()->findItem( 5 )->setText( trUtf8("&Help") );
@@ -271,18 +287,21 @@ like C<classname->>C<NEW(args...)>.
   clearWState(&Qt::WState_Polished);
 
   # Then, connect the signals for the pulldown menus to appropriate slots
-  Qt::Object::connect(fileNewAction,      SIGNAL "activated()", 
-                      this,               SLOT "fileNew()");
-  Qt::Object::connect(fileOpenAction,     SIGNAL "activated()", 
-                      this,               SLOT "fileOpen()");
-  Qt::Object::connect(fileSaveAction,     SIGNAL "activated()", 
-                      this,               SLOT "fileSave()");
-  Qt::Object::connect(fileSaveAsAction,   SIGNAL "activated()", 
-                      this,               SLOT "fileSaveAs()");
-  Qt::Object::connect(filePrintAction,    SIGNAL "activated()", 
-                      this,               SLOT "filePrint()");
-  Qt::Object::connect(fileExitAction,     SIGNAL "activated()", 
-                      this,               SLOT "fileExit()");
+  print "Connecting the signals...\n";
+
+##### More file code.
+#  Qt::Object::connect(fileNewAction,      SIGNAL "activated()", 
+#                      this,               SLOT "fileNew()");
+#  Qt::Object::connect(fileOpenAction,     SIGNAL "activated()", 
+#                      this,               SLOT "fileOpen()");
+#  Qt::Object::connect(fileSaveAction,     SIGNAL "activated()", 
+#                      this,               SLOT "fileSave()");
+#  Qt::Object::connect(fileSaveAsAction,   SIGNAL "activated()", 
+#                      this,               SLOT "fileSaveAs()");
+#  Qt::Object::connect(filePrintAction,    SIGNAL "activated()", 
+#                      this,               SLOT "filePrint()");
+#  Qt::Object::connect(fileExitAction,     SIGNAL "activated()", 
+#                      this,               SLOT "fileExit()");
   Qt::Object::connect(windowCascadeAction,SIGNAL "activated()", 
                       installerWorkspace, SLOT "cascade()");
   Qt::Object::connect(windowTileAction,   SIGNAL "activated()", 
@@ -316,6 +335,8 @@ $installerTasksAndTools hash) before calling this subroutine.
 
 #########################################################################
 
+  print "Populating the task menu...\n";
+  print "Number of tasks: ".scalar (@installerTasksSorted)."\n";
   my $arraynum = 0;
   foreach my $task (@installerTasksSorted)
     {
@@ -368,50 +389,50 @@ $installerTasksAndTools hash) before calling this subroutine.
       toolsMenu->setItemParameter($id,$arraynum++);
     }
 }
-
-sub fileNew
-{
-  print "fileNew(): Not implemented yet.\n";
-}
-
-sub fileOpen
-{
-  print "fileOpen(): Not implemented yet.\n";
-}
-
-sub fileSave
-{
-  print "fileSave(): Not implemented yet.\n";
-}
-
-sub fileSaveAs
-{
-  print "fileSaveAs(): Not implemented yet.\n";
-}
-
-sub filePrint
-{
-  print "filePrint(): Not implemented yet.\n";
-}
-
-sub fileExit
-{
-  Qt::Application::exit();
-}
-
+#####  File Code
+#sub fileNew
+#{
+#  print "fileNew(): A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
+#}
+#
+#sub fileOpen
+#{
+#  print "fileOpen():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
+#}
+#
+#sub fileSave
+#{
+#  print "fileSave():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
+#}
+#
+#sub fileSaveAs
+#{
+#  print "fileSaveAs():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
+#}
+#
+#sub filePrint
+#{
+#  print "filePrint():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
+#}
+#
+#sub fileExit
+#{
+#  Qt::Application::exit();
+#}
+#
 sub helpIndex
 {
-  print "helpIndex(): Not implemented yet.\n";
+  print "helpIndex():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
 }
 
 sub helpContents
 {
-  print "helpContents(): Not implemented yet.\n";
+  print "helpContents():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
 }
 
 sub helpAbout
 {
-  print "helpAbout(): Not implemented yet.\n";
+  print "helpAbout():  A shadow robed figure appears before you.  He waves his hand at you and sais \"You do not want to do that.\"  Suddenly you find you do not want to do that.\n";
 }
 
 sub windowMenuAboutToShow
@@ -459,6 +480,7 @@ are built into Qt so we don't have to do any extra work.)
 
 sub windowMenuActivated
 {
+    print "1\n";
 #########################################################################
 
 =item C<windowMenuActivated($windowNum)>
@@ -475,7 +497,9 @@ gives it the focus.
 
 #########################################################################
 
+  print "toto\n";
   my $windowNum = shift;
+  print "Window num = $windowNum\n";
 
   my $wid = $windowList[$windowNum];
   if ($wid)
@@ -1206,7 +1230,7 @@ Terrence G. Fleury (tfleury@ncsa.uiuc.edu)
 
 First Created on February 2, 2004
 
-Last Modified on April 28, 2004
+Last Modified on June 20, 2007 by Geoffroy Vallee (valleegr@ornl,gov).
 
 =cut
 
@@ -1214,4 +1238,6 @@ Last Modified on April 28, 2004
 #                          MODIFICATION HISTORY                         #
 # Mo/Da/Yr                        Change                                #
 # -------- ------------------------------------------------------------ #
+# 06/20/07  Restart the effort on the Qt GUI. Add debugging info. By    #
+#           Geoffroy Vallee <valleegr@ornl.gov>                         #
 #########################################################################

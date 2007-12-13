@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<oscar>
+  <name>sync-files</name>
+  <class>core</class>
+  <summary>OSCARized File Synchronization System</summary>
+  <description>The OSCAR File Synchronization System keeps any list of files
+    synchronized from the the central OSCAR server out to the
+    OSCAR compute nodes.
+  </description>
+  <license>GPL</license>
+  <group>System Environment/Base</group>
+  <uri>http://oscar.openclustergroup.org/</uri>
+  <authors>
+    <author cat="maintainer">
+      <name>Erich Focht</name>
+      <email>efocht@hpce.nec.com</email>
+    </author>
+    <author cat="maintainer">
+      <name>Geoffroy Vallee</name>
+      <email>valleegr@ornl.gov</email>
+    </author>
+  </authors>
+  <serverDeps>
+    <requires>
+      <filters>
+        <dist>rhel</dist>
+        <dist>fc</dist>
+        <dist>mdv</dist>
+      </filters>
+      <pkg>sync-files</pkg>
+      <pkg>crontabs</pkg>
+    </requires>
+    <requires>
+      <filters>
+        <dist>suse</dist>
+      </filters>
+      <pkg>sync-files</pkg>
+      <pkg>cron</pkg>
+    </requires>
+  </serverDeps>
+  <clientDeps/>
+  <apiDeps/>
+  <changelog>
+    <versionEntry version="2.4-2">
+      <changelogEntry authorName="Geoffroy Vallee" date="2007-06-25T10:46:54-04:00">
+        <item>Minor modification: the package name (including the directory name in the source is now sync-files everywhere.</item>
+      </changelogEntry>
+    </versionEntry>
+    <versionEntry version="2.4-1">    
+      <changelogEntry authorName="Erich Focht" date="2007-06-25T10:46:54-04:00">
+        <item>Convert to the new OPKG API (for OPKGC)</item>
+      </changelogEntry>
+    </versionEntry>
+  </changelog>
+</oscar>

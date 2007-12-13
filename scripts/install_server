@@ -40,6 +40,7 @@ use OSCAR::PackageSmart;
 use Carp;
 use Data::Dumper;
 use OSCAR::OCA::OS_Detect;
+use OSCAR::Opkg;
 
 ## Begin distribution specific stuff ##
 
@@ -89,45 +90,25 @@ oscar_log_subsection("Got: [broadcast $bcast]");
 oscar_log_subsection("Got: [netmask $netmask]");
 
 oscar_log_subsection("Adding hosts to /etc/hosts");
-update_hosts($ip) or croak("Couldn't add required host entries to /etc/hosts");
+OSCAR::Network::update_hosts($ip)
+    or croak("Couldn't add required host entries to /etc/hosts");
 
 
 # Get a list of all non-core packages
 # and list of RPMs from the non-core packages
-my $sel_group = get_selected_group;
-my @opkgs = list_selected_packages("noncore",$sel_group);
-my @opkgs_list;
-my @pkgs;
-my @qerrors;
-foreach my $pkg_ref ( @opkgs ) {
-    my $opkg = $$pkg_ref{package};
-    my $ver = $$pkg_ref{version};
-    push @opkgs_list, $opkg;
-    push @pkgs, pkgs_of_opkg($opkg, $ver, \@qerrors,
-			     group => $OSCAR_SERVER_GROUP,
-			     chroot => "/" );
+my $sel_group = &get_selected_group();
+my @ohlist = &list_selected_packages("noncore", $sel_group);
+my @opkgs;
+foreach my $p (@ohlist) {
+    push @opkgs, $$p{package};
 }
-oscar_log_subsection("Identified non-core packages: " . join(' ', @opkgs_list));
-
+oscar_log_subsection("Identified non-core packages: " . join(' ', @opkgs));
 
 # Now install the pkgs that we found
 
 oscar_log_subsection("Installing server non-core packages " .
 		     "(core packages already installed)");
-
-my $pm = &OSCAR::PackageSmart::prepare_pools($verbose,$oscar_pkg_pool,$distro_pkg_pool);
-if (!$pm) {
-    croak "\nERROR: Could not create PackMan instance!\n";
-}
-# If the list of packages we have to install is empty, we do nothing
-if (@pkgs > 0) {
-    oscar_log_subsection("Smart_install: ".join(",",@pkgs));
-    my ($ret, @out) = $pm->smart_install(@pkgs);
-    if (!$ret) {
-        print "Error occured during server pkgs install:\n".join("\n",@out)."\n";
-        croak("Couldn't install the required packages needed for OSCAR");
-    }
-}
+&OSCAR::Opkg::opkgs_install("server", @opkgs);
 oscar_log_subsection("Successfully installed server non-core binary packages");
 
 #
@@ -160,7 +141,8 @@ oscar_log_subsection("Marking installed bit in ODA for server non-core RPMS");
 
 my $requested = 8; # "Installed" flag for the Node_Package_Status"
 die "$0:Failed to update the table Node_Package_Status"
-    if(!update_node_package_status(\%options,$OSCAR_SERVER_NODE,\@opkgs,$requested,\@errors));
+    if(!&update_node_package_status(\%options, $OSCAR_SERVER_NODE, \@ohlist,
+				    $requested,\@errors));
 
 
 # UNLOCKING FOR NEST
@@ -173,10 +155,10 @@ oscar_log_subsection("Done marking installed bits in ODA");
 
 oscar_log_subsection("Running post_server_install scripts " .
 		     "for server non-core packages");
-foreach my $opkg (@opkgs_list) {
+foreach my $opkg (@opkgs) {
     # if($opkg ne "networking"){   # EF: why was this here?
                                    # if it doesn't work, fix it!  
-    run_pkg_script($opkg,"post_server_install") 
+    &run_pkg_script($opkg,"post_server_install") 
         or croak("Failed running post_server_install for $opkg");
 }
 oscar_log_subsection("Successfully ran server non-core package ".
@@ -225,81 +207,6 @@ foreach my $f (@rcfiles) {
 
 oscar_log_subsection("Finished server_prep script");
 
-
-sub verbose {
-    print join " ", @_;
-    print "\n";
-}
-
-sub update_hosts {
-    my $ip = shift;
-    if( ! $ip ) {   # mjc - 12/13/01
-      croak( "Cannot update hosts without a valid ip.\n" );
-    }
-    verbose("Backing up /etc/hosts");
-    copy("/etc/hosts","/etc/hosts.bak") or return undef;
-    my $short;
-    my $hostname = qx/hostname/;
-    chomp($hostname);
-    if($hostname =~ /\./) {
-        $short = $hostname;
-        $short =~ s/\..*//;
-        if($short eq $hostname) {
-            $short=undef;
-        }
-    }
-    my @aliases=qw(oscar_server nfs_oscar pbs_oscar);
-    open(IN,"</etc/hosts.bak") or return undef;
-    open(OUT,">/etc/hosts") or return undef;
-    verbose("Adding required entries to /etc/hosts");
-
-    # mjc - 11/12/01 - start
-    # - If the ip is in there, add the oscar aliases if they
-    #   aren't on the list.
-    # - If the ip is not in there, add the line.
-    # - If you stumble across another line in the file with a different ip
-    #   but the same hostname, pull it out of the file and add it back in
-    #   only after we have added the line for this specified ip
-    my @hostlines = ();
-    my $line;
-    my $found=0;
-
-    while ($line=<IN>) {
-      chomp $line; # mjc - 12/13/01
-      if( $line =~ /^$ip\s+/ ) {
-        $line =~ /^([^#]+)(#.*)?$/;
-        my $body = $1;
-        my $comment = $2||"";
-        # Same ip, grab all the items on the line and add the oscar 
-        # aliases if they aren't already there.
-        $found = 1;
-        my @items = split( /\s+/, $body );
-        foreach my $alias (@aliases) {
-                push @items, $alias unless grep {$alias eq $_} @items;
-        }
-        # print the modified line.
-        print OUT join( " ", @items ), " $comment\n";
-      } elsif( $line =~ /$hostname/ ) {  # mjc - 12/13/01
-        # Not the same ip, but same hostname, save this line for now
-        $hostlines[$#hostlines + 1] = $line;
-      } else {
-        # Not a line we're interested in changing
-        print OUT $line."\n"; # mjc - 12/13/01
-      }
-    }
-    # If there wasn't a line there, add it now.
-    if(!$found) {
-      print OUT "$ip $hostname $short ". join( " ", @aliases )."\n";
-    }
-    # Add back in any lines found with the same hostname but different ip
-    foreach $line ( @hostlines ) {
-      print OUT $line."\n"; # mjc - 12/13/01
-    }
-    # mjc - 11/12/01 - end
-
-    close(OUT);
-    close(IN);
-}
 
 #
 # EF: it is a bad idea to add /usr/local/bin to root's path

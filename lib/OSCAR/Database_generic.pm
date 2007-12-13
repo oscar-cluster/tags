@@ -109,22 +109,22 @@ $options{debug} = 1
 
 
 ######################################################################
-#
-#           Most frequently used
-#       Internal database subroutines
-#
+#                                                                    #
+#           Most frequently used                                     #
+#       Internal database subroutines                                #
+#                                                                    #
 ######################################################################
 
-######################################################
-# Three main query subroutines
-#
-#   - do_select
-#   - do_insert
-#   - do_update
-#
-# These subroutines directly call the oda query command
-# if query succeeds, return 1. Otherwise, return 0
-########################################################## 
+################################################################################
+# Three main query subroutines:                                                #
+#                                                                              #
+#   - do_select                                                                #
+#   - do_insert                                                                #
+#   - do_update                                                                #
+#                                                                              #
+# These subroutines directly call the oda query command.                       #
+# Return; if query succeeds, return 1. Otherwise, return 0.                    #
+################################################################################
 
 sub do_select {
     my ($sql,

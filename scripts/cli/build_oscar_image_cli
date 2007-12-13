@@ -1,0 +1,647 @@
+#!/usr/bin/perl -w
+
+# $Id$
+#
+# Copyright (c) 2006 Oak Ridge National Laboratory.
+#                  All rights reserved.
+# Copyright (c) 2007 The Trustees of Indiana University.
+#                  All rights reserved.
+#
+# This section builds the OSCAR image for the clients
+#
+# Some code in this section was borrowed from:
+#   SystemInstaller::Tk::Image
+#   trunk/scripts/oscar_wizard
+
+use strict;
+use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig","/usr/lib/systeminstaller","/usr/lib/systemimager/perl","$ENV{OSCAR_HOME}/scripts/cli";
+use OSCAR::Logger;
+use OSCAR::PackagePath;
+use OSCAR::Database;
+use SystemInstaller::Tk::Common;
+use SystemImager::Server;
+use OSCAR::ImageMgt qw (
+                        delete_image
+                        do_setimage 
+                        do_post_binary_package_install 
+                        do_oda_post_install
+                        get_image_default_settings
+                       );
+use OSCAR::Opkg qw ( create_list_selected_opkgs );
+use Carp;
+use POSIX;
+use Getopt::Long;
+
+my $exit_status = 9;
+
+$| = 1;
+
+oscar_log_section("Build OSCAR Client Image");
+
+our $file = " ";
+my $help = '';
+
+GetOptions('help' => \$help, 'filename=s' => \$file, 'f=s' => \$file);
+
+if ($help)
+{
+    print "Usage: build_oscar_image_cli [FLAGS] adapter
+
+  --filename, -f    The file to be read in to automate this step.\n";
+    exit 0;
+}
+
+# We get the default settings for images.
+my %vars = get_image_default_settings ();
+
+# Update settings: ee set the last few points specific to the current
+# situation.
+$vars{postinstall} = \&postimagebuild;
+
+#
+# Validate image name (code from systeminstaller-oscar, 
+# lib/SystemInstaller/Tk/Image.pm).
+#
+my @images = listimages("etc/systemimager/rsyncd.conf");
+if( grep {$vars{imgname} eq $_} @images )
+{
+    my $last = 0;
+    foreach (@images)
+    {
+        if( /^\Q$vars{imgname}\E(\d+)$/ )
+        {
+            $last = $1 if $1 > $last;
+        }
+    }
+    $vars{imgname} .= $last + 1;
+}
+
+# Backup the old settings in case the user changes his mind
+my %defaults = %vars;
+
+# Locate all available distro pools
+my %distro_pools = &OSCAR::PackagePath::list_distro_pools();
+our @distros = sort(keys(%distro_pools));
+
+# Set up the default distro
+# GV: Is the first distro in the 'distros' array the local distro? Or are
+# distros sorted?
+if($vars{distro} eq "")
+{
+    $vars{distro} = $distros[0];
+}
+
+oscar_log_subsection("Get configuration choices from user");
+my $result = 1;
+while($result)
+{
+    $result = menu();
+    #If we are running in automated mode, we don't want to keep 
+        #looping if we fail
+    if($file ne " ") {last;}
+        last if $result == 9;
+}
+
+our $progress_status;
+
+#This will print out a progress bar.
+#This subroutine takes one arguement that represents the current position
+#of the progress bar.
+sub progress
+{
+    #Terrible hack to avoid using curses
+    #This still isn't good and doesn't work all the time, but it's better
+    #than before
+    $|++;
+    print "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
+
+    my $value = shift;
+    
+    #Insert code for progress bar
+    #This is a temp fix
+    print "\n$value % [";
+    for(my $i = 0; $i < $value/10; $i++)
+    {
+        print "=";
+    }
+    for(my $i = 0; $i < 10 - $value/10; $i++)
+    {
+        print " ";
+    }
+    print "]";
+}
+
+sub add_image
+{
+    our $file;
+
+    if( imageexists("/etc/systemimager/rsyncd.conf", $vars{imgname}) )
+    {
+        if($file eq " ")
+        {
+            print "\"$vars{imgname}\" exists.  Do you want to replace it?\n(y/n):";
+            my $response = <STDIN>;
+            chomp $response;
+            if($response eq "n" || $response eq "no")
+            {
+                return undef;
+            }
+        }
+        delete_image ($vars{imgname});
+    }
+    oscar_log_subsection("Building Image...");
+    my $result = add_image_build();
+    
+    if(!$result)
+    {
+        oscar_log_subsection("Successfully created image \"$vars{imgname}\"");
+        if( $vars{imgname} =~ /(.*?)(\d+)$/ )
+        {
+            $vars{imgname} = $1.($2 + 1);
+        } else {
+            $vars{imgname} .= 1;
+        }
+    } else {
+        oscar_log_subsection("Failed building image \"$vars{imgname}\"");
+        delete_image ($vars{imgname});
+    }
+    $exit_status = $result;
+    return $result;
+}
+
+# Code based on add_image_build from systeminstaller-oscar
+# (lib/SystemInstaller/Tk/Image.pm).
+# Retrun : 0 if success, 1 else.
+sub add_image_build
+{
+    my $cmd = "mksiimage -A --name $vars{imgname} " .
+        "--location $vars{pkgpath} " .
+        "--filename $vars{pkgfile} " .
+        "--arch $vars{arch} " .
+        "--path $vars{imgpath}/$vars{imgname}" .
+        " $vars{extraflags}";
+    
+    print "Executing command: $cmd\n";
+    
+    my $value = 0;
+    $SIG{PIPE} = 'IGNORE';
+    my $pid = open(OUTPUT, "$cmd |");
+    unless($pid)
+    {
+        carp("Couldn't run command $cmd");
+        return 1;
+    }
+    
+    progress($value);
+    while(my $line = <OUTPUT>)
+    {
+        print "$line" if (exists $ENV{OSCAR_VERBOSE});
+        my $ovalue = $value;
+        if($line =~ /\[progress: (\d+)\]/) {
+            $value = $1;
+        }
+        progress($value) unless $ovalue == $value;
+    }
+    close(OUTPUT);
+    
+    print "Image build finished\n";
+
+    $cmd = "mksidisk -A --name $vars{imgname} --file $vars{diskfile}";
+    if( system($cmd) )
+    {
+        carp("Couldn't run command $cmd");
+        return 1;
+    }
+    
+    print "Added Disk Table for $vars{imgname} based on $vars{diskfile}\n";
+
+    #Default command options
+    $cmd = "si_mkautoinstallscript -quiet --autodetect-disks -image $vars{imgname} -force -ip-assignment $vars{ipmeth} -post-install $vars{piaction}";
+
+    print "Running: $cmd ... ";
+    if( system($cmd) )
+    {
+        carp("failed");
+        return 1;
+    }
+    
+    print "done\n";
+
+    #This allows for an arbitrary callback to be registered.
+    #It will get a reference to all the variables that have been defined
+    #for the image
+    if(ref($vars{postinstall}) eq "CODE")
+    {
+        { 
+            unless( &{$vars{postinstall}}() )
+            {
+                carp("Couldn't run postinstall");
+                return 1;
+            }
+        }
+    }
+
+    if(ref($vars{postinstall}) eq "ARRAY")
+    {
+        my $sub = shift(@{$vars{postinstall}});
+        unless( &$sub(@{$vars{postinstall}}) )
+        {
+            carp("Couldn't run postinstall");
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+###############################################################################
+# Similar to the function in scripts/oscar_wizard: execute post actions after #
+# the image creation.                                                         #
+# Input: none.                                                                #
+# Return: none.                                                               #
+###############################################################################
+sub postimagebuild
+{
+    my $img = $vars{imgname};
+    my %options;
+    do_setimage ($img, \%options);
+    do_post_binary_package_install ($img, $ARGV[0]);
+    do_oda_post_install (%vars, \%options);
+}
+
+#Prints out the menu for the user to choose which section to edit
+#The user will type in a line number which will be parsed and
+#control will be sent to the appropriate subroutine
+sub menu
+{
+    our $file;
+
+    my $selection;
+
+    #If the file is defined, we're going to run in automatic mode
+    if($file ne " ")
+    {
+        oscar_log_subsection("Running in automated mode from $file");
+        open(FILE, $file) || die "Can't open $file\n";
+        my @file = <FILE>;
+        chomp @file;
+        for(my $i = 0; $i <= $#file; $i++)
+        {
+            #If the line starts with a '#' it's a comment
+            if($file[$i] =~ /^#/) {next;}
+
+            #Empty line
+            elsif(!$file[$i]) {next;}
+            
+            if($file[$i] == 1) {imageName($file[++$i]);}
+            elsif($file[$i] == 2) {packageFile($file[++$i]);}
+            elsif($file[$i] == 3) {distro($file[++$i]);}
+            elsif($file[$i] == 4) {packageDir($file[++$i]);}
+            elsif($file[$i] == 5) {diskPart($file[++$i]);}
+            elsif($file[$i] == 6) {ipAssign($file[++$i]);}
+            elsif($file[$i] == 7) {postInstall($file[++$i]);}
+            elsif($file[$i] == 8) {return add_image();}
+            elsif($file[$i] == 9) {return $exit_status;}
+        }
+    }
+    #Otherwise get input from the user
+    else
+    {
+        my $ppid = getppid();
+        open (LOG, ">$ENV{OSCAR_HOME}/tmp/build.$ppid.clilog");
+        print LOG "##########################################\n" .
+                  "#Select one\n" .
+                  "#-----------------------------------------\n" .
+                  "#1) Image name: $vars{imgname}\n" .
+                  "#2) Package file: $vars{pkgfile}\n" .
+                  "#3) Distro: $vars{distro}\n" .
+                  "#4) Package Repositories: $vars{pkgpath}\n" .
+                  "#5) Disk Partition File: $vars{diskfile}\n" .
+                  "#6) IP Assignment Method: $vars{ipmeth}\n" .
+                  "#7) Post install action: $vars{piaction}\n" .
+                  "#8) Build Image\n" .
+                  "#9) Quit\n" .
+                  "##########################################\n";
+        do #Keep looping until the user picks quit
+        {
+            do #Keep looping as long as the user picks an invalid response
+            {
+                #Put a couple of spacer lines in there
+                print "\n\n";
+                
+                print "Select one\n" .
+                      "-----------------------------------------\n" .
+                      "1) Image name: $vars{imgname}\n" .
+                      "2) Package file: $vars{pkgfile}\n" .
+                      "3) Distro: $vars{distro}\n" .
+                      "4) Package Repositories: $vars{pkgpath}\n" .
+                      "5) Disk Partition File: $vars{diskfile}\n" .
+                      "6) IP Assignment Method: $vars{ipmeth}\n" .
+                      "7) Post install action: $vars{piaction}\n" .
+                      "8) Build Image\n" .
+                      "9) Quit\n" . 
+                      ">  ";
+                $selection = <STDIN>;
+                print LOG $selection;
+                chomp $selection;
+            }
+            while($selection < 1 || $selection > 9);
+        
+            #Go to the appropriate subroutine based on what the user picked
+            if($selection == 1) {imageName();}
+            elsif($selection == 2) {packageFile();}
+            elsif($selection == 3) {distro();}
+            elsif($selection == 4) {packageDir();}
+            elsif($selection == 5) {diskPart();}
+            elsif($selection == 6) {ipAssign();}
+            elsif($selection == 7) {postInstall();}
+            elsif($selection == 8) {return add_image();}
+            elsif($selection == 9) {return $exit_status;}
+                
+        } while(1);
+        close LOG;
+    }
+}
+
+#Pick the image name
+sub imageName
+{
+    #Automated
+    my $input = shift;
+
+    if (defined $input)
+    {
+        $vars{imgname} = $input;
+        oscar_log_subsection("Image name: $input");
+    }
+    #Interactive
+    else
+    {
+        print "Image Name\n";
+        print "-----------------------\n";
+        print "Currently: $vars{imgname}\n";
+        print "New:  ";
+        my $temp = <STDIN>;
+        print LOG $temp;
+        chomp $temp;
+        
+        #If the user leaves it blank, don't change anything
+        if ($temp eq "") {return;}
+        
+        $vars{imgname} = $temp;
+    }
+}
+
+#Where is your package file?
+sub packageFile
+{
+    #Automated
+    my $input = shift;
+
+    if (defined $input)
+    {
+        $vars{pkgfile} = $input;
+        oscar_log_subsection("Package file: $input");
+    }
+    #Interactive
+    else
+    {
+        print "Package File\n";
+        print "-----------------------\n";
+        print "Currently: $vars{pkgfile}\n";
+        print "New:  ";
+        my $temp = <STDIN>;
+        print LOG $temp;
+        chomp $temp;
+    
+        #If the user leaves it blank, don't change anything
+        if ($temp eq "") {return;}
+        
+        $vars{pkgfile} = $temp;
+    }
+}
+
+#What is your distro?
+sub distro
+{
+    my $input = shift;
+
+    our @distros;
+    my $found = 0;
+
+    #Automated
+    if (defined $input)
+    {
+        $vars{distro} = $input;
+        oscar_log_subsection("Distro: $input");
+    }
+    #Interactive
+    else
+    {
+        while(!$found)
+        {
+            print "Distro\n";
+            print "-----------------------\n";
+            print "Currently: $vars{distro}\n";
+            print "Choices: " . join(" ", sort(@distros)) . "\n";
+            print "New:  ";
+            my $temp = <STDIN>;
+            print LOG $temp;
+            chomp $temp;
+            
+            #If the user leaves it blank, don't change anything
+            if($temp eq "") {return;}
+    
+            #Make sure the user gave valid input
+            foreach my $item (@distros)
+            {
+                if($item eq $temp)
+                {
+                    $found = 1;
+                    $vars{distro} = $temp;
+                    last;
+                }
+            }
+        }
+    }
+}
+
+#Where are your packages?
+sub packageDir
+{
+    #Automated
+    my $input = shift;
+
+    if (defined $input)
+    {
+        $vars{pkgpath} = $input;
+        oscar_log_subsection("Package Repositories: $input");
+    }
+    #Interactive
+    else
+    {
+        print "Package Repositories:\n";
+        print "-----------------------\n";
+        print "Currently: $vars{pkgpath}\n";
+        print "New:  ";
+        my $temp = <STDIN>;
+        print LOG $temp;
+        chomp $temp;
+    
+        #If the user leaves it blank, don't change anything
+        if ($temp eq "") {return;}
+        
+        $vars{pkgpath} = $temp;
+    }
+}
+
+#Where is your disk partition file?
+sub diskPart
+{
+    #Automated
+    my $input = shift;
+
+    if (defined $input)
+    {
+        $vars{diskfile} = $input;
+        oscar_log_subsection("Disk Partition File: $input");
+    }
+    #Interactive
+    else
+    {
+        print "Disk Partition File:\n";
+        print "-----------------------\n";
+        print "Currently: $vars{diskfile}\n";
+        print "New:  ";
+        my $temp = <STDIN>;
+        print LOG $temp;
+        chomp $temp;
+        
+        #If the user leaves it blank, don't change anything
+        if ($temp eq "") {return;}
+        
+        $vars{diskfile} = $temp;
+    }
+}
+
+#What is your IP assignment method?
+sub ipAssign
+{
+    my $input = shift;
+
+    my $found = 0;
+    my @ipoptions = qw( dhcp replicant static );
+    
+    #Automated
+    if (defined $input)
+    {
+        foreach my $item (@ipoptions)
+        {
+            if($item eq $input)
+            {
+                $found = 1;
+                $vars{ipmeth} = $input;
+                last;
+            }
+        }
+        oscar_log_subsection("IP Assignment Method: $input");
+    }
+    else
+    {
+        while(!$found)
+        {
+            print "IP Assignment Method\n";
+            print "-----------------------\n";
+            print "Currently: $vars{ipmeth}\n";
+            print "Choices: " . join(" ", sort(@ipoptions)) . "\n";
+            print "New:  ";
+            my $temp = <STDIN>;
+            print LOG $temp;
+            chomp $temp;
+    
+            #If the user leaves it blank, don't change anything
+            if($temp eq "") {return;}
+    
+            #Make sure the user gave valid input
+            foreach my $item (@ipoptions)
+            {
+                if($item eq $temp)
+                {
+                    $found = 1;
+                    $vars{ipmeth} = $temp;
+                    last;
+                }
+            }
+        }
+    }
+}
+
+#What is the post install action?
+sub postInstall
+{
+    my $input = shift;
+    
+    my $found = 0;
+    my @postinstall = qw(beep reboot shutdown kexec);
+    
+    #Automated
+    if (defined $input)
+    {
+        foreach my $item (@postinstall)
+        {
+            if($item eq $input)
+            {
+                $found = 1;
+                $vars{piaction} = $input;
+                last;
+            }
+        }
+        oscar_log_subsection("Post Install Action: $input");
+    }
+    #Interactive
+    else
+    {
+        while(!$found)
+        {
+            print "Post Install Action\n";
+            print "-----------------------\n";
+            print "Currently: $vars{piaction}\n";
+            print "Choices: " . join(" ", sort(@postinstall)) . "\n";
+            print "New:  ";
+            my $temp = <STDIN>;
+            print LOG $temp;
+            chomp $temp;
+            
+            #If the user leaves it blank, don't change anything
+            if($temp eq "") {return;}
+    
+            #Make sure the user gave valid input
+            foreach my $item (@postinstall)
+            {
+                if($item eq $temp)
+                {
+                    $found = 1;
+                    $vars{piaction} = $temp;
+                    last;
+                }
+            }
+        }
+    }
+}
+
+sub listimages
+{
+    my @list;
+    if(open IN, "mksiimage --list |")
+    {
+        while(<IN>)
+        {
+            next if $. <= 2;
+            chomp;
+            my @items = split;
+            push @list, $items[1] if $items[1];
+        }
+        close IN;
+    }
+    return @list;
+}

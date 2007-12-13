@@ -1,0 +1,128 @@
+# $Id$
+
+%define basedir /opt/oscar
+%define _unpackaged_files_terminate_build 0
+
+Summary: Base OSCAR package
+Name: oscar-base
+Version: OSCARVERSION
+Release: 1
+License: GPL
+URL: http://oscar.openclustergroup.org
+Group: Applications/System
+Source: %{name}-%{version}.tar.gz
+Requires: %{name}-libs
+Requires: %{name}-scripts
+Requires: yum, createrepo, yume
+Vendor: OSCAR
+Distribution: OSCAR
+Packager: Erich Focht
+
+Buildroot: %{_tmppath}/%{name}-%{version}-root
+BuildArch: noarch
+AutoReqProv: no
+
+%description
+Base OSCAR package.
+OSCAR allows users, regardless of their experience level with a *nix
+environment, to install a Beowulf type high performance computing cluster. It
+also contains everything needed to administer and program this type of HPC
+cluster. OSCAR's flexible package management system has a rich set of
+pre-packaged applications and utilities which means you can get up and running
+without laboriously installing and configuring complex cluster administration
+and communication packages. It also lets administrators create customized
+packages for any kind of distributed application or utility, and to distribute
+those packages from an online package repository, either on or off site.
+
+%prep
+%setup -n %{name}-%{version}
+
+%build
+rm -rf %{buildroot}
+mkdir -p %{buildroot}%{basedir}
+cp -prd * %{buildroot}%{basedir}/
+
+%clean
+rm -rf %{_tmppath}/%{name}-%{version}-root
+
+
+%package client
+Group: Applications/System
+Summary: Libraries for OSCAR clustering package.
+AutoReqProv: no
+%description client
+Requires: %{name}-scripts == %{version}-%{release}
+Dummy package for oscar-base-client install.
+
+
+%package server
+Group: Applications/System
+Summary: Libraries for OSCAR clustering package.
+AutoReqProv: no
+%description server
+Requires: %{name} == %{version}-%{release}
+Dummy package for oscar-base-server install.
+
+
+%package libs
+Group: Applications/System
+Summary: Libraries for OSCAR clustering package.
+AutoReqProv: no
+%description libs
+Libraries for OSCAR clustering base package.
+
+
+%package scripts
+Group: Applications/System
+Summary: Libraries for OSCAR clustering package.
+Requires: %{name}-libs == %{version}-%{release}
+AutoReqProv: no
+%description scripts
+Scripts for OSCAR clustering base package.
+
+
+%files
+%defattr(-,root,root)
+%dir %{basedir}/
+%dir %{basedir}/doc/
+%dir %{basedir}/images/
+%dir %{basedir}/oscarsamples/
+%dir %{basedir}/packages/
+%dir %{basedir}/share/
+%dir %{basedir}/testing/
+%dir %{basedir}/tmp/
+%{basedir}/COPYING
+%{basedir}/CREDITS
+%{basedir}/README
+%{basedir}/VERSION
+%{basedir}/doc/*
+%{basedir}/images/*
+%{basedir}/install_cluster
+%{basedir}/oscarsamples/*
+%{basedir}/packages/*
+%{basedir}/share/*
+%{basedir}/testing/*
+%{basedir}/tmp/
+
+%files client
+%defattr(-,root,root)
+
+%files server
+%defattr(-,root,root)
+
+%files libs
+%defattr(-,root,root)
+%dir %{basedir}/lib/
+%{basedir}/lib/*
+
+%files scripts
+%defattr(-,root,root)
+%dir %{basedir}/scripts/
+%{basedir}/scripts/*
+
+%changelog
+* Thu Nov 29 2007 Bernard Li <bernard@vanhpc.org>
+- Added directories to the %files sections so that they will be removed
+  when the RPMs are uninstalled
+* Thu Oct 4 2007 Erich Focht
+- Initial package.

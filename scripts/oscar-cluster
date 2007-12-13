@@ -1,0 +1,92 @@
+#!/usr/bin/env perl 
+#
+# Copyright (c) 2007 Oak Ridge National Laboratory
+#               Geoffroy Vallee <valleegr@ornl.gov>
+#               All rights reserved
+#
+# This file is part of the OSCAR software package.  For license
+# information, see the COPYING file in the top level directory of the
+# OSCAR source distribution.
+#
+# This script is a simple CLI for the management of OSCAR clusters.
+#
+# $Id: oscar_cluster 5134 2006-07-12 05:51:29Z valleegr $
+#
+
+use strict;
+use warnings "all";
+use Carp;
+use lib "$ENV{OSCAR_HOME}/lib";
+use OSCAR::msm;
+use OSCAR::PartitionMgt;
+use OSCAR::Database;
+use Getopt::Long;
+
+my ($new_partition, @clients, $list_partitions, $list_partition_nodes, 
+    $distro, $list_partition_distro);
+my $verbose = 1;
+
+Getopt::Long::Configure("pass_through");
+GetOptions(
+        "display-partitions"            => \$list_partitions,
+        "display-partition-nodes=s"     => \$list_partition_nodes,
+        "display-partition-distro=s"    => \$list_partition_distro,
+        "add-partition=s"               => \$new_partition,
+        "client=s"                      => \@clients,
+        "distro=s"                      => \$distro,
+        "help"                          => \&help,
+        );
+
+# The user wants to add a new partition
+if ($new_partition) {
+    # If the user did not define clients at the same time, this is an error
+    if (scalar(@clients) == 0) {
+        die ("ERROR: no client is associated to the partition, ".
+              "impossible to create the partition.\n");
+    }
+    if (!defined($distro) || $distro eq "") {
+        die ("ERROR: no linux distribution is associated to the partition. ".
+              "To know which distributions are supported, please use ".
+              "the oscar-config command\n");
+    }
+    print "New partition: name=$new_partition, ".
+          "distro=$distro, clients=@clients\n" if $verbose;
+    OSCAR::msm::add_partition ($new_partition, $distro, \@clients);
+}
+
+# The user wants to see the list of partitions.
+if ($list_partitions) {
+    # TODO: Pretty ugly to do the SQL query here, we have to change that
+    my $sql = "SELECT * FROM Clusters WHERE name='oscar'";
+    my $cluster_id = OSCAR::Database::oda_query_single_result ($sql, "id");
+    my @partitions = OSCAR::PartitionMgt::get_list_partitions ($cluster_id);
+    foreach my $p (@partitions) {
+        if (defined ($p)) {
+            print "$p ";
+        }
+    }
+    print "\n";
+}
+
+# The user wants to see the list of nodes within a partition.
+if ($list_partition_nodes) {
+    my @nodes =
+        OSCAR::PartitionMgt::get_list_nodes_partition ($list_partition_nodes);
+    foreach my $n (@nodes) {
+        print "$n ";
+    }
+    print "\n";
+}
+
+# The user wants to see the Linux distribution id associated to a give 
+# partition.
+if ($list_partition_distro) {
+    my $distro = 
+        OSCAR::PartitionMgt::get_partition_distro ($list_partition_distro);
+    if (defined($distro)) {
+        print "$distro";
+        print "\n";
+    }
+}
+
+1;

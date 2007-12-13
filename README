@@ -8,32 +8,70 @@ wonderful web site:
 The most up to date information on installing and using OSCAR is available
 on our wiki
 
-http://svn.oscar.openclustergroup.org/wiki/
+http://svn.oscar.openclustergroup.org/trac/oscar/wiki/
 
 Instructions for installing this release can be found in doc/install.pdf 
 and user instructions for utilizing the software installed on OSCAR
 clusters can be found in doc/user.pdf.
 
-The OSCAR distibution comes in two OSCAR tarballs and a set of repository
-tarballs:
-  oscar-base-OSCARVERSION.tar.gz  : the base OSCAR tarball stripped of
-				    almost every binary packages (rpms)
-  oscar-srpms-OSCARVERSION.tar.gz : the SRPMS, you only need this if you
-				    want to rebuild rpms
-  oscar-repo-common-rpms-OSCARVERSION.tar.gz : 
-				    repository of noarch rpms used on all
-				    supported distributions
-  oscar-repo-DISTRO-VER-ARCH-OSCARVERSION.tar.gz :
-				    repository of distro and architecture
-				    specific rpms.
+A very basic HOWTO:
+-------------------
+1) download the repo tarballs you are interested in from
+http://oscar.openclustergroup.org/filebrowser/49/crispy
+For example:
+oscar-repo-common-rpms-5.0.9a1r6551nightly-20071113.tar.gz
+oscar-repo-rhel-5-x86_64-5.0.9a1r6551nightly-20071113.tar.gz
 
-For an OSCAR installation:
- - Download the oscar-repo-common-rpms and the oscar-repo-DISTRO-VER-ARCH
- tarballls suitable for the distribution(s). Unpack them in /tftpboot/oscar.
- - Download the oscar-base tarball. Unpack it in an appropriate directory.
- Rename the unpacked directory, if you want (e.g. /opt/oscar)
- - In the unpacked directory (e.g. /opt/oscar) execute:
- ./install_cluster ETH_INTERFACE
+2) unpack the tarballs:
+mkdir -p /tftpboot/oscar
+tar xzfC oscar-repo-common-rpms-*.tar.gz /tftpboot/oscar/
+tar xzfC oscar-repo-rhel-5-x86_64-*.tar.gz /tftpboot/oscar/
 
+3) install yume (supposing yum is already there):
+yum install createrepo /tftpboot/oscar/common-rpms/yume*.rpm 
+
+4) set up the distro repository in /tftpboot/distro/... Look at
+http://svn.oscar.openclustergroup.org/trac/oscar/wiki/InstallGuidePreparing#DistributionRepositories
+for instructions.
+
+5) install oscar-base rpm
+yume --repo /tftpboot/oscar/common-rpms install oscar-base
+
+6) start installation, for example:
+cd /opt/oscar
+env OSCAR_VERBOSE=3 ./install_cluster ETH_INTERFACE 
  (ETH_INTERFACE is the cluster internal interface on the head node,
  e.g. eth0).
+
+
+Understanding of a new package structure
+----------------------------------------
+The basic idea behind the new structure is that opkgs as well as the basic
+OSCAR installation come packaged in the distribution's native package
+management format. This way the OSCAR infrastructure doesn't need to care
+about resolving dependencies and binary package lists. Everything is coming
+as RPM or DEB in repositories and is upgradeable (in theory).
+
+Each OSCAR package is represented by three meta-packages:
+
+opkg-<NAME> : the so called API metapackage, contains the OSCAR API scripts,
+              the documentation (if available) and the testing scripts.
+
+opkg-<NAME>-server: contains the binary package dependencies of the RPMs or DEBs
+                    which need to be installed on the master node for the opkg.
+
+opkg-<NAME>-client: contains as dependencies the binary packages which need to
+                    be installed on the client nodes (the image).
+
+In addition the the opkg-* packages we have oscar-base, oscar-libs, oscar-scripts,
+oscar-server and oscar-client. They contain the base OSCAR scripts, libs, etc...
+
+"crispy" contains support for the RPM based distributions:
+    rhel-5-i386
+    rhel-5-x86_64
+    suse-10.2-x86_64
+    ydl-5-ppc64 (yellow dog linux for the PS3)
+ALL these distros are new for OSCAR, which shows that the infrastructure is now
+quite flexible. And the PS3 support is something quite unique, a big thanks to
+DongInn and Bernard for it!
+

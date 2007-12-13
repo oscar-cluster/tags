@@ -46,9 +46,9 @@ use Qt::slots
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Database;
 use OSCAR::Package;
+use OSCAR::OpkgDB;
 use OSCAR::PackageSet qw (get_list_opkgs_in_package_set);
 use OSCAR::Utils qw (
-                    is_element_in_array
                     print_array
                     );
 use Carp;
@@ -58,6 +58,7 @@ my $tablePopulated = 0;     # So we call populateTable only once
 my $currSet;                # The name of the currently selected Package Set
 my $packagesInstalled;      # Hash of packages with 'installed' bit set to 1
 my $foundPackagesInstalled; # Has the above hash been calculated once?
+my %scope = ();
 
 sub NEW
 {
@@ -196,17 +197,16 @@ sub getPackagesInPackageSet
     # hash where the keys are the (short) names of the packages and the
     # values are "1"s for those packages.
     my @packagesInSet;
-    my $packagesInSet;
-#  my $success = OSCAR::Database::get_selected_group_packages(
-#    \@packagesInSet1,\%options,\@errors,$packageSet);
-    @packagesInSet = get_list_opkgs_in_package_set($packageSet);
-#  print "OPKGs in the set $packageSet: ";
-#  print_array (@packagesInSet);
+    my %packagesInSet;
+    my $success = OSCAR::Database::get_selected_group_packages(
+		      \@packagesInSet,\%options,\@errors,$packageSet);
+    #@packagesInSet = get_list_opkgs_in_package_set($packageSet);
+
     foreach my $pack_ref (@packagesInSet) {
-        $packagesInSet->{$pack_ref} = 1;
+        $packagesInSet{$$pack_ref{package}} = 1;
     }
 
-    return $packagesInSet;
+    return \%packagesInSet;
 }
 
 sub getPackagesInstalled
@@ -285,15 +285,16 @@ sub populateTable
       }      
 
 
-      foreach my $pack (keys %{ $allPackages })
+      foreach my $pack (sort keys %{ $allPackages })
         {
+          my $pkg = $$allPackages{$pack}->{package};
           # Don't even bother to display non-installable packages
           # next if ($allPackages->{$pack}{installable} != 1);
           #next if ( $should_not_install{$pack} );
           setNumRows($rownum+1); 
 
           # Column 0 contains "short" names of packages
-          my $item = SelectorTableItem(this,Qt::TableItem::Never(),$pack);
+          my $item = SelectorTableItem(this,Qt::TableItem::Never(),$pkg);
           setItem($rownum,0,$item);
 
           # Column 1 contains checkboxes
@@ -307,8 +308,17 @@ sub populateTable
           setItem($rownum,2,$item);
 
           # Column 3 contains the "class" of packages
+          my $opkg_class;
+          if ($allPackages->{$pack}{group}){
+              $opkg_class = $allPackages->{$pack}{group};
+              if ($allPackages->{$pack}{class}) {
+                  $opkg_class .= ":" . $allPackages->{$pack}{class};
+              }
+          }elsif($allPackages->{$pack}{class}){
+              $opkg_class = $allPackages->{$pack}{class};
+          }
           $item = SelectorTableItem(this,Qt::TableItem::Never(),
-                                    $allPackages->{$pack}{__class});
+                                    $opkg_class);
           setItem($rownum,3,$item);
 
           # Column 4 contains the Location + Version
@@ -354,7 +364,7 @@ sub populateTable
         }
 
       # Go through table and check the boxes ON if 
-      #   (a) the package is supposed to be installed OR 
+      #   (a) the package is supposed to bepackages installed OR 
       #   (b) the package is currently installed and not supposed to be
       #       uninstalled.
       for (my $rownum = 0; $rownum < numRows(); $rownum++)
@@ -512,6 +522,7 @@ sub checkboxChangedForSelector
   my $success;  # Value returned by database commands
 
   my $allPackages = SelectorUtils::getAllPackages();
+#  my @opkgs = OSCAR::OpkgDB::opkg_list_available(%scope);
   my $donothing = 0;
   my($reqhash,$conhash,$reqkey,$conkey);
 
@@ -531,11 +542,12 @@ sub checkboxChangedForSelector
           # Add in any 'core' packages which are selected since they are
           # always required and should never have any conflicts (i.e.
           # become unselected).
-          foreach my $pkg (keys %{ $allPackages })
+          foreach my $pkg (keys %{$allPackages})
+#          foreach my $pkg (@opkgs)
             {
               $reqhash->{$pkg} = 1 if 
-                ((defined $allPackages->{$package}{__class}) &&
-                 ($allPackages->{$package}{__class} eq 'core'));
+                ((defined $allPackages->{$package}{class}) &&
+                 ($allPackages->{$package}{class} eq 'core'));
             }
 
           # Get a list of packages conflicting with the required ones.
@@ -611,8 +623,8 @@ sub checkboxChangedForSelector
           $reqhash = SelectorUtils::getIsRequiredByList($reqhash,$package);
           foreach $reqkey (keys %{ $reqhash })
             {
-              if (!((defined $allPackages->{$reqkey}{__class}) &&
-                    ($allPackages->{$reqkey}{__class} eq 'core')))
+              if (!((defined $allPackages->{$reqkey}{class}) &&
+                    ($allPackages->{$reqkey}{class} eq 'core')))
                 {
                   setCheckBoxForPackage($reqkey,0);
                   if ((defined $packagesInSet->{$reqkey}) || 
@@ -702,8 +714,8 @@ sub checkboxChangedForUpdater
       $reqhash = SelectorUtils::getIsRequiredByList($reqhash,$package);
       foreach $reqkey (keys %{ $reqhash })
         {
-          if (!((defined $allPackages->{$reqkey}{__class}) &&
-                ($allPackages->{$reqkey}{__class} eq 'core')))
+          if (!((defined $allPackages->{$reqkey}{class}) &&
+                ($allPackages->{$reqkey}{class} eq 'core')))
             {
               setCheckBoxForPackage($reqkey,0);
             }

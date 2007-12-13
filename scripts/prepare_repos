@@ -1,14 +1,14 @@
 #!/usr/bin/env perl
 #
 # Copyright (c) Oak Ridge National Laboratory
-#               Geoffroy Vallee <efocht@hpce.nec.com>
+#               Geoffroy Vallee <valleegr@ornl.gov>
 #               All rights reserved
 #
 # This file is part of the OSCAR software package.  For license
 # information, see the COPYING file in the top level directory of the
 # OSCAR source distribution.
 #
-# $Id: get_available_distros 5134 2006-07-12 05:51:29Z bli $
+# $Id: prepare_repos 5134 2006-07-12 05:51:29Z bli $
 #
 # This script set up the local repositories. For that, we scan /tftpboot/distro
 # to get the list of distributions we want to use for image creation. Based on
@@ -17,6 +17,12 @@
 #   - OSCAR binary packages related to all available distros (e.g. 
 #     /tftpboot/oscar/debian-4-x86_64
 # For instance, this allows us to create RPM based images on a Debian headnode.
+#
+# !!WARNINGS!!
+#   * the script _must_ be executed from $(OSCAR_HOME)
+#   * all existing repositories will be deleted and recreated from scratch
+#     using binary packages from OPKGs.
+#
 
 use strict;
 use lib "$ENV{PWD}/lib";

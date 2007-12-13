@@ -29,7 +29,7 @@ all:
 	@echo "... there is no default target ..."
 	@echo "Use one of: dist test install clean"
 
-OSCAR_VERSION = $(shell dist/get-oscar-version.sh VERSION)
+OSCAR_VERSION ?= $(shell scripts/get-oscar-version.sh VERSION)
 PKG        = $(shell env OSCAR_HOME=`pwd` scripts/distro-query | \
 	       awk '/packaging method/{print $$NF}')
 ARCH       = $(shell scripts/get_arch)
@@ -64,8 +64,12 @@ test: checkenv install-perlQt bootstrap-smart localrepos
 dist:
 	cd dist; ./newmake.sh --base --srpms --all-repos
 
-nightly:
+# first attempt to include oscar-base rpms into common-rpms repo
+nightly: baserpms
+	mkdir -p packages/base/distro/common-rpms
+	mv oscar-base-*.rpm packages/base/distro/common-rpms
 	cd dist; ./newmake.sh --base --srpms --all-repos --nightly
+	rm -rf packages/base/distro/common-rpms ../oscar-base-*.tar.gz ../oscar-srpms-*.tar.gz
 
 #
 # Install the repositories needed on the local machine to /tftpboot/oscar,
@@ -132,5 +136,47 @@ uninstall: clean
 	@echo "Deleting directory $(DESTDIR)/tftpboot/oscar"
 	rm -rf $(DESTDIR)/tftpboot/oscar
 	rm -rf ~/tmp
+
+baserpms:
+	@echo "Building OSCAR base rpms"
+	@if [ `echo $(OSCAR_VERSION) | grep -c ':'` -gt 0 ]; then \
+		echo "OSCAR_VERSION is $(OSCAR_VERSION) and contains a ':'"; \
+		echo "Please clean up (svn update) your svn tree and try again!"; \
+		exit 1; \
+	fi
+	sed -e "s/OSCARVERSION/$(OSCAR_VERSION)/" < oscar-base.spec.in \
+		> oscar-base.spec
+	mkdir oscar-base-$(OSCAR_VERSION)
+	cp -rl `ls -1 | grep -v oscar-base-$(OSCAR_VERSION)` oscar-base-$(OSCAR_VERSION)
+	( cd oscar-base-$(OSCAR_VERSION); \
+	  for p in packages/* ; do \
+	    if [ ! -e $$p/prereq.cfg ]; then rm -rf $$p; fi; \
+	  done; )
+	tar czvf oscar-base-$(OSCAR_VERSION).tar.gz \
+		--exclude dist --exclude .svn --exclude \*.tar.gz \
+		--exclude \*.spec.in --exclude src --exclude \*~ \
+		--exclude share/prereqs/\*/distro \
+		--exclude share/prereqs/\*/SRPMS oscar-base-$(OSCAR_VERSION) 
+	rm -rf oscar-base-$(OSCAR_VERSION)
+	rpmbuild -tb oscar-base-$(OSCAR_VERSION).tar.gz && \
+	mv `rpm --eval '%{_topdir}'`/RPMS/noarch/oscar-base-*$(OSCAR_VERSION)-*.noarch.rpm . && \
+	rm -f oscar-base-$(OSCAR_VERSION).tar.gz oscar-base.spec
+
+basedebs:
+	@echo "Building OSCAR base Debian packages"
+	@if [ `echo $(OSCAR_VERSION) | grep -c ':'` -gt 0 ]; then \
+		echo "OSCAR_VERSION is $(OSCAR_VERSION) and contains a ':'"; \
+		echo "Please clean up (svn update) your svn tree and try again!"; \
+		exit 1; \
+	fi
+	rm -rf /tmp/oscar-debian; mkdir -p /tmp/oscar-debian
+	tar czvf /tmp/oscar-debian/oscar-base-$(OSCAR_VERSION).tar.gz --exclude packages \
+        --exclude dist --exclude .svn --exclude \*.tar.gz \
+        --exclude \*.spec.in --exclude src --exclude \*~ \
+        --exclude share/prereqs/\*/distro \
+        --exclude share/prereqs/\*/SRPMS .
+	cd /tmp/oscar-debian && tar xzf oscar-base-$(OSCAR_VERSION).tar.gz && \
+		dpkg-buildpackage -rfakeroot
+	cp /tmp/oscar*deb /tmp/liboscar* $(OSCAR_HOME)
 
 .PHONY : test dist clean install

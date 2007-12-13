@@ -111,12 +111,12 @@ srcdir=`dirname $RUNDIR`
 
 umask 022
 cd $srcdir
-OSCAR_VERSION=`dist/get-oscar-version.sh VERSION`
+OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION`
 if [ -n "$NIGHTLY" ]; then
-    OSCAR_VERSION=`dist/get-oscar-version.sh VERSION --nightly`
+    OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION --nightly`
 fi
-OSCAR_GREEK_VERSION=`dist/get-oscar-version.sh VERSION --greek`
-OSCAR_SVN_VERSION=`dist/get-oscar-version.sh VERSION --svn`
+OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
+OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`
 
 ############################################################################
 
@@ -352,10 +352,10 @@ if [ -n "$DISTROS" -o -n "$ALL_REPOS" ]; then
     fi
     if [ -n "$ALL_REPOS" ]; then
 	DISTROS="common-rpms \
-            fc-4-i386 fc-4-x86_64 fc-5-i386 fc-5-x86_64 fc-6-i386 fc-6-x86_64 fc-7-i386 fc-7-x86_64 \
-            mdv-2006-i386 \
-            rhel-4-i386 rhel-4-x86_64 \
-            suse-10.0-i386"
+            rhel-4-i386 rhel-5-i386 rhel-5-x86_64 \
+            fc-8-x86_64 \
+            suse-10.2-x86_64 \
+            ydl-5-ppc64"
     fi
 
     message ">> Building OSCAR package repositories <<"

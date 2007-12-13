@@ -30,6 +30,7 @@ use base qw(Exporter);
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Database;
 use OSCAR::PackagePath;
+use OSCAR::OpkgDB;
 use OSCAR::Logger;
 use File::Basename;
 use File::Copy;
@@ -42,86 +43,43 @@ my $DEFAULT = "Default";
 
 @EXPORT = qw(
              run_pkg_script
-	     run_pkg_user_test
+             run_pkg_user_test
              run_pkg_script_chroot
              run_pkg_apitest_test
              isPackageSelectedForInstallation
-	     getConfigurationValues
+             getConfigurationValues
              run_pkg_apitest_test
              get_excluded_opkg
-	     );
+             );
 $VERSION = sprintf("r%d", q$Revision$ =~ /(\d+)/);
 
 # The list of phases that are valid for package install.  For more
 # info, please see the developement doc
-
+# Note that we still list old scripts' name to ease the transition.
+# Mid-term they should be removed
 %PHASES = (
-           setup => ['setup'],
-           pre_configure => ['pre_configure'],
-           post_configure => ['post_configure'],
-           post_server_install => ['post_server_install',
-                                   'post_server_rpm_install'],
-           post_rpm_install => ['post_client_rpm_install',
-                                'post_rpm_install'],
-	   post_rpm_nochroot => ['post_rpm_nochroot'],
-           post_clients => ['post_clients'],
-           post_install => ['post_install'],
+           setup => ['api-pre-install',
+                     'setup'], # deprecated
+           pre_configure => ['api-pre-configure',
+                             'pre_configure'], # deprecated
+           post_configure => ['api-post-configure',
+                              'post_configure'], # deprecated
+           post_server_install => ['server-post-install',
+                                   'post_server_install', # deprecated
+                                   'post_server_rpm_install'], # deprecated
+           post_rpm_install => ['client-post-install',
+                                'post_client_rpm_install', # deprecated
+                                'post_rpm_install'], # deprecated
+           post_rpm_nochroot => ['api-post-image',
+                                 'post_rpm_nochroot'], # deprecated
+           post_clients => ['api-post-clientdef',
+                            'post_clients'], # deprecated
+           post_install => ['api-post-deploy',
+                            'post_install'], # deprecated
            test_root    => ['test_root'],
            test_user    => ['test_user'],
           );
 
-
-#########################################################################
-#  Subroutine: getOdaPackageDir                                         #
-#  Parameter : The name of an OSCAR package (directory)                 #
-#  Returns   : The "directory" field in the ODA database for the        #
-#              passed-in package, or undef if not defined               # 
-#  This subroutine takes in the name of an OSCAR package (i.e. the      #
-#  directory name under the 'packages' directory for the package) and   #
-#  returns the 'directory' field for that package.  This is necessary   #
-#  because a package can be in either the OSCAR tree or the OPD tree.   #
-#  However, if the oda database hasn't been set up yet or the           #
-#  directory entry for the passed-in package doesn't exist, then we     #
-#  fall back on the old method of finding the directory, namely         #
-#  iterate throught the directories in the PKG_SOURCE_LOCATIONS list    #
-#  and try to find the package directory.                               #
-#########################################################################
-sub getOdaPackageDir { # ($pkg) -> $pkgdir
-    my $pkg = shift;
-    my @list = (); 
-    my $retdir = undef;
-    
-    # First, check to see if the oda database has been created.  If not, then
-    # don't bother to ask oda for the package's directory.
-
-    my $odaProblem = system('mysqlshow oscar >/dev/null 2>&1');
-    if (!$odaProblem) {
-	my @tables = ("Packages");
-	my $success = single_dec_locked("SELECT path FROM " .
-					"Packages WHERE package='$pkg'",
-					"read",
-					\@tables,
-					\@list);
-	Carp::carp("Could not do oda command 'SELECT path" .
-		   " FROM Packages WHERE package=$pkg '") if (!$success);
-
-	my $dir_ref = $list[0] if (defined $list[0]);
-	$retdir = $$dir_ref{path};
-    }
-
-    # Couldn't find the directory via oda - resort to old method.  Search
-    # through the list of 'packages' directories and return the first one that
-    # has the passed-in package as a subdirectory.
-    if ((!defined $retdir) || (!-d $retdir)) {
-	foreach my $pkgdir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-	    if (-d "$pkgdir/$pkg") {
-		$retdir = "$pkgdir/$pkg";
-		last;
-	    }
-	}
-    }
-    return $retdir;
-}
 
 #
 # run_pkg_script - runs the package script for a specific package
@@ -135,7 +93,7 @@ sub run_pkg_script {
 	return undef;
     }
 
-    my $pkgdir = getOdaPackageDir($pkg);
+    my $pkgdir = &opkg_api_path($pkg);
     return 0 unless ((defined $pkgdir) && (-d $pkgdir));
     foreach my $scriptname (@$scripts) {
 	my $script = "$pkgdir/scripts/$scriptname";

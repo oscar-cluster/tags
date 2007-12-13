@@ -23,8 +23,8 @@
 # Copyright (c) 2005-2006 Bernard Li <bli@bcgsc.ca>
 #                         All rights reserved.
 #
-# Copyright (c) 2006 Erich Focht <efocht@hpce.nec.com>
-#                    All rights reserved.
+# Copyright (c) 2006-2007 Erich Focht <efocht@hpce.nec.com>
+#                         All rights reserved.
 # 
 # This file is part of the OSCAR software package.  For license
 # information, see the COPYING file in the top level directory of the
@@ -36,7 +36,8 @@
 use strict;
 use Tk;
 use Tk::ROText;
-use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig","/usr/lib/systeminstaller","/usr/lib/systemimager/perl";
+use lib "$ENV{OSCAR_HOME}/lib","/usr/lib/systemconfig",
+    "/usr/lib/systeminstaller","/usr/lib/systemimager/perl";
 use POSIX;
 use OSCAR::Help;
 use OSCAR::Network;
@@ -51,6 +52,16 @@ use OSCAR::Package;
 use OSCAR::PackagePath;
 use OSCAR::PackageInUn;
 use OSCAR::WizardEnv;
+use OSCAR::Tk;
+use OSCAR::ImageMgt qw (
+                        do_setimage 
+                        do_post_binary_package_install 
+                        do_oda_post_install
+                        get_image_default_settings
+                       );
+use OSCAR::Opkg qw ( create_list_selected_opkgs );
+use OSCAR::Network qw ( get_network_config );
+use OSCAR::ClientMgt;
 use AppConfig;
 use SystemInstaller::Tk::Image;
 use SystemInstaller::Tk::AddClients;
@@ -58,6 +69,7 @@ use SystemInstaller::Env;
 use SystemInstaller::Tk::Common;
 use Carp;
 use FileHandle;
+use File::Basename;
 use vars qw($config);
 
 # First of all, enforce that the user running this script is 'root'
@@ -81,6 +93,8 @@ my %buttons = ();
 our $monitortk_pid;
 
 my $lockfile = "$ENV{OSCAR_HOME}/.oscar_wizard_lockfile";
+
+my $oscarsamples_dir = "$ENV{OSCAR_HOME}/oscarsamples";
 
 
 # END processing to remove the lockfile when we die(), exit, or otherwise
@@ -146,7 +160,7 @@ $window->title("OSCAR Wizard - $shostname");
 # Get OSCAR's version
 
 my $oscar_version;
-my $oscar_version_script = $ENV{OSCAR_HOME} ."/" . "dist/get-oscar-version.sh";
+my $oscar_version_script = $ENV{OSCAR_HOME} ."/" . "scripts/get-oscar-version.sh";
 my $oscar_version_file = $ENV{OSCAR_HOME} . "/" . "VERSION";
 
 # Use the scripty-foo to get oscar version information.
@@ -217,7 +231,7 @@ my $step_status = get_wizard_status(\%options,\@errors);
 my $manage_status = get_manage_status(\%options,\@errors);
 
 oscar_button($window, $step_string,
-             "Download Additional OSCAR Packages...",
+             "Manage OSCAR Repositories...",
              [sub { my $olddir = Cwd::cwd();
 		    chdir($ENV{OSCAR_HOME} . '/lib/Qt');
 		    system('/usr/bin/perl Opder.pl');
@@ -350,7 +364,7 @@ if( $debug ) {
     $cl_b->grid("-","-",-sticky=>"nsew",-ipady=>"4");
 }
 
-center_window( $window );
+OSCAR::Tk::center_window( $window );
 #
 # Execution goes into an infinite Tcl/Tk loop here
 #
@@ -401,10 +415,10 @@ sub run_command {
 
     if (system($$vars{cmd})) {
         $result = $$vars{failure};
-        $window_func = \&error_window;
+        $window_func = \&OSCAR::Tk::error_window;
     } else {
         $result = $$vars{success};
-        $window_func = \&done_window;
+        $window_func = \&OSCAR::Tk::done_window;
     }
 
     if ($mode eq "install") {
@@ -469,9 +483,6 @@ sub run_server_install {
 
 sub build_oscar_image {
     my ($window, $step_number) = @_;
-    my @df_lines = `df /`;
-    my $disk_type = "ide";
-    $disk_type = "scsi" if ( grep ( /\/dev\/sd/, ( @df_lines ) ) );
 
     if ($mode eq "install") {
        oscar_log_section("Running step $step_number of the OSCAR wizard: Build OSCAR client image");
@@ -479,76 +490,32 @@ sub build_oscar_image {
        oscar_log_section("OSCAR Manage Wizard: Build OSCAR client image");
     } 
 
-    # Get the distro list
-
-    my $master_os = distro_detect_or_die("/");
-    my $arch = $master_os->{arch};
-
-    my $distro = $master_os->{compat_distro};
-    my $distro_ver = $master_os->{compat_distrover};
-
-    # quick hack to get this running with own (master) distro
-    # adding foreign distros will need some more complicated hacking
-
-    my $distro_pool = &OSCAR::PackagePath::distro_repo_url("/");
-    $distro_pool =~ s/\ /,/g;
-    my $oscar_pool = &OSCAR::PackagePath::oscar_repo_url("/");
-
     my $step_string = "";
     $step_string = "Step $step_number: " if $mode eq "install";
 
-    oscar_log_subsection("$step_string"."Identified distro of clients: $distro $distro_ver");
+    # Rewrite package group files, we will need them!
+    &OSCAR::Opkg::write_pgroup_files();
 
-    oscar_log_subsection("$step_string"."distro repo: $distro_pool");
-    oscar_log_subsection("$step_string"."oscar repo: $oscar_pool");
+    # We get the default settings for images.
+    my %vars = &get_image_default_settings();
 
-    my $pkglist = "$ENV{OSCAR_HOME}/oscarsamples/$distro-$distro_ver-$arch.rpmlist";
-    oscar_log_subsection("$step_string"."Using binary package list: $pkglist");
-    
-    # Get a list of the client binary packages that we want to install.  Make a
-    # new file containing the names of all the binary packages to install.
-
-    my @opkgs = list_selected_packages("all");
-    my $outfile = "/tmp/oscar-install-rpmlist.$$";
-    my @errors;
-    $save_text = $outfile;
-    open(OUTFILE, ">$outfile") or croak("Could not open $outfile");
-    foreach my $opkg_ref (@opkgs) {
-        my $opkg = $$opkg_ref{package};
-        my %sel = ("group" => "oscar_clients", "os" => $master_os);
-        my @pkgs = pkgs_of_opkg($opkg, undef, \@errors, %sel );
-        foreach my $pkg (@pkgs) {
-            print OUTFILE "$pkg\n";
-        }
+    # Update settings: ee set the last few points specific to the current
+    # situation.
+    $vars{title} = "Build OSCAR Client Image";
+    $vars{noshow} = {
+                     arch => 1,
+                     imgpath => 1,
+                     password => 1,
+                    };
+    $vars{postinstall} = \&postimagebuild;
+    $vars{step_number} = $step_number;
+    my @pgroups;
+    my $ppath = $OSCAR::PackagePath::PGROUP_PATH;
+    for my $d (glob("$ppath/*.pgroup")) {
+	my $f = basename($d, ".pgroup");
+	push @pgroups, { label => "$f", path => "$d" };
     }
-    close(OUTFILE);
-    my $extraflags = "--filename=$outfile ";
-    if (exists $ENV{OSCAR_VERBOSE}) {
-	$extraflags .= "--verbose ";
-    }
-    my $diskfile = "$ENV{OSCAR_HOME}/oscarsamples/$disk_type";
-    # ia64 needs special disk file because of /boot/efi
-    $diskfile .= ".$arch" if $arch eq "ia64";
-    $diskfile .= ".disk";
-
-    my %vars = (
-                title => "Build OSCAR Client Image",
-                imgname => "oscarimage",
-                noshow => {
-                           arch => 1,
-                           imgpath => 1,
-                           password => 1,
-                          },
-                pkgfile => $pkglist,
-                pkgpath => "$oscar_pool,$distro_pool",
-                diskfile => $diskfile,
-                ipmeth => "static",
-                mcast  => "off",
-                piaction => "reboot",
-                extraflags => $extraflags,
-                postinstall => \&postimagebuild,
-                step_number => $step_number,
-               );
+    $vars{package_group} = \@pgroups;
 
     createimage_window($window, %vars);
 }
@@ -556,72 +523,22 @@ sub build_oscar_image {
 sub postimagebuild {
     my ($vars) = @_;
     my $step_number = $$vars{step_number};
-
     my $img = $$vars{imgname};
 
-    my $master_os = distro_detect_or_die("/");
-    my $arch = $master_os->{arch};
+    print ("Setting up image in the database\n");
+    do_setimage ($img, \%options);
 
-    # Get the image path (typically /var/lib/systemimager/images/<imagename>)
-    my $config = init_si_config();
-    my $imaged = $config->default_image_dir;
-    croak "default_image_dir not defined\n" unless $imaged;
-    croak "$imaged: not a directory\n" unless -d $imaged;
-    croak "$imaged: not accessible\n" unless -x $imaged;
-    my $imagepath = $imaged."/".$img;
-    croak "$imagepath: not a directory\n" unless -d $imagepath;
-    croak "$imagepath: not accessible\n" unless -x $imagepath;
-
-    #
-    # Image info lines should be deleted once systeminstaller
-    # talks directly to ODA
-    #
-    my %image_info = ( "name"         => $img,
-		       #
-		       # EF: OS_Detect detects images now, use that!
-		       #
-                       # "distro"=>"$distroname-$distroversion",
-                       "architecture" => $arch,
-                       "path"         => $imagepath );
-    set_images(\%image_info,\%options,\@errors);
-
-    my $cmd = "./post_rpm_install $img $interface";
-
+    my $cmd = "post_binary_package_install ($img, $interface)";
     my $step_string = "";
     $step_string ="Step $step_number: " if $mode eq "install";
-
     oscar_log_subsection("$step_string"."Running: $cmd");
-    !system($cmd) or (carp($!), return undef);
-    oscar_log_subsection("$step_string"."Successfully ran: $cmd");
+    do_post_binary_package_install ($img, $interface);
 
-
-    # Have installed Client binary packeges & did not croak, so mark 
-    # packages.<pkg>installed # true. (best effort for now)
-    
-    oscar_log_subsection("Marking installed bit in ODA for client binary ".
-                         "packages");
-    
-    my @opkgs = list_selected_packages("all");
-    foreach my $opkg_ref (@opkgs) {
-        my $opkg = $$opkg_ref{package};
-        oscar_log_subsection("Set package: $opkg");
-        set_image_packages($img,$opkg,\%options,\@errors);
-    }
-    oscar_log_subsection("Done marking installed bits in ODA");
-
-    # /var/log/lastlog could be HUGE in some horked setup packages...
-    #
-    croak "image name not defined\n" unless $$vars{imgname};
-    my $lastlog = "/var/log/lastlog";
-    oscar_log_subsection( "Truncating ".$img.":".$lastlog );
-
-    my $imagelog = $imagepath.$lastlog;
-    truncate $imagelog, 0 if -s $imagelog;
-    oscar_log_subsection( "Truncated ".$img.":".$lastlog );
+    do_oda_post_install (%$vars, \%options);
 
     # All done -- remove the temp file that held all the binary packages
     # filenames
-    
+
     #unlink($save_text); # breaks createimage_window
 
     # Set the next button "Define OSCAR Clients..." available
@@ -642,47 +559,19 @@ sub postimagebuild {
 sub build_oscar_clients {
     my ($window, $step_number, $interface) = @_;
 
-    my ($ip, $broadcast, $netmask) = interface2ip($interface);
-    my ($a, $b, $c, $d) = split(/\./,$ip);
-    if ($d == 1) {
-      $d++;
-    } else {
-      $d = 1;
-    }
-    my $startip = "$a.$b.$c.$d";
-
-    # Select the right GW address: server-gw if one nic; interface-ip if multiple nics.
-
-    my $gw;
-    my @tables = qw( nodes nics networks );
-    my @results;
-    my $node = "oscar_server";
-    get_nics_info_with_node($node,\@results,\%options,\@errors);
-    my $ref = pop @results;
-    my $nic_name = $$ref{name};
-    if( @results == 1 ) {
-        get_gateway($node,$interface,\@results,\%options,\@errors);
-        my $gw_ref = pop @results if @results;
-        $gw = $$gw_ref{gateway};
-    }
-    $gw ||= $ip;
-
-    my $hostname = (uname)[1];
-    my ($shorthostname)  = split(/\./,$hostname,2);
-    my $dnsdomainname = `dnsdomainname`;
-    chomp($dnsdomainname);
+    my @network_config = get_network_config ($interface, \%options, \@errors);
+    my $netmask = $network_config[0];
+    my $dnsdomainname = $network_config[1];
+    my $gw = $network_config[2];
+    my $startip = $network_config[3];
 
     if ($mode eq "install") {
-       oscar_log_section("Running step $step_number of the OSCAR wizard: Define OSCAR clients");
+       oscar_log_section("Running step $step_number of the OSCAR wizard: ".
+                         "Define OSCAR clients");
     } else {
        oscar_log_section("OSCAR Management Wizard: Define OSCAR clients");
     }
 
-    # If the domainname is blank, stick in a default value
-
-    if (!$dnsdomainname) {
-	$dnsdomainname = "oscardomain";
-    }
     get_client_nodes(\@client_nodes,\%options,\@errors)
         if $#client_nodes == -1; # If @client_nodes is empty
     my $client_basename = "oscarnode";
@@ -781,7 +670,8 @@ sub do_it_or_die {
 
 sub populate_client_group_nodes {
     my @pkgs = list_selected_packages("all");
-    my @tables = ("Nodes", "Group_Nodes", "Groups", "Packages", "Node_Package_Status");
+    my @tables = ("Nodes", "Group_Nodes", "Groups", "Packages",
+                  "Node_Package_Status", "Image_Package_Status");
 #    locking("WRITE", \%options, \@tables, \@errors);
     get_client_nodes(\@client_nodes,\%options,\@errors)
         if $#client_nodes == -1;  # If @client_nodes is empty
@@ -797,9 +687,13 @@ sub populate_client_group_nodes {
     # We assume that all the selected packages should be installed
     my $status = 2;
     foreach my $node_name (@nodes){
-        update_node_package_status(\%options,$node_name,\@pkgs,$status,\@errors);
-    }     
-    
+        update_node_package_status(\%options,
+                                   $node_name,
+                                   \@pkgs,
+                                   $status,
+                                   \@errors);
+    }
+
 #    unlock(\%options, \@errors);
 }
 
@@ -845,7 +739,7 @@ sub run_post_install {
     };
     my $status = run_command($window, $step_number, $cmd_vars);
 
-    &update_client_node_package_status;
+    OSCAR::ClientMgt::update_client_node_package_status (\%options, \@errors);
     # Set the next button "Test Cluster Setup" available
     if( $status && $$step_status{test_install} eq "disabled" ){
         my $next_step_button = $buttons{test_install};
@@ -857,27 +751,6 @@ sub run_post_install {
     @mod_env = WizardEnv::update_env();
 }
 
-sub update_client_node_package_status {    
-	my @pkgs = list_selected_packages();
-    my @tables = ("Nodes", "Group_Nodes", "Groups", "Packages", "Node_Package_Status");
-#    locking("WRITE", \%options, \@tables, \@errors);
-    @client_nodes = ();
-    get_client_nodes(\@client_nodes,\%options,\@errors);
-    my @nodes = ();
-    foreach my $client_ref (@client_nodes){
-        my $node_id = $$client_ref{id};
-        my $node_name = $$client_ref{name};
-        push @nodes, $node_name;
-    }
-
-    # We assume that all the selected packages should be installed
-    my $status = 8;
-    foreach my $node_name (@nodes){
-        update_node_package_status(\%options,$node_name,\@pkgs,$status,\@errors);
-    }     
-    
-#    unlock(\%options, \@errors);
-}
 
 ###########################################################################
 

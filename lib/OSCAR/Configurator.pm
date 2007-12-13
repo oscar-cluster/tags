@@ -43,8 +43,9 @@ use OSCAR::Database;  # For list_installable_packages(), locking() and unlock()
 use OSCAR::Logger;    # For oscar_log_section()
 use OSCAR::Tk;
 #use OSCAR::Selector;
-use XML::Simple;      # Read/write the .selection config files
+#use XML::Simple;      # Read/write the .selection config files
 use Tk::Pane; 
+use Data::Dumper;
 no warnings qw(closure);
 
 our $destroyed = 0;
@@ -158,22 +159,22 @@ sub getSelectedConfigurablePackages
   my %packages;
 
   # START LOCKING FOR NEST
-  my @tables = ("Cluster", "Packages", "Group_Packages", "Node_Package_Status", "Groups");
+  #my @tables = ("Cluster", "Packages", "Group_Packages", "Node_Package_Status", "Groups");
   my @error_list = ();
   my %options = ();
   #locking("WRITE", \%options, \@tables, \@error_list);
   #OSCAR::Database::dec_already_locked(
   #  "packages_in_selected_package_set packages.package", \@results,1);
-  my $success = OSCAR::Database::get_selected_group_packages(\@results,\%options,\@error_list); 
-
+  my $success = OSCAR::Database::get_selected_group_packages(\@results,
+							     \%options,
+							     \@error_list); 
   # Transform the list into a hash; keys=short pkg name, values=long pkg name
-  foreach my $pkg_ref (@results) 
-    {
+  foreach my $pkg_ref (@results) {
       my $pname = $$pkg_ref{package};
-      my $ppackage = $$pkg_ref{name};
+      my $ppackage = $$pkg_ref{package};
       print "$pname, $ppackage\n" if $options{debug};
       $packages{$pname} = $ppackage;
-    }
+  }
 
   # Actually we don't need this any more in the new DB schema.
   #
@@ -252,7 +253,7 @@ sub populateConfiguratorList
 
           # Figure out where the package directory is located on the disk.
           $packagedir =  "$oscarbasedir/packages/$package";  # Fallback
-          foreach my $dir (@OSCAR::Package::PKG_SOURCE_LOCATIONS)
+          foreach my $dir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS)
             {
               (($packagedir = "$dir/$package") and last) if
                 (-d "$dir/$package");
@@ -366,7 +367,7 @@ sub displayPackageConfigurator # ($parent)
   # Then create the scrollable package listing and place it in the grid.
   populateConfiguratorList();
 
-  center_window( $root );
+  OSCAR::Tk::center_window( $root );
   
   return $root;       # Return pointer to new window to calling function
 }
