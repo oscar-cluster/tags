@@ -52,6 +52,8 @@ if ($test) {
     $gmetad_conf = "gmetad.conf";
     $gmond_conf = "gmond.conf";
     $ENV{OSCAR_PACKAGE_HOME} = ".";
+}else{
+    $ENV{OSCAR_PACKAGE_HOME} = "/var/lib/oscar/packages/ganglia";
 }
 my $masterconf = "$ENV{OSCAR_PACKAGE_HOME}/configurator.html";
 my $imgconfd = "$ENV{OSCAR_PACKAGE_HOME}/.configs";

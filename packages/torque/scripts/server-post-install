@@ -27,6 +27,8 @@ use SystemInstaller::Machine;
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Opkg;
 
+my $oscar_torque = "/var/lib/oscar/packages/torque";
+
 #######################################################
 #  Start up 'Torque Server' by restarting the daemon  #
 #######################################################
@@ -85,4 +87,4 @@ if (-f $xpbsmonrc) {
 my $rm_detect_dir = "$ENV{OSCAR_HOME}/lib/OSCAR/OCA/RM_Detect";
 
 # Copy RM_Detect component for TORQUE to the right location
-system("cp -a $ENV{OSCAR_PACKAGE_HOME}/scripts/TORQUE.pm $rm_detect_dir") == 0 or croak("Failed to copy $ENV{OSCAR_PACKAGE_HOME}/scripts/TORQUE.pm to $rm_detect_dir");
+system("cp -a $oscar_torque/TORQUE.pm $rm_detect_dir") == 0 or croak("Failed to copy $oscar_torque/TORQUE.pm to $rm_detect_dir");

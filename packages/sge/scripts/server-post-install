@@ -45,8 +45,9 @@ my $spooltype = "classic";      # Other option would be to use berkeleydb
 
 my $admin_user = "sge";
 
+my $oscar_sge = "/var/lib/oscar/packages/sge";
 # Obtain any custom configure values from the user
-my $xml_data = "$ENV{OSCAR_PACKAGE_HOME}/configurator.html";
+my $xml_data = "$oscar_sge/configurator.html";
 
 my $qmasterBuffer = "";
 
@@ -250,7 +251,7 @@ sub setup_pe {
         if ($? == 256) {
                 # parallel environment does not exist, creating...
                 opkg_print("Adding $pe parallel environment to SGE\n");
-                system("$qconf -Ap $ENV{OSCAR_PACKAGE_HOME}/templates/$pe.template") == 0 or croak("Failed to add $pe to SGE's parallel environment");
+                system("$qconf -Ap $oscar_sge/templates/$pe.template") == 0 or croak("Failed to add $pe to SGE's parallel environment");
         } elsif ($? == 0) {
                 # parallel environment already exists
         } else {
@@ -318,4 +319,4 @@ opkg_print("All qmaster-related setup complete.\n");
 my $rm_detect_dir = "$ENV{OSCAR_HOME}/lib/OSCAR/OCA/RM_Detect";
 
 # Copy RM_Detect component for SGE to the right location
-system("cp -a $ENV{OSCAR_PACKAGE_HOME}/scripts/SGE.pm $rm_detect_dir") == 0 or croak("Failed to copy $ENV{OSCAR_PACKAGE_HOME}/scripts/SGE.pm to $rm_detect_dir");
+system("cp -a $oscar_sge/SGE.pm $rm_detect_dir") == 0 or croak("Failed to copy $oscar_sge/SGE.pm to $rm_detect_dir");

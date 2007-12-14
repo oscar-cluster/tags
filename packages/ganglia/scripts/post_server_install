@@ -19,5 +19,5 @@
 # Copyright Erich Focht 2005
 
 /etc/init.d/gmond stop
-$OSCAR_PACKAGE_HOME/scripts/edit_ganglia_conf --gmond --verbose
-$OSCAR_PACKAGE_HOME/scripts/edit_ganglia_conf --gmetad --verbose
+/var/lib/oscar/packages/ganglia/edit_ganglia_conf --gmond --verbose
+/var/lib/oscar/packages/ganglia/edit_ganglia_conf --gmetad --verbose

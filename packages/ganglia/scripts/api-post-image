@@ -38,7 +38,8 @@ use lib '/usr/lib/systeminstaller';
 use SIS::DB;
 use SIS::Image;
 
-my $configdir = "$ENV{OSCAR_PACKAGE_HOME}/.configs";
+my $oscar_ganglia = "/var/lib/oscar/packages/ganglia";
+my $configdir = "$oscar_ganglia/.configs";
 
 my $imagedir = shift @ARGV;
 $imagedir =~ s/\/$//;
@@ -52,7 +53,7 @@ my $window;
 #####################
 
 my $imageconf = $configdir."/".$image;
-my $masterconf = $ENV{OSCAR_PACKAGE_HOME}."/configurator.html";
+my $masterconf = $oscar_ganglia."/configurator.html";
 
 my $master_conf;
 if (-e $masterconf) {
@@ -88,7 +89,7 @@ if (! -d $imageconf) {
     };
     if (! -e $imageconf."/configurator.html") {
 	!system("sed -e \"s/\@IMAGENAME\@/$image/\" ".
-		"< $ENV{OSCAR_PACKAGE_HOME}/configurator_image.html ".
+		"< $oscar_ganglia/configurator_image.html ".
 		"> $imageconf/configurator.html") or
 		croak("Could not create $imageconf/configurator.html! $!\n");
     }
@@ -107,7 +108,7 @@ if (!@res) {
 # do the gmond configuration according to the values file
 #
 run_image_conf:
-exec "$ENV{OSCAR_PACKAGE_HOME}/scripts/edit_ganglia_conf --gmond --image $image --verbose"
+exec "$oscar_ganglia/edit_ganglia_conf --gmond --image $image --verbose"
     or carp("Could not run edit_ganglia_conf! $!");
 
 exit 0;

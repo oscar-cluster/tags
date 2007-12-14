@@ -31,7 +31,7 @@ $ENV{SGE_ROOT} = "/opt/sge";
 my $cell = "default";
 
 # Obtain any custom configure values from the user
-my $xml_data = "$ENV{OSCAR_PACKAGE_HOME}/configurator.html";
+my $xml_data = "/var/lib/oscar/packages/sge/configurator.html";
 
 # If user has configured the package, use the custom values, otherwise use the default
 if (-e $xml_data) {

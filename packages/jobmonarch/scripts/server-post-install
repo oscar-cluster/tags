@@ -19,7 +19,7 @@ our ($distro);
 
 sub get_config {
     my $conf;
-    my $config_data = "$ENV{OSCAR_PACKAGE_HOME}/configurator.html";
+    my $config_data = "/var/lib/oscar/packages/jobmonarch/configurator.html";
 
     if (-e $config_data) {
 	my $ref = readInConfigValues($config_data,"jobmonarch","",noarray=>1);
