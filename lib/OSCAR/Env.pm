@@ -27,6 +27,7 @@ use File::Basename;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 use Carp;
+use Data::Dumper;
 
 @EXPORT = qw(
             oscar_home_env
@@ -90,7 +91,9 @@ sub oscar_home_env {
        # write profile.d files
        if (!$dir_sh || !$dir_csh) {
         oscar_log_subsection("Generating /etc/profile.d/oscar_home.{sh,csh} files.");
-        &profiled_files_write($ohome);
+        &profiled_files_write("OSCAR_HOME", $ohome);
+        &profiled_files_write("OSCAR_PACKAGE", "/var/lib/oscar/packages");
+        &profiled_files_write("OSCAR_TEST", "/var/lib/oscar/testing");
        }
     }
 }
@@ -124,18 +127,26 @@ sub profiled_files_read {
 }
 
 sub profiled_files_write {
-    my ($dir) = @_;
+    my ($env_var, $dir) = @_;
     my $file = "/etc/profile.d/oscar_home.csh";
-    open OUT, "> $file" or
+    if ( -e $file ){
+        my @check = `grep $env_var $file`;
+        return if @check;
+    }
+    open OUT, ">> $file" or
         carp("Could not write file $file: $!");
-    print OUT "setenv OSCAR_HOME $dir\n";
+    print OUT "setenv $env_var $dir\n";
     close OUT;
     chmod 0755, $file;
     $file = "/etc/profile.d/oscar_home.sh";
-    open OUT, "> $file" or
+    if ( -e $file ){
+        my @check = `grep $env_var $file`;
+        return if @check;
+    }
+    open OUT, ">> $file" or
         carp("Could not write file $file: $!");
-    print OUT "OSCAR_HOME=$dir\n";
-    print OUT "export OSCAR_HOME\n";
+    print OUT "$env_var=$dir\n";
+    print OUT "export $env_var\n";
     close OUT;
     chmod 0755, $file;
 }

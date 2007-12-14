@@ -1,4 +1,4 @@
-package scripts::package_config;
+package package_config;
 
 # Copyright (c) 2002-2003 The Trustees of Indiana University.  
 #                         All rights reserved.

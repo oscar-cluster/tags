@@ -337,7 +337,8 @@ sub getConfigurationValues # ($package) -> $valueshashref
   my $values;
   my $filename;
 
-  my $pkgdir = getOdaPackageDir($package);
+#  my $pkgdir = getOdaPackageDir($package);
+  my $pkgdir = "$ENV{OSCAR_PACKAGE}/$package";
   if ((defined $pkgdir) && (-d $pkgdir))
     {
       $filename = "$pkgdir/.configurator.values";

@@ -16,7 +16,7 @@ imagedir=`echo $imagedir | sed -e 's/\/$//'`
 image=`echo $imagedir | sed -e 's:^.*/::g'`
 
 # where do we look for the scripts
-dir="/var/lib/oscar/packages/disable-services"
+dir="$OSCAR_PACKAGE_HOME"
 
 #
 # Create a script in the systemimager post-install/ directory

@@ -1,4 +1,4 @@
-package scripts::user_settings;
+package user_settings;
 
 # Copyright (c) 2002-2003 The Trustees of Indiana University.  
 #                         All rights reserved.
@@ -23,7 +23,7 @@ $VERSION = sprintf("%d.%02d", q$Revision$ =~ /(\d+)\.(\d+)/);
 # Import some modules just for switcher
 
 use lib "$ENV{OSCAR_PACKAGE_HOME}";
-use scripts::package_config;
+use package_config;
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Configbox;
 
@@ -47,7 +47,7 @@ sub get {
     # Read in all the <switcher> blocks from the package
     # configurations
     
-    my $pkg_config = scripts::package_config::get();
+    my $pkg_config = package_config::get();
 
     # Merge the two together.  Wherever there is no user-specified
     # setting from the configurator, make a default setting.

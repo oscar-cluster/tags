@@ -16,7 +16,7 @@
 # See if there's any defaults that we need to set from the
 # Configurator step
 
-cmd="$OSCAR_PACKAGE_HOME/scripts/set_switcher_defaults"
+cmd="$OSCAR_PACKAGE_HOME/set_switcher_defaults"
 $cmd
 
 # Since we just set the defaults, it is now necessary to push the
