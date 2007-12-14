@@ -275,10 +275,11 @@ foreach my $prereq (@ordered_prereqs) {
     # this should really be an exception!
     # 
     # !! All setup scripts are run _before_ installation of prereqs !!
-    if (-x "$ohome/$prereq/scripts/setup") {
-	oscar_log_subsection("Running prereq setup script for $prereq");
-	!system("$ohome/$prereq/scripts/setup")
-	    or croak("ERROR: Prerequisite setup failure!");
+    my $setup_script = "$ohome/$prereq/scripts/api-pre-install";
+    if (-x $setup_script ) {
+	oscar_log_subsection("Running prereq api-pre-install script for $prereq");
+	!system($setup_script)
+	    or croak("ERROR: Prerequisite api-pre-install failure!");
     }
     oscar_log_subsection("Successfully installed prereq $prereq");
 }
