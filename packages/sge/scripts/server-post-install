@@ -45,7 +45,7 @@ my $spooltype = "classic";      # Other option would be to use berkeleydb
 
 my $admin_user = "sge";
 
-my $oscar_sge = "/var/lib/oscar/packages/sge";
+my $oscar_sge = $ENV{OSCAR_PACKAGE_HOME};
 # Obtain any custom configure values from the user
 my $xml_data = "$oscar_sge/configurator.html";
 

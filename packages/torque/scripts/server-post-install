@@ -27,7 +27,7 @@ use SystemInstaller::Machine;
 use lib "$ENV{OSCAR_HOME}/lib";
 use OSCAR::Opkg;
 
-my $oscar_torque = "/var/lib/oscar/packages/torque";
+my $oscar_torque = "$ENV{OSCAR_PACKAGE_HOME}";
 
 #######################################################
 #  Start up 'Torque Server' by restarting the daemon  #

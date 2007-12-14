@@ -47,7 +47,7 @@ if (!$install_mode) {
 use Config;
 unless ($Config{useithreads}) {
     print "Detected that perl doesn't support threads!!!\n";
-    my $patch = "/var/lib/oscar/packages/sis/si_monitor.patch";
+    my $patch = "$ENV{OSCAR_PACKAGE_HOME}/si_monitor.patch";
     # was the patch already applied?
     my $is_patched = system("patch -p0 --dry-run --batch -f -s < $patch 2>/dev/null");
     if (!$is_patched) {
