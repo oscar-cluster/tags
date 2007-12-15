@@ -260,7 +260,7 @@ $ENV{PATH} = $ENV{PATH} .
 # Ensure that the package scripts are executable (wizard_prep runs
 # some of them)
 
-system("chmod 755 packages/*/scripts/*");
+system("chmod 755 /var/lib/oscar/packages/*/*");
 
 # TJN (10/4/2005): Note, a fairly evil, totally non-obvious issue 
 #    occurs if you have /tftpboot setup as a symlink,
