@@ -54,6 +54,8 @@ my %sample_pkgs = (
                   );
 
 my %opts = ();
+my $pkg_dir = "/var/lib/oscar";
+
 unless (GetOptions(\%opts,"wait") ) {
         croak("Options incorrect.");
 }
@@ -125,15 +127,13 @@ $ENV{OSCAR_TESTPRINT}="$ENV{OSCAR_HOME}/testing/testprint";
 my $file;
 my $script;
 foreach my $pkg (@pkgs) {
-    $file = "$pkg/testing/test_root";
-    for my $dir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-	$script = "$dir/$file";
-	if (-x $script) {
-	    if (!run_pkg_user_test($script, "root", 0,
-				   join(" ", @clientlist))) {
-		$return++;
-	    } 
-	}
+    $file = "testing/$pkg/test_root";
+    $script = "$pkg_dir/$file";
+    if (-x $script) {
+        if (!run_pkg_user_test($script, "root", 0,
+                               join(" ", @clientlist))) {
+            $return++;
+        }
     }
 }
 
@@ -214,13 +214,11 @@ unless ($rm->{name} eq "None") {
 
 # Copy the packages test files to the user home dir.
 foreach my $pkg (@pkgs) {
-    foreach my $dir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-	if (-d "$dir/$pkg/testing") {
-	    mkdir("$test_user_homedir/$pkg/");
-	    # I know, shell badness, but so much easier than doing
-	    # a recursive thing in perl.
-	    system("cp -af $dir/$pkg/testing/* $test_user_homedir/$pkg/");
-	}
+    if (-d "$pkg_dir/testing/$pkg") {
+        mkdir("$test_user_homedir/$pkg/");
+        # I know, shell badness, but so much easier than doing
+        # a recursive thing in perl.
+        system("cp -af $pkg_dir/testing/$pkg/* $test_user_homedir/$pkg/");
     }
 }
 
@@ -275,20 +273,18 @@ my $areturn=0;
 
 my $test_type = "Installation";
 foreach my $pkg (@pkgs) {
-	my $file = "$pkg/testing/install_tests.apb";
+    my $file = "testing/$pkg/install_tests.apb";
 
-	for my $dir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-		my $test = "$dir/$file";
-		if( -e $test ) {
+    my $test = "$pkg_dir/$file";
+    if( -e $test ) {
 
-			# Print leading label only if have some tests to run :)
-			print "\nRun APItests...\n" if( $run_apitest_label == 0 );
-			$run_apitest_label=1;
+        # Print leading label only if have some tests to run :)
+        print "\nRun APItests...\n" if( $run_apitest_label == 0 );
+        $run_apitest_label=1;
 
-			print "\nRunning $test_type tests for $pkg\n";
-			$areturn++ if (!run_pkg_apitest_test($test, "root", 0));
-		}
-	}
+        print "\nRunning $test_type tests for $pkg\n";
+        $areturn++ if (!run_pkg_apitest_test($test, "root", 0));
+    }
 }
 
 #
@@ -297,20 +293,18 @@ foreach my $pkg (@pkgs) {
 
 my $test_type = "Validation";
 foreach my $pkg (@pkgs) {
-	my $file = "$pkg/testing/validation_tests.apb";
+    my $file = "testing/$pkg/validation_tests.apb";
 
-	for my $dir (@OSCAR::PackagePath::PKG_SOURCE_LOCATIONS) {
-		my $test = "$dir/$file";
-		if( -e $test ) {
+    my $test = "$pkg_dir/$file";
+    if( -e $test ) {
 
-			# Print leading label only if have some tests to run :)
-			print "\nRun APItests...\n" if( $run_apitest_label == 0 );
-			$run_apitest_label=1;
+        # Print leading label only if have some tests to run :)
+        print "\nRun APItests...\n" if( $run_apitest_label == 0 );
+        $run_apitest_label=1;
 
-			print "\nRunning $test_type tests for $pkg\n";
-			$areturn++ if (!run_pkg_apitest_test($test, "root", 0));
-		}
-	}
+        print "\nRunning $test_type tests for $pkg\n";
+        $areturn++ if (!run_pkg_apitest_test($test, "root", 0));
+    }
 }
 
 # Sum the (errors) return codes for root/user/apitest tests
