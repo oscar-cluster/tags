@@ -59,19 +59,19 @@ fi
 
 p=`pwd`
 banner="MPI C bindings test:"
-cmds="cp cpi.c $openmpi_tmp && cd $openmpi_tmp && mpicc cpi.c -o openmpi-cpi && cp openmpi-cpi $p && cd $p && mpiexec -machinefile $MACHINEFILE -n $NSLOTS openmpi-cpi"
+cmds="cp cpi.c $openmpi_tmp && cd $openmpi_tmp && mpicc cpi.c -o openmpi-cpi && cp openmpi-cpi $p && cd $p && mpiexec -n $NSLOTS openmpi-cpi"
 do_cmds
 
 # Compile cxxhello and try running it
 
 banner="MPI C++ bindings test:"
-cmds="cp cxxhello.cc $openmpi_tmp && cd $openmpi_tmp && mpiCC cxxhello.cc -o openmpi-cxxhello && cp openmpi-cxxhello $p && cd $p && mpiexec -machinefile $MACHINEFILE -n $NSLOTS openmpi-cxxhello"
+cmds="cp cxxhello.cc $openmpi_tmp && cd $openmpi_tmp && mpiCC cxxhello.cc -o openmpi-cxxhello && cp openmpi-cxxhello $p && cd $p && mpiexec -n $NSLOTS openmpi-cxxhello"
 do_cmds
 
 # Compile f77hello and try running it
 
 banner="MPI Fortran bindings test:"
-cmds="cp f77hello.f $openmpi_tmp && cd $openmpi_tmp && mpif77 f77hello.f -o openmpi-f77hello && cp openmpi-f77hello $p && cd $p && mpiexec -machinefile $MACHINEFILE -n $NSLOTS openmpi-f77hello"
+cmds="cp f77hello.f $openmpi_tmp && cd $openmpi_tmp && mpif77 f77hello.f -o openmpi-f77hello && cp openmpi-f77hello $p && cd $p && mpiexec -n $NSLOTS openmpi-f77hello"
 do_cmds
 
 # All done!
