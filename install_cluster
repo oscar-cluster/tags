@@ -257,11 +257,6 @@ $ENV{PATH} = $ENV{PATH} .
     ':/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin';
 
 
-# Ensure that the package scripts are executable (wizard_prep runs
-# some of them)
-
-system("chmod 755 /var/lib/oscar/packages/*/*");
-
 # TJN (10/4/2005): Note, a fairly evil, totally non-obvious issue 
 #    occurs if you have /tftpboot setup as a symlink,
 #    e.g., /tftpboot -> /var/tftpboot/,  and remove 'tftp-server'. 

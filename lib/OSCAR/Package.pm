@@ -103,26 +103,27 @@ sub run_pkg_script {
     my ($pkg, $phase, $verbose, $args) = @_;
     my $scripts = $PHASES{$phase};
     if (!$scripts) {
-	carp("No such phase '$phase' in OSCAR package API");
-	return undef;
+        carp("No such phase '$phase' in OSCAR package API");
+        return undef;
     }
     
     my $pkgdir = get_scripts_dir($pkg, $phase);
     return 0 unless ((defined $pkgdir) && (-d $pkgdir));
     foreach my $scriptname (@$scripts) {
-	my $script = "$pkgdir/$scriptname";
-	if (-e $script) {
-	    oscar_log_subsection("About to run $script for $pkg") if $verbose;
-	    $ENV{OSCAR_PACKAGE_HOME} = $pkgdir;
-	    my $rc = system("$script $args");
-	    delete $ENV{OSCAR_PACKAGE_HOME};
-	    if ($rc) {
-		my $realrc = $rc >> 8;
-		carp("Script $script exitted badly with exit code '$realrc'") if 
-		    $verbose;
-		return 0;
-	    }
-	} 
+        my $script = "$pkgdir/$scriptname";
+        if (-e $script) {
+            chmod 0755, $script;
+            oscar_log_subsection("About to run $script for $pkg") if $verbose;
+            $ENV{OSCAR_PACKAGE_HOME} = $pkgdir;
+            my $rc = system("$script $args");
+            delete $ENV{OSCAR_PACKAGE_HOME};
+            if ($rc) {
+                my $realrc = $rc >> 8;
+                carp("Script $script exitted badly with exit code '$realrc'") if 
+                    $verbose;
+                return 0;
+            }
+        } 
     }
     return 1;
 }
@@ -144,6 +145,7 @@ sub run_pkg_script_chroot {
       my $script = "$pkgdir/$scriptname";
       if (-e $script) 
         {
+          chmod 0755, $script;
           oscar_log_subsection("About to run $script for $pkg");
           run_in_chroot($dir,$script) or 
             (carp "Script $script failed", return undef);
