@@ -28,10 +28,15 @@
       <filters>
         <dist>fc</dist>
         <dist>rhel</dist>
-        <dist>ydl</dist>
       </filters>
       <pkg>php-gd</pkg>
       <pkg>php-common</pkg>
+    </requires>
+    <requires>
+      <filters>
+        <dist>ydl</dist>
+      </filters>
+      <pkg>php-gd</pkg>
     </requires>
     <requires>
       <filters>
