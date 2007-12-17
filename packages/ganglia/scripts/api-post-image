@@ -38,7 +38,7 @@ use lib '/usr/lib/systeminstaller';
 use SIS::DB;
 use SIS::Image;
 
-my $oscar_ganglia = "$OSCAR_PACKAGE_HOME";
+my $oscar_ganglia = $ENV{OSCAR_PACKAGE_HOME};
 my $configdir = "$oscar_ganglia/.configs";
 
 my $imagedir = shift @ARGV;
