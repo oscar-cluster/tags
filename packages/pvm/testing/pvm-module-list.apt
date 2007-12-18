@@ -22,7 +22,7 @@
          modules loaded and usable.
       -->
     <command interpreter='/bin/bash' wdir='/tmp'>
-     /opt/modules/3.1.6/bin/modulecmd bash list
+     /opt/modules/Modules/default/bin/modulecmd bash list
     </command> 
 
 

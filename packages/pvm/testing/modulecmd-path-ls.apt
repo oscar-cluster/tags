@@ -19,10 +19,10 @@
 
    <command>/bin/ls</command>
 
-   <input name="argument" format="literal">/opt/modules/3.1.6/bin/modulecmd</input> 
+   <input name="argument" format="literal">/opt/modules/Modules/default/bin/modulecmd</input> 
 
 
-   <output name="stdout" format="regexp">/opt/modules/3.1.6/bin/modulecmd</output> 
+   <output name="stdout" format="regexp">/opt/modules/Modules/default/bin/modulecmd</output> 
     <output name="stderr" format="literal"></output> 
     <output name="status" format="literal">0</output>
 

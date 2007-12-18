@@ -19,7 +19,7 @@
 
     <!-- NOTE: Must use script form w/ bash to get ENV sourced/ready -->
     <command interpreter='/bin/bash' wdir='/tmp'>
-    /opt/modules/3.1.6/bin/modulecmd bash show pvm
+    /opt/modules/Modules/default/bin/modulecmd bash show pvm
     </command> 
 
 
