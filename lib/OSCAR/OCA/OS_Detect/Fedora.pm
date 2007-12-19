@@ -46,10 +46,10 @@ sub detect_dir {
 	chroot => $root,
     };
 
-    if ($release_string =~ /Fedora (?:Core )?release (\d+)/) {
-	$fc_release = $1;
-    } elsif ($release_string =~ /Fedora release (\d+)\.9\d \(Rawhide\)/) { # Fedora Core test releases
+    if ($release_string =~ /Fedora release (\d+)\.9\d \(Rawhide\)/) { # Fedora Core test releases 
 	$fc_release = $1+1;
+    } elsif ($release_string =~ /Fedora (?:Core )?release (\d+)/) {
+	$fc_release = $1;
     } else {
 	return undef;
     }
