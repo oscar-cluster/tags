@@ -478,7 +478,7 @@ sub vprint {
 sub get_config {
     my ($path, $distro, $distrover, $arch) = @_;
     local *IN;
-    my (@config, $line, $match);
+    my (@config, $line, $check);
     
     open IN, "$path/prereq.cfg" or die "Could not open $path/prereq.cfg $!";
     while ($line = <IN>) {
@@ -488,19 +488,17 @@ sub get_config {
 	    $d =~ s/\*/\.*/g;
 	    $v =~ s/\*/\.*/g;
 	    $a =~ s/\*/\.*/g;
-            my $check = 0;
+            $check = 0;
             $check++ if $distro =~ m/^$d$/ ; 
             $check++ if $distrover =~ m/^$v$/ ; 
             $check++ if $arch =~ m/^$a$/ ; 
-	    $match = 0;
 	    if ($check == 3) {
-		$match = 1;
 		vprint("found matching block [$d:$v:$a]\n");
 		last;
 	    }
 	}
     }
-    if ($match) {
+    if ($check == 3) {
 	while ($line = <IN>) {
 	    chomp $line;
 	    last if ($line =~ /^\[([^:]+):([^:]+):([^:]+)\]/);
