@@ -487,12 +487,13 @@ sub get_config {
 	    my ($d,$v,$a) = ($1,$2,$3);
 	    $d =~ s/\*/\.*/g;
 	    $v =~ s/\*/\.*/g;
-	    $v =~ s/\|/\\|/g;
 	    $a =~ s/\*/\.*/g;
-	    my $str = "$distro:$distrover:$arch";
-	    my $mstr = "$d:$v:$a";
+            my $check = 0;
+            $check++ if $distro =~ m/^$d$/ ; 
+            $check++ if $distrover =~ m/^$v$/ ; 
+            $check++ if $arch =~ m/^$a$/ ; 
 	    $match = 0;
-	    if ($str =~ m/^$mstr$/) {
+	    if ($check == 3) {
 		$match = 1;
 		vprint("found matching block [$d:$v:$a]\n");
 		last;
