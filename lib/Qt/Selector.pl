@@ -501,7 +501,7 @@ sub exitButton_clicked {
 
     OSCAR::Database::initialize_selected_flag(\%options,\@errors) 
         if (installuninstall <= 0);
-    OSCAR::Opkg::writeGroupFiles();
+    OSCAR::Opkg::write_pgroup_files();
     Qt::Application::exit();
 
 }
