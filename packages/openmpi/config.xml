@@ -24,6 +24,12 @@
     </requires>
     <requires>
       <filters>
+        <dist version="4" >rhel</dist>
+      </filters>
+      <pkg>gcc4-gfortran</pkg>
+    </requires>
+    <requires>
+      <filters>
         <dist>suse</dist>
         <dist>sles</dist>
       </filters>
@@ -37,6 +43,12 @@
     </requires>
     <requires>
       <filters>
+        <dist version="4" >rhel</dist>
+      </filters>
+      <pkg>gcc4-gfortran</pkg>
+    </requires>
+    <requires>
+      <filters>
         <dist>suse</dist>
         <dist>sles</dist>
       </filters>
@@ -45,6 +57,11 @@
   </clientDeps>
   <apiDeps/>
   <changelog>
+    <versionEntry version="1.2.4-1">
+      <changelogEntry authorName="DongInn Kim" date="2007-12-22T14:58:14+05:00">
+        <item>Fixed the missing dependencies on RHEL4.</item>
+      </changelogEntry>
+    </versionEntry>
     <versionEntry version="1.2.3-1">
       <changelogEntry authorName="Erich Focht" date="2007-10-06T12:06:14-04:00">
         <item>Fixed completely wrong dependencies.</item>

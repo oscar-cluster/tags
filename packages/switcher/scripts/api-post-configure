@@ -27,7 +27,7 @@ use strict;
 #
 
 my $ret;
-my $cmd = "$ENV{OSCAR_PACKAGE_HOME}/scripts/set_switcher_defaults";
+my $cmd = "$ENV{OSCAR_PACKAGE_HOME}/set_switcher_defaults";
 if (-x $cmd) {
     $ret = system($cmd);
 } else {
