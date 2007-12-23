@@ -35,7 +35,7 @@ http://svn.oscar.openclustergroup.org/trac/oscar/wiki/InstallGuidePreparing#Dist
 for instructions.
 
 5) install oscar-base rpm
-yume --repo /tftpboot/oscar/common-rpms install oscar-base
+yume --repo /tftpboot/oscar/common-rpms install oscar-base*
 
 6) start installation, for example:
 cd /opt/oscar
