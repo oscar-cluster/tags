@@ -1,6 +1,6 @@
 package package_config;
 
-# Copyright (c) 2002-2003 The Trustees of Indiana University.  
+# Copyright (c) 2002-2003,2007 The Trustees of Indiana University.  
 #                         All rights reserved.
 #
 # This file is part of the OSCAR software package.  For license
@@ -34,7 +34,7 @@ sub get {
     my @errors = ();
     my @results = ();
     if(! get_packages_switcher(\@results,\%options,\@errors) ){
-        die("packages/switcher/scripts/package_config.pm could not run ODA");
+        die("packages/switcher/package_config.pm could not run ODA");
     }
     my $result = undef;
     foreach my $result_ref (@results){
@@ -47,7 +47,7 @@ sub get {
         };
     }    
     #open(ODA, "oda switcher_list_packages_tags_names|") || 
-	#die("packages/switcher/scripts/package_config.pm could not run ODA");
+	#die("packages/switcher/package_config.pm could not run ODA");
     #my $result = undef;
     #while (<ODA>) {
 	#chomp($_);

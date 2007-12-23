@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2002-2003 The Trustees of Indiana University.  
+# Copyright (c) 2002-2003,2007 The Trustees of Indiana University.  
 #                         All rights reserved.
 # 
 # This file is part of the OSCAR software package.  For license
@@ -17,7 +17,7 @@ use Carp;
 # Import some modules just for switcher
 
 use lib "$ENV{OSCAR_PACKAGE_HOME}";
-require scripts::package_config;
+require package_config;
 
 # Debugging
 
@@ -35,7 +35,7 @@ my $outfile = "$ENV{OSCAR_PACKAGE_HOME}/configurator.html";
 # switcher blocks
 #
 
-my $pkg_config = scripts::package_config::get();
+my $pkg_config = package_config::get();
 
 #
 # Now that we know what packages use switcher, we can construct an
