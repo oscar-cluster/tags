@@ -114,6 +114,8 @@ cd $srcdir
 OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION`
 if [ -n "$NIGHTLY" ]; then
     OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION --nightly`
+    sed -e s/^svn_r=.*/svn_r="$OSCAR_VERSION"/g VERSION > VERSION.new
+	mv VERSION.new VERSION
 fi
 OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
 OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`
@@ -296,10 +298,7 @@ if [ -n "$BUILD_BASE" ]; then
 
     if test "$OSCAR_SVN_VERSION" != ""; then
         sed -e s/^svn_r=.*/svn_r=$OSCAR_SVN_VERSION/g VERSION > VERSION.new
-        if [ -n "$NIGHTLY" ]; then
-            sed -e s/^svn_r=.*/svn_r="$OSCAR_SVN_VERSION"nightly/g VERSION > VERSION.new
-        fi
-	mv VERSION.new VERSION
+	    mv VERSION.new VERSION
     fi
 
     csh -f ./dist/insert-license.csh $newlist
