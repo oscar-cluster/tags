@@ -65,12 +65,14 @@ dist:
 	cd dist; ./newmake.sh --base --srpms --all-repos
 
 # first attempt to include oscar-base rpms into common-rpms repo
-nightly: baserpms
+nightly: nightly_version baserpms
 	mkdir -p packages/base/distro/common-rpms
 	mv oscar-base-*.rpm packages/base/distro/common-rpms
-	cd dist; ./newmake.sh --base --srpms --all-repos --nightly
+	cd dist; ./newmake.sh --base --srpms --all-repos
 	rm -rf packages/base/distro/common-rpms ../oscar-base-*.tar.gz ../oscar-srpms-*.tar.gz
 
+nightly_version:
+	cd dist; ./newmake.sh --nightly; cd ..
 #
 # Install the repositories needed on the local machine to /tftpboot/oscar,
 # Install the base OSCAR (without RPMS/DEBs) in /opt.

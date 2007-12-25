@@ -116,6 +116,7 @@ if [ -n "$NIGHTLY" ]; then
     OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION --nightly`
     sed -e s/^svn_r=.*/svn_r="$OSCAR_VERSION"/g VERSION > VERSION.new
 	mv VERSION.new VERSION
+    exit 0
 fi
 OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
 OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`

@@ -60,7 +60,7 @@ else
             fi
             OSCAR_SVN_R="$ver"
         fi
-	OSCAR_VERSION="${OSCAR_VERSION}$OSCAR_SVN_R"
+        OSCAR_VERSION="${OSCAR_VERSION}$OSCAR_SVN_R"
     fi
 
     if test "$option" = ""; then
@@ -94,7 +94,7 @@ case "$option" in
         echo ${OSCAR_VERSION} ${OSCAR_MAJOR_VERSION} ${OSCAR_MINOR_VERSION} ${OSCAR_RELEASE_VERSION} ${OSCAR_GREEK_VERSION} ${OSCAR_SVN_R}
         ;;
     --nightly)
-	echo ${OSCAR_VERSION}nightly-${OSCAR_DATE}
+	echo ${OSCAR_SVN_R}nightly-${OSCAR_DATE}
 	;;
     -h|--help)
 	cat <<EOF
