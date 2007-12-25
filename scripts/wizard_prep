@@ -459,6 +459,8 @@ print"###########\n###########\n".Dumper($h)."\n############\n###########\n"
 my @opkg_set = @{$h->{packages}->{opkg}};
 my (%options, @errors);
 for my $p (@opkg_set) {
+    $p = "mtaconfig" if $p eq "mta-config"; # synchronize its name
+    next if $p eq "networking";   # The network package is not under control of oda
     &OSCAR::Database::set_group_packages("Default", $p, 2, \%options, \@errors);
 }
 
