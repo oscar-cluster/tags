@@ -1,6 +1,9 @@
 #!/bin/bash
 #
 # Copyright (c) 2006 Erich Focht
+#
+# Copyright (c) 2007 The Trustees of Indiana University.  
+#                    All rights reserved.
 # 
 # This file is part of the OSCAR software package.  For license
 # information, see the COPYING file in the top level directory of the
@@ -112,14 +115,15 @@ srcdir=`dirname $RUNDIR`
 umask 022
 cd $srcdir
 OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION`
+OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
+OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`
+
+nightly_date=`date '+%Y%m%d'`
 if [ -n "$NIGHTLY" ]; then
-    OSCAR_VERSION=`scripts/get-oscar-version.sh VERSION --nightly`
-    sed -e s/^svn_r=.*/svn_r="$OSCAR_VERSION"/g VERSION > VERSION.new
+    sed -e s/^svn_r=.*/svn_r="$OSCAR_SVN_VERSION"nightly-"$nightly_date"/g VERSION > VERSION.new
 	mv VERSION.new VERSION
     exit 0
 fi
-OSCAR_GREEK_VERSION=`scripts/get-oscar-version.sh VERSION --greek`
-OSCAR_SVN_VERSION=`scripts/get-oscar-version.sh VERSION --svn`
 
 ############################################################################
 

@@ -22,6 +22,8 @@
 # Copyright (c) Oak Ridge National Laboratory, 2007
 #               Geoffroy Vallee <valleegr@ornl.gov>
 #               All rights reserved
+# Copyright (c) 2007 The Trustees of Indiana University.  
+#               All rights reserved.
 
 DESTDIR=
 

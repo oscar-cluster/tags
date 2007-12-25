@@ -68,36 +68,37 @@ else
     fi
 fi
 
+OSCAR_SVN_R=`echo $OSCAR_SVN_R | sed -e 's/nightly//g' | cut -d- -f1`
 case "$option" in
     --full|-v|--version)
-	echo $OSCAR_VERSION
-	;;
+    echo $OSCAR_VERSION
+    ;;
     --major)
-	echo $OSCAR_MAJOR_VERSION
-	;;
+    echo $OSCAR_MAJOR_VERSION
+    ;;
     --minor)
-	echo $OSCAR_MINOR_VERSION
-	;;
+    echo $OSCAR_MINOR_VERSION
+    ;;
     --release)
-	echo $OSCAR_RELEASE_VERSION
-	;;
+    echo $OSCAR_RELEASE_VERSION
+    ;;
     --greek)
-	echo $OSCAR_GREEK_VERSION
-	;;
+    echo $OSCAR_GREEK_VERSION
+    ;;
     --svn)
-	echo $OSCAR_SVN_R
-	;;
+    echo $OSCAR_SVN_R
+    ;;
     --base)
-        echo $OSCAR_BASE_VERSION
-        ;;
+    echo $OSCAR_BASE_VERSION
+    ;;
     --all)
-        echo ${OSCAR_VERSION} ${OSCAR_MAJOR_VERSION} ${OSCAR_MINOR_VERSION} ${OSCAR_RELEASE_VERSION} ${OSCAR_GREEK_VERSION} ${OSCAR_SVN_R}
-        ;;
+    echo ${OSCAR_VERSION} ${OSCAR_MAJOR_VERSION} ${OSCAR_MINOR_VERSION} ${OSCAR_RELEASE_VERSION} ${OSCAR_GREEK_VERSION} ${OSCAR_SVN_R}
+    ;;
     --nightly)
-	echo ${OSCAR_SVN_R}nightly-${OSCAR_DATE}
-	;;
+    echo ${OSCAR_SVN_R}nightly-${OSCAR_DATE}
+    ;;
     -h|--help)
-	cat <<EOF
+    cat <<EOF
 $0 <srcfile> [<option>]
 
 <srcfile> - Text version file
