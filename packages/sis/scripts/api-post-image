@@ -42,7 +42,7 @@ use SystemInstaller::Image;
 use File::Basename;
 use Getopt::Long;
 
-my $base = "$ENV{OSCAR_HOME}/packages/sis";
+my $base = "$ENV{OSCAR_PACKAGE_HOME}";
 
 my $configdir = $base."/.configs";
 
