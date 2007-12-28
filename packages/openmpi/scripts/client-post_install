@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# Copyright (c) 2007 The Trustees of Indiana University.  
+#                    All rights reserved.
+# 
+# This file is part of the OSCAR software package.  For license
+# information, see the COPYING file in the top level directory of the
+# OSCAR source distribution.
+#
+# $Id$
+#
+# client-post-install script for the openmpi package
+#
+# This script is for the foolproof of setting up env-switcher's --add-name.
+# openmpi-switcher-modulefile is supposed to take care of adding its own
+# proper env-switcher for the mpi swither by running the following command
+# during the installation of openmpi-switcher-moduelfile. It is setup at 
+# post_script of rpm installation but it does not seem to work properly on
+# the oscarimage according to the linux distro. 
+# (FYI, fedora 7 and fedora 8 have an issue of this.)
+# switcher mpi --add-name openmpi-1.2.4 /opt/openmpi-switcher-modulefile-1.2.4 --slient --force
+
+#
+# Check to see what openmpi-switcher-modulefile is installed
+# 
+sw_dir=/opt/openmpi-switcher-modulefile-*/share/openmpi
+cd $sw_dir
+sw_file=`ls -1`
+
+#
+# Check to see if mpi env-switcher for openmpi is already setup properly.
+# If so, sliently finish.
+#
+dest_dir=/opt/env-switcher/share/env-switcher/mpi
+if [ ! -d $dest_dir ]; then
+    mkdir -p $dest_dir
+fi
+
+if [ -e $dest_dir/$sw_file ]; then
+    echo "Good! mpi env-switcher for openmpi is properly setup on oscarimage."
+    exit 0
+fi
+
+#
+# If you are here, mpi env-switcher for openmpi is not properly setup yet.
+# So, we manually setup env-switcher here now.
+#
+cp $sw_dir/$sw_file $dest_dir/$sw_file
+echo "Re-configured env-switcher for openmpi on oscarimage. OK!"
+
+# OK, I hope everything is good for openmpi env-switcher now.

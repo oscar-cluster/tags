@@ -65,9 +65,11 @@ $VERSION = sprintf("r%d", q$Revision$ =~ /(\d+)/);
            post_configure => ['api-post-configure',
                               'post_configure'], # deprecated
            post_server_install => ['server-post-install',
+                                   'server-post_install', # for only RPM based sys
                                    'post_server_install', # deprecated
                                    'post_server_rpm_install'], # deprecated
            post_rpm_install => ['client-post-install',
+                                'client-post_install', # for only RPM based sys
                                 'post_client_rpm_install', # deprecated
                                 'post_rpm_install'], # deprecated
            post_rpm_nochroot => ['api-post-image',
