@@ -16,7 +16,7 @@ use strict;
 use XML::Simple;
 
 my $pkg = "torque";
-my $pkg_dir = "$ENV{OSCAR_HOME}/packages/$pkg";
+my $pkg_dir = "$ENV{OSCAR_PACKAGE_HOME}/$pkg";
 my $pkg_config = "$pkg_dir/config.xml";
 
 my $xml_ref = undef;
