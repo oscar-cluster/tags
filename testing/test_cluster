@@ -161,6 +161,10 @@ unless ($test_user_homedir) {
 	      getpwnam $test_user;
 }
 
+# This is necessary because Fedora series distros (> verison 7) does not create
+# user's $HOME automatically with "useradd -m".
+mkdir("$test_user_homedir") if( !( -d $test_user_homedir) );
+
 # Check for a properly mounted /home dir
 
 system("$ENV{OSCAR_TESTPRINT} --label '/home mounts'");
