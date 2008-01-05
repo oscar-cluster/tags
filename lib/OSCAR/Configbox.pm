@@ -17,7 +17,7 @@ package OSCAR::Configbox;
 #
 # Copyright (c) 2002 National Center for Supercomputing Applications (NCSA)
 #                    All rights reserved.
-# Copyright (c) 2007 The Trustees of Indiana University.  
+# Copyright (c) 2007-2008 The Trustees of Indiana University.  
 #                    All rights reserved.
 #
 # Written by Terrence G. Fleury (tfleury@ncsa.uiuc.edu)
@@ -604,6 +604,7 @@ sub displayWebPage { # ($parent,$file)
 	    $top->title("Configuration");
         }
 	$top->withdraw;
+        $top->protocol('WM_DELETE_WINDOW',\&exitWithoutSaving);
 	OSCAR::Configbox::Configbox_ui $top;  # Call the specPerl window creator
     }
 
