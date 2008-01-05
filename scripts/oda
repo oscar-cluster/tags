@@ -572,6 +572,7 @@ sub execute_simple_command{
         my %table_fields = ();
         foreach my $table (keys %shortcuts){
             my %fields = ();
+            $table = ucfirst($table);
              oda::list_fields($options_ref,$table,\%fields,\@error_strings);
             $table_fields{$table} = \%fields;
         }
@@ -580,8 +581,9 @@ sub execute_simple_command{
         my @results = ();
         select_table($options_ref,ucfirst($db_table),undef,undef,\@results,\@error_strings);
         $field = $shortcuts{$db_table} if ! $field;
+        $db_table = ucfirst($db_table);
         if ( $table_fields{$db_table}{$field} ){
-            print "List of the field($field) in ".ucfirst($db_table);
+            print "List of the field($field) in $db_table";
             print "\n=================================\n";
             foreach my $ref (@results){
                 print "$$ref{$field}\n";
@@ -630,6 +632,7 @@ Values:
   PORT is a network port number for the database server
   TABLE is the name of a database table.
   TYPE is the type of field(column) using standard mysql types.
+  DUMP FILE is the dump file name to be saved or restored.
 USAGE1
     print STDERR <<USAGE2 if ! $interactive;
 
