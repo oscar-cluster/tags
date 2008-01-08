@@ -23,6 +23,7 @@
       <pkg>torque-mom</pkg>
       <pkg>torque-client</pkg>
       <pkg>torque-modulefile</pkg>
+      <pkg>torque-scheduler</pkg>
     </requires>
   </serverDeps>
   <clientDeps>
