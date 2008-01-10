@@ -31,6 +31,7 @@ use OSCAR::Opkg qw ( create_list_selected_opkgs );
 use Carp;
 use POSIX;
 use Getopt::Long;
+use File::Basename;
 
 my $exit_status = 9;
 
@@ -51,12 +52,25 @@ if ($help)
     exit 0;
 }
 
+# Rewrite package group files, we will need them!
+&OSCAR::Opkg::write_pgroup_files();
+
 # We get the default settings for images.
 my %vars = get_image_default_settings ();
 
 # Update settings: ee set the last few points specific to the current
 # situation.
 $vars{postinstall} = \&postimagebuild;
+
+$vars{selected_group} = "Default";
+
+my @pgroups;
+my $ppath = $OSCAR::PackagePath::PGROUP_PATH;
+for my $d (glob("$ppath/*.pgroup")) {
+    my $f = basename($d, ".pgroup");
+    push @pgroups, { label => "$f", path => "$d" };
+}
+$vars{package_group} = \@pgroups;
 
 #
 # Validate image name (code from systeminstaller-oscar, 
@@ -174,11 +188,25 @@ sub add_image
 # Retrun : 0 if success, 1 else.
 sub add_image_build
 {
+
+    my $groupfile;
+    if ($vars{selected_group}) {
+        my $path;
+        for my $a (@{$vars{package_group}}) {
+            if ($a->{label} eq $vars{selected_group}) {
+                $path = $a->{path};
+                last;
+            }
+        }
+        $groupfile = "--filename $path";
+    }
+
     my $cmd = "mksiimage -A --name $vars{imgname} " .
-        "--location $vars{pkgpath} " .
+        "--location \"$vars{pkgpath}\" " .
         "--filename $vars{pkgfile} " .
         "--arch $vars{arch} " .
-        "--path $vars{imgpath}/$vars{imgname}" .
+        "--path $vars{imgpath}/$vars{imgname} " .
+        "$groupfile ".
         " $vars{extraflags}";
     
     print "Executing command: $cmd\n";
@@ -218,6 +246,7 @@ sub add_image_build
     #Default command options
     $cmd = "si_mkautoinstallscript -quiet --autodetect-disks -image $vars{imgname} -force -ip-assignment $vars{ipmeth} -post-install $vars{piaction}";
 
+    $cmd = $cmd . " -iseries-vdisk=$vars{vdiskdev}" if ( $vars{vdiskdev} =~ (/\/dev\/[a-zA-Z]*/) );
     print "Running: $cmd ... ";
     if( system($cmd) )
     {
