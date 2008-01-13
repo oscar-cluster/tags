@@ -27,7 +27,6 @@
     <requires>
       <filters>
         <dist>fc</dist>
-        <dist>rhel</dist>
       </filters>
       <pkg>php-gd</pkg>
       <pkg>php-common</pkg>
@@ -35,6 +34,7 @@
     <requires>
       <filters>
         <dist>ydl</dist>
+        <dist>rhel</dist>
       </filters>
       <pkg>php-gd</pkg>
     </requires>
