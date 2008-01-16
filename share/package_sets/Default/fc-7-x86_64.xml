@@ -7,25 +7,18 @@
         <opkg>c3</opkg>
         <opkg>disable-services</opkg>
         <opkg>ganglia</opkg>
-        <opkg>jobmonarch</opkg>
         <opkg>lam</opkg>
-        <opkg>linux-ha</opkg>
-        <opkg>loghost</opkg>
         <opkg>maui</opkg>
         <opkg>mpich</opkg>
         <opkg>mta-config</opkg>
         <opkg>netbootmgr</opkg>
-        <opkg>networking</opkg>
         <opkg>ntpconfig</opkg>
         <opkg>oda</opkg>
         <opkg>openmpi</opkg>
         <opkg>opium</opkg>
-        <opkg>pfilter</opkg>
         <opkg>pvm</opkg>
         <opkg>rapt</opkg>
         <opkg>sc3</opkg>
-        <opkg>selinux</opkg>
-        <opkg>sge</opkg>
         <opkg>sis</opkg>
         <opkg>switcher</opkg>
         <opkg>sync-files</opkg>
