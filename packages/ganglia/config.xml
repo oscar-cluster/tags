@@ -49,7 +49,6 @@
         <dist>suse</dist>
       </filters>
       <pkg>php5-gd</pkg>
-      <pkg>apache2</pkg>
     </requires>
   </serverDeps>
   <clientDeps>
@@ -59,11 +58,6 @@
   </clientDeps>
   <apiDeps/>
   <changelog>
-    <versionEntry version="3.0.6-2">
-      <changelogEntry authorName="DongInn Kim" date="2008-01-17T02:35:00+05:00">
-        <item>Modify the dependency for suse to get apache2</item>
-      </changelogEntry>
-    </versionEntry>
     <versionEntry version="3.0.6-1">
       <changelogEntry authorName="DongInn Kim" date="2008-01-01T16:05:00+05:00">
         <item>Upgrade ganglia to 3.0.6</item>
