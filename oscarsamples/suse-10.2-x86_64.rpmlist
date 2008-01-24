@@ -68,7 +68,6 @@ less
 libacl
 libattr
 libgcc
-libselinux
 libstdc++
 libxcrypt
 libxml2
@@ -128,7 +127,6 @@ sed
 siga
 sitar
 src_vipa
-submount
 suse-build-key
 suse-release
 sysconfig
