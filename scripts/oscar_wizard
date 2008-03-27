@@ -382,6 +382,7 @@ sub oscar_button {
     }
     my $status = $$step_status{$helptext};
     $status = $$manage_status{$helptext} if ! $status;
+    $status = "disabled" if $helptext eq "download_packages";
     $status = "normal" if ! $status;
     
     my $label = $window->Label(-text => $labeltxt);

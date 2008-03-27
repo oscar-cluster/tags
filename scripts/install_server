@@ -179,8 +179,10 @@ update_rsyncd_conf($ip,$netmask) or croak("Couldn't update rsyncd.conf file");
 oscar_log_subsection("Refreshing services");
 # Note: it is better to try to restart the service, "start" generates an error
 # if the service is already running
+chomp(my $nfs_export = `which exportfs`);
 !system("/etc/init.d/$nfs restart") or croak("Couldn't restart $nfs");
-!system("exportfs -a") or croak("Couldn't refresh nfs exports");
+!system("exportfs -a") or croak("Couldn't refresh nfs exports")
+    if $nfs_export;
 !system("/etc/init.d/$sshd restart") or croak("Couldn't start $sshd");
 my $os = OSCAR::OCA::OS_Detect::open();
 my $binary_format = $os->{'pkg'};
