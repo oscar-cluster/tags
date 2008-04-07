@@ -794,8 +794,9 @@ sub run_tests {
     # Set the following next buttons available for manage mode
     if ( $$manage_status{delete_nodes8} eq "disabled" ) {
         my @tmp_next_steps = ("add_nodes", 
-                              "delete_nodes8",
-                              "install_uninstall_packages");
+                              "delete_nodes8");
+    # Disabled for the not supported feature on oscar 5.1
+    #                          "install_uninstall_packages");
         foreach my $next_step (@tmp_next_steps){                          
             set_manage_status($next_step,\%options,\@errors);
         }
