@@ -5,7 +5,6 @@ authconfig
 basesystem
 bash
 bc
-beecrypt
 bind-utils
 bind-libs
 binutils
@@ -139,7 +138,6 @@ shadow-utils
 slang
 slocate
 strace
-sysklogd
 SysVinit
 tar
 tcl
