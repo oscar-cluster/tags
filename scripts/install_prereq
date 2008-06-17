@@ -251,7 +251,7 @@ sub handle_dumb_rpms {
 		if ($pkgpath) {
 		    $cmd = "rpm -Uhv $pkgpath";
 		    vprint("Executing: $cmd\n");
-		    !system($cmd) or croak "install failed: $!\n";
+		    !system($cmd) or croak "install failed: $! ($cmd)\n";
 		} else {
 		    print "WARNING: Could not locate package $pkg\n";
 		}

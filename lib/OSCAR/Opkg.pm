@@ -37,14 +37,16 @@ use lib "$ENV{OSCAR_HOME}/lib";
 use vars qw(@EXPORT);
 use base qw(Exporter);
 use File::Basename;
-use Data::Dumper;
 use OSCAR::Database;
 use OSCAR::PackagePath;
 use Carp;
 
 @EXPORT = qw(
+            get_data_from_configxml
             get_list_opkg_dirs
+            get_opkg_version_from_configxml
             opkg_print
+            opkgs_install
             opkgs_install_server
             create_list_selected_opkgs
             );
@@ -182,5 +184,63 @@ sub write_pgroup_files {
     }
 }
 
+################################################################################
+# Gets the version of a give OPKG parsing a config.xml file. For that we need  #
+# to parse the OPKG changelog for that.                                        #
+#                                                                              #
+# Input: configxml, path to the config.xml file we need to parse in order to   #
+#                   extract data.                                              #
+# Return: the OPKG version, undef if error.                                    #
+################################################################################
+sub get_opkg_version_from_configxml ($) {
+    my ($configxml) = @_;
+
+    require OSCAR::FileUtils;
+    my $ref = OSCAR::FileUtils::parse_xmlfile ($configxml);
+    if (!defined $ref) {
+        carp "ERROR: Impossible to parse XML file ($configxml)";
+        return undef;
+    }
+
+    my $changelog_ref = $ref->{changelog}->{versionEntry};
+    my @versions;
+    foreach my $entry (@$changelog_ref) {
+        push (@versions, "$entry->{version}") if defined $entry->{version};
+    }
+
+    require OSCAR::Utils;
+    require OSCAR::VersionParser;
+    my $max = $versions[0];
+    foreach my $v (@versions) {
+        if (OSCAR::VersionParser::version_compare (
+            OSCAR::VersionParser::parse_version($max),
+            OSCAR::VersionParser::parse_version($v)) < 0) {
+            $max = $v;
+        }
+    }
+    return $max;
+}
+
+################################################################################
+# Get the value of a specific tag from a config.xml file. Note that this is a  #
+# basic function, the tag has to be a first level tag, if not it won't work.   #
+#                                                                              #
+# Input: configxml, path to the config.xml file we need to parse.              #
+#        key, XML tag we are to look for.                                      #
+# Return: the value of the XML tag, undef if errors.                           #
+################################################################################
+sub get_data_from_configxml ($$) {
+    my ($configxml, $key) = @_;
+
+    require OSCAR::FileUtils;
+    my $ref = OSCAR::FileUtils::parse_xmlfile ($configxml);
+    if (!defined $ref) {
+        carp "ERROR: Impossible to parse XML file ($configxml)";
+        return undef;
+    }
+
+    my $provide = $ref->{$key};
+    return $provide;
+}
 
 1;

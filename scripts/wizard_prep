@@ -258,7 +258,7 @@ goto PREREQS_DONE if (!$do_prereqs);
 #
 # base prereqs install start before the others, they're done smartly
 #
-$cmd = "$ipcmd $prereqs_dir/base";
+$cmd = "$ipcmd --smart $prereqs_dir/base";
 !system($cmd) or
     die "Could not install base prereqs!\n";
 
@@ -298,6 +298,7 @@ for my $prereq (@ordered_prereqs) {
 
 require OSCAR::Package;
 require OSCAR::Opkg;
+require OSCAR::SwitcherAPI;
 
 #
 #
@@ -316,6 +317,9 @@ my @opkgs = &opkg_list_available();
 #
 oscar_log_subsection("Installing API opkgs");
 &OSCAR::Opkg::opkgs_install("api", @opkgs);
+if (OSCAR::SwitcherAPI::store_opkgs_switcher_data (@opkgs)) {
+    die "ERROR: Impossible to store switcher data into ODA\n"
+} 
 oscar_log_subsection("Successfully installed API opkgs");
 
 

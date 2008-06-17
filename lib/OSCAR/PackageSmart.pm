@@ -38,7 +38,10 @@ use Switch;
 use Cwd;
 use Carp;
 
-@EXPORT = qw(
+# NOTE: required so the @EXPORT (default exported to all) works ok
+# my @ISA = qw(Exporter);
+
+our @EXPORT = qw(
 	     prepare_pools
 	     checksum_write
 	     checksum_needed

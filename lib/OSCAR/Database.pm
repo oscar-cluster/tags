@@ -124,7 +124,6 @@ $options{debug} = 1
               get_node_package_status_with_node_package
 	      get_package_info_with_name
               get_packages
-              get_packages_switcher
               get_packages_servicelists
               get_pkgconfig_vars
               get_selected_group
@@ -487,18 +486,6 @@ sub get_package_info_with_name {
     }
     return $p_ref;
 }
-
-sub get_packages_switcher {
-    my ($results_ref,
-        $options_ref,
-        $errors_ref) = @_;
-    my $sql = "SELECT P.package, S.switcher_tag, S.switcher_name " .
-              "FROM Packages P, Packages_switcher S " .
-              "WHERE P.package=S.package";
-    print "DB_DEBUG>$0:\n====> in Database::get_packages_switcher SQL : $sql\n"
-	if $$options_ref{debug};
-    return do_select($sql,$results_ref,$options_ref,$errors_ref);
-}    
 
 # This is called only by "DelNode.pm" and if group_name is not specified,
 # it will assume that you are querying for all the client nodes because we
