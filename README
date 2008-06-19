@@ -17,10 +17,10 @@ clusters can be found in doc/user.pdf.
 A very basic HOWTO:
 -------------------
 1) download the repo tarballs you are interested in from
-http://oscar.openclustergroup.org/filebrowser/49/crispy
+http://downloads.sourceforge.net/oscar/
 For example:
-oscar-repo-common-rpms-5.0.9a1r6551nightly-20071113.tar.gz
-oscar-repo-rhel-5-x86_64-5.0.9a1r6551nightly-20071113.tar.gz
+oscar-repo-common-rpms-5.1.tar.gz
+oscar-repo-rhel-5-x86_64-5.1.tar.gz
 
 2) unpack the tarballs:
 mkdir -p /tftpboot/oscar
@@ -66,12 +66,19 @@ opkg-<NAME>-client: contains as dependencies the binary packages which need to
 In addition the the opkg-* packages we have oscar-base, oscar-libs, oscar-scripts,
 oscar-server and oscar-client. They contain the base OSCAR scripts, libs, etc...
 
-"crispy" contains support for the RPM based distributions:
-    rhel-5-i386
-    rhel-5-x86_64
-    suse-10.2-x86_64
-    ydl-5-ppc64 (yellow dog linux for the PS3)
-ALL these distros are new for OSCAR, which shows that the infrastructure is now
+Supported distributions (archs):
+------------------------
+
+- Fedora Core 7 (i386,x86_64)
+- Fedora Core 8 (i386,x86_64)
+- Fedora Core 9 (x86_64)
+- RHEL 4 (i386,x86_64)
+- RHEL 5 (i386,x86_64)
+- SuSe 10.2 (x86_64)
+- SuSe 10.3 (x86_64)
+- YDL 5 (ppc64)
+
+Many of these distros are new for OSCAR, which shows that the infrastructure is now
 quite flexible. And the PS3 support is something quite unique, a big thanks to
 DongInn and Bernard for it!
 
