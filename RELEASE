@@ -1,0 +1,27 @@
+The Open Cluster Group is please to announce the release of
+OSCAR version 5.1.
+
+New features:
+=============
+
++ OSCAR database (ODA):
+  * Postgresql support
+  * Code janitoring
+
++ New OSCAR Package format, using native distribution package formats
+
+Supported distributions:
+========================
+
+- Fedora Core 7 (i386,x86_64)
+- Fedora Core 8 (i386,x86_64)
+- Fedora Core 9 (x86_64)
+- RHEL 4 (i386,x86_64)
+- RHEL 5 (i386,x86_64)
+- SuSe 10.2 (x86_64)
+- SuSe 10.3 (x86_64)
+- YDL 5 (ppc64)
+
+Many of these distros are new for OSCAR, which shows that the infrastructure is now
+quite flexible. And the PS3 support is something quite unique, a big thanks to
+DongInn and Bernard for it!

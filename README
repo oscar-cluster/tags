@@ -66,19 +66,3 @@ opkg-<NAME>-client: contains as dependencies the binary packages which need to
 In addition the the opkg-* packages we have oscar-base, oscar-libs, oscar-scripts,
 oscar-server and oscar-client. They contain the base OSCAR scripts, libs, etc...
 
-Supported distributions (archs):
-------------------------
-
-- Fedora Core 7 (i386,x86_64)
-- Fedora Core 8 (i386,x86_64)
-- Fedora Core 9 (x86_64)
-- RHEL 4 (i386,x86_64)
-- RHEL 5 (i386,x86_64)
-- SuSe 10.2 (x86_64)
-- SuSe 10.3 (x86_64)
-- YDL 5 (ppc64)
-
-Many of these distros are new for OSCAR, which shows that the infrastructure is now
-quite flexible. And the PS3 support is something quite unique, a big thanks to
-DongInn and Bernard for it!
-
